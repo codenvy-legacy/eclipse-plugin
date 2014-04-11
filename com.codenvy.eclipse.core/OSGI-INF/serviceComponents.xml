@@ -16,8 +16,8 @@
   from Codenvy S.A..
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0">
-	<implementation class="com.codenvy.plugin.eclipse.core.service.DefaultRestServiceFactory" />		   
+	<implementation class="com.codenvy.eclipse.core.service.DefaultRestServiceFactory" />		   
 	<service>
-		<provide interface="com.codenvy.plugin.eclipse.core.service.api.RestServiceFactory" />
+		<provide interface="com.codenvy.eclipse.core.service.api.RestServiceFactory" />
 	</service>		   
 </scr:component>
