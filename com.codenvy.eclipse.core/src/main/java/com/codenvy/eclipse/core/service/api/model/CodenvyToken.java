@@ -27,18 +27,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Kevin Pollet
  */
 public class CodenvyToken {
-    public final String token;
+    public final String value;
 
     /**
      * Constructs an instance of {@linkplain CodenvyToken}.
      * 
-     * @param token the authentication token.
-     * @throws NullPointerException if the token parameter is {@code null}.
+     * @param value the authentication token.
+     * @throws NullPointerException if the value parameter is {@code null}.
      */
     @JsonCreator
-    public CodenvyToken(@JsonProperty("token") String token) {
-        checkNotNull(token);
+    public CodenvyToken(@JsonProperty("value") String value) {
+        checkNotNull(value);
         
-        this.token = token;
+        this.value = value;
     }
 }

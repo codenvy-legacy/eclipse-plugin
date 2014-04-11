@@ -71,7 +71,7 @@ public class WorkspaceService implements RestServiceWithAuth {
     public List<Workspace> getAllWorkspaces() {
 
         return workspaceWebTarget.path("all")
-                                 .queryParam("token", codenvyToken.token)
+                                 .queryParam("token", codenvyToken.value)
                                  .request()
                                  .accept(APPLICATION_JSON)
                                  .get(new GenericType<List<Workspace>>() {
@@ -90,7 +90,7 @@ public class WorkspaceService implements RestServiceWithAuth {
         checkNotNull(name);
         checkArgument(!name.trim().isEmpty());
 
-        return workspaceWebTarget.queryParam("token", codenvyToken.token)
+        return workspaceWebTarget.queryParam("token", codenvyToken.value)
                                  .queryParam("name", name)
                                  .request()
                                  .accept(APPLICATION_JSON)

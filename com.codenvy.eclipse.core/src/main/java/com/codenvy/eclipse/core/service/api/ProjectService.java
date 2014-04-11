@@ -75,7 +75,7 @@ public class ProjectService implements RestServiceWithAuth {
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
 
-        return projectWebTarget.queryParam("token", codenvyToken.token)
+        return projectWebTarget.queryParam("token", codenvyToken.value)
                                .path(workspaceId)
                                .request()
                                .accept(APPLICATION_JSON)
