@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.codenvy.eclipse.feature_1.0.0.qualifier.jar" id="com.codenvy.eclipse.feature" version="1.0.0.qualifier">
+      <category name="com.codenvy.eclipse.category"/>
+   </feature>
+   <category-def name="com.codenvy.eclipse.category" label="Codenvy Eclipse Plugin Category">
+      <description>
+         Plugins and features providing Codenvy integration in Eclipse.
+      </description>
+   </category-def>
+</site>

@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: com.codenvy.eclipse.core;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ManifestVersion: 2
+Bundle-Name: Codenvy Eclipse Plugin Core
+Bundle-Vendor: Codenvy
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.9.100",
+ com.google.guava;bundle-version="12.0.0",
+ com.codenvy.eclipse.lib;bundle-version="1.0.0"
+Export-Package: com.codenvy.eclipse.core.service.api,
+ com.codenvy.eclipse.core.service.api.exception,
+ com.codenvy.eclipse.core.service.api.model
+Service-Component: OSGI-INF/serviceComponents.xml

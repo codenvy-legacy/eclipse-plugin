@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  CODENVY CONFIDENTIAL
+  ________________
+  
+  [2012] - [2014] Codenvy, S.A.
+  All Rights Reserved.
+  NOTICE: All information contained herein is, and remains
+  the property of Codenvy S.A. and its suppliers,
+  if any. The intellectual and technical concepts contained
+  herein are proprietary to Codenvy S.A.
+  and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law.
+  Dissemination of this information or reproduction of this material
+  is strictly forbidden unless prior written permission is obtained
+  from Codenvy S.A..
+-->
+<feature
+      id="com.codenvy.eclipse.feature"
+      label="Codenvy Eclipse Plugin Feature"
+      version="1.0.0.qualifier"
+      provider-name="Codenvy">
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime" version="3.9.100" match="greaterOrEqual"/>
+      <import plugin="com.google.guava" version="12.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui" version="3.105.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="com.codenvy.eclipse.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.codenvy.eclipse.lib"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.codenvy.eclipse.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
