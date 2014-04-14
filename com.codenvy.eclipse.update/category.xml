@@ -3,9 +3,9 @@
    <feature url="features/com.codenvy.eclipse.feature_1.0.0.qualifier.jar" id="com.codenvy.eclipse.feature" version="1.0.0.qualifier">
       <category name="com.codenvy.eclipse.category"/>
    </feature>
-   <category-def name="com.codenvy.eclipse.category" label="Codenvy Eclipse Plugin Category">
+   <category-def name="com.codenvy.eclipse.category" label="Codenvy">
       <description>
-         Plugins and features providing Codenvy integration in Eclipse.
+         Provides Codenvy integration for Eclipse.
       </description>
    </category-def>
 </site>
