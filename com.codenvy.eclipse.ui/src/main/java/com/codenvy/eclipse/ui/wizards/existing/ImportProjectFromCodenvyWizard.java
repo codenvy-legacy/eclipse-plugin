@@ -98,4 +98,8 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
         // TODO do import stuff here!!!!
         return true;
     }
+
+    public WorkspaceWizardPage getWorkspaceWizardPage() {
+        return workspaceWizardPage;
+    }
 }

@@ -47,6 +47,7 @@ import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
 import com.codenvy.eclipse.core.service.api.model.Project;
 import com.codenvy.eclipse.core.service.api.model.Workspace;
 import com.codenvy.eclipse.ui.Activator;
+import com.codenvy.eclipse.ui.wizards.existing.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
 
 /**
@@ -70,7 +71,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         super(AuthenticationWizardPage.class.getSimpleName());
 
         checkNotNull(importWizardSharedData);
-        
+
         this.importWizardSharedData = importWizardSharedData;
 
         setTitle("Codenvy Authentication");
@@ -125,9 +126,11 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
     @Override
     public void handlePageChanging(PageChangingEvent event) {
+        final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
+        final IWizardPage targetPage = (IWizardPage)event.getTargetPage();
         final IWizardPage currentPage = (IWizardPage)event.getCurrentPage();
 
-        if (getName().equals(currentPage.getName())) {
+        if (getName().equals(currentPage.getName()) && wizard.getWorkspaceWizardPage().getName().equals(targetPage.getName())) {
             final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
             final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
 
