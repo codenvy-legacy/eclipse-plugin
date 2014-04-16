@@ -64,6 +64,8 @@ import com.codenvy.eclipse.ui.utils.ImageConstants;
  */
 public class ProjectWizardPage extends WizardPage implements IPageChangingListener, IPageChangedListener {
     private CheckboxTableViewer          projectTableViewer;
+    private Composite                    wizardContainer;
+    private Label                        projectTableLabel;
     private final ImportWizardSharedData importWizardSharedData;
 
     /**
@@ -87,14 +89,11 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
 
     @Override
     public void createControl(Composite parent) {
-        final Composite wizardContainer = new Composite(parent, SWT.NONE);
+        wizardContainer = new Composite(parent, SWT.NONE);
         wizardContainer.setLayout(new GridLayout());
         wizardContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        final Label projectTableLabel = new Label(wizardContainer, SWT.NONE);
-        final String selectedWorkspaceName = importWizardSharedData.getWorkspace().get().workspaceRef.name;
-
-        projectTableLabel.setText("Project(s) in workspace '" + selectedWorkspaceName + "'");
+        projectTableLabel = new Label(wizardContainer, SWT.NONE);
 
         projectTableViewer =
                              CheckboxTableViewer.newCheckList(wizardContainer, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL
@@ -186,6 +185,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
                                     public void run() {
+                                        projectTableLabel.setText("Project(s) in workspace '" + selectedWorkspaceName + "'");
                                         projectTableViewer.setInput(projects);
 
                                         // restore previous state if needed
@@ -193,6 +193,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                                         if (!checkedProjects.isEmpty()) {
                                             projectTableViewer.setCheckedElements(checkedProjects.toArray());
                                         }
+
+                                        wizardContainer.layout();
                                     }
                                 });
 
