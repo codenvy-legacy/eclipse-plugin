@@ -26,8 +26,10 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.service.api.RestServiceFactory;
+import com.codenvy.eclipse.core.service.api.UserService;
 import com.codenvy.eclipse.core.service.api.WorkspaceService;
 import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
+import com.codenvy.eclipse.core.service.api.model.User;
 import com.codenvy.eclipse.core.service.api.model.Workspace;
 import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
 
@@ -38,6 +40,7 @@ import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
  */
 public class WorkspaceServiceTest extends RestApiBaseTest {
     private WorkspaceService workspaceService;
+    private UserService      userService;
 
     @Before
     public void initialize() {
@@ -49,6 +52,7 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
         Assert.assertNotNull(restServiceFactory);
 
         workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, REST_API_URL, new CodenvyToken("dummy"));
+        userService = restServiceFactory.newRestService(UserService.class, REST_API_URL);
     }
 
     @Test
@@ -74,5 +78,18 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
         Assert.assertNotNull(workspaceRef);
         Assert.assertNotNull(workspaceRef.id);
         Assert.assertNotNull(workspaceRef.name);
+    }
+
+    @Test
+    public void testFindWorkspacesByAccount() {
+        final User currentUser = userService.getCurrentUser();
+        Assert.assertNotNull(currentUser);
+
+        final List<WorkspaceRef> workspaces = workspaceService.findWorkspacesByAccount(currentUser.id);
+
+        Assert.assertNotNull(workspaces);
+        Assert.assertTrue(workspaces.size() > 0);
+        Assert.assertNotNull(workspaces.get(0).id);
+        Assert.assertNotNull(workspaces.get(0).name);
     }
 }

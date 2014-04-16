@@ -74,7 +74,8 @@ public class WorkspaceService implements RestServiceWithAuth {
                                  .queryParam("token", codenvyToken.value)
                                  .request()
                                  .accept(APPLICATION_JSON)
-                                 .get(new GenericType<List<Workspace>>() {});
+                                 .get(new GenericType<List<Workspace>>() {
+                                 });
     }
 
     /**
@@ -94,6 +95,27 @@ public class WorkspaceService implements RestServiceWithAuth {
                                  .request()
                                  .accept(APPLICATION_JSON)
                                  .get(WorkspaceRef.class);
+    }
+
+    /**
+     * Finds Codenvy workspaces of the given account.
+     * 
+     * @param accountId the account id.
+     * @return the Codenvy workspace list never {@code null}.
+     * @throws NullPointerException if accountId parameter is {@code null}.
+     * @throws IllegalArgumentException if accountId parameter is an empty {@linkplain String}.
+     */
+    public List<WorkspaceRef> findWorkspacesByAccount(String accountId) {
+        checkNotNull(accountId);
+        checkArgument(!accountId.trim().isEmpty());
+
+        return workspaceWebTarget.path("find/account")
+                                 .queryParam("token", codenvyToken.value)
+                                 .queryParam("id", accountId)
+                                 .request()
+                                 .accept(APPLICATION_JSON)
+                                 .get(new GenericType<List<WorkspaceRef>>() {
+                                 });
     }
 
     /**
