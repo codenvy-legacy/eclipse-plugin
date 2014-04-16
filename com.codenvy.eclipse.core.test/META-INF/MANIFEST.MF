@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: com.codenvy.eclipse.core.test;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Name: Codenvy Eclipse Plugin Core Test
+Bundle-Vendor: Codenvy
+Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Require-Bundle: org.junit;bundle-version="4.11.0",
+ org.eclipse.osgi,
+ com.codenvy.eclipse.core;bundle-version="1.0.0"

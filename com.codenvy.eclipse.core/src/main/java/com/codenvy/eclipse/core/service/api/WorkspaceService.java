@@ -18,6 +18,7 @@ package com.codenvy.eclipse.core.service.api;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.net.URI;
@@ -69,17 +70,15 @@ public class WorkspaceService implements RestServiceWithAuth {
      * @return all Codenvy workspaces never {@code null}.
      */
     public List<Workspace> getAllWorkspaces() {
-
         return workspaceWebTarget.path("all")
                                  .queryParam("token", codenvyToken.value)
                                  .request()
                                  .accept(APPLICATION_JSON)
-                                 .get(new GenericType<List<Workspace>>() {
-                                 });
+                                 .get(new GenericType<List<Workspace>>() {});
     }
 
     /**
-     * Retries a Codenvy workspace by it's name.
+     * Retrieves a Codenvy workspace by it's name.
      * 
      * @param name the workspace name.
      * @return the Codenvy workspace or {@code null} if none.
@@ -95,5 +94,18 @@ public class WorkspaceService implements RestServiceWithAuth {
                                  .request()
                                  .accept(APPLICATION_JSON)
                                  .get(WorkspaceRef.class);
+    }
+
+    /**
+     * Creates the given workspace.
+     * 
+     * @param workspaceRef the workspace to create.
+     * @return the created workspace.
+     */
+    public WorkspaceRef createWorkspace(WorkspaceRef workspaceRef) {
+        return workspaceWebTarget.queryParam("token", codenvyToken.value)
+                                 .request()
+                                 .post(json(workspaceRef), WorkspaceRef.class);
+
     }
 }
