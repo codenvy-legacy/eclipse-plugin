@@ -23,7 +23,7 @@ import java.util.List;
 
 import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
 import com.codenvy.eclipse.core.service.api.model.Project;
-import com.codenvy.eclipse.core.service.api.model.Workspace;
+import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
 import com.google.common.base.Optional;
 
 /**
@@ -34,7 +34,7 @@ import com.google.common.base.Optional;
 public final class ImportWizardSharedData {
     private Optional<String>       url;
     private Optional<CodenvyToken> codenvyToken;
-    private Optional<Workspace>    workspace;
+    private Optional<WorkspaceRef> workspaceRef;
     private List<Project>          projects;
 
     /**
@@ -43,7 +43,7 @@ public final class ImportWizardSharedData {
     public ImportWizardSharedData() {
         this.url = Optional.absent();
         this.codenvyToken = Optional.absent();
-        this.workspace = Optional.absent();
+        this.workspaceRef = Optional.absent();
         this.projects = new ArrayList<>();
     }
 
@@ -90,24 +90,24 @@ public final class ImportWizardSharedData {
     }
 
     /**
-     * Returns the Codenvy workspace checked by the user in step 2.
+     * Returns the Codenvy workspace reference checked by the user in step 2.
      * 
-     * @return the checked Codenvy workspace never {@code null}.
+     * @return the checked Codenvy workspace reference never {@code null}.
      */
-    public Optional<Workspace> getWorkspace() {
-        return workspace;
+    public Optional<WorkspaceRef> getWorkspaceRef() {
+        return workspaceRef;
     }
 
     /**
-     * Defines the Codenvy workspace checked by the user.
+     * Defines the Codenvy workspace reference checked by the user.
      * 
-     * @param workspace the Codenvy workspace.
-     * @throws NullPointerException if workspace parameter is {@code null}.
+     * @param workspaceRef the Codenvy workspace reference.
+     * @throws NullPointerException if workspaceRef parameter is {@code null}.
      */
-    public void setWorkspace(Optional<Workspace> workspace) {
-        checkNotNull(workspace);
+    public void setWorkspaceRef(Optional<WorkspaceRef> workspaceRef) {
+        checkNotNull(workspaceRef);
 
-        this.workspace = workspace;
+        this.workspaceRef = workspaceRef;
     }
 
     /**

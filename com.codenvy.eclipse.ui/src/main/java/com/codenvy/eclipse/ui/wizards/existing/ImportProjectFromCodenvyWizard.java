@@ -50,6 +50,8 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
         this.authenticationWizardPage = new AuthenticationWizardPage(importWizardSharedData);
         this.workspaceWizardPage = new WorkspaceWizardPage(importWizardSharedData);
         this.projectWizardPage = new ProjectWizardPage(importWizardSharedData);
+        
+        setNeedsProgressMonitor(true);
     }
 
     @Override

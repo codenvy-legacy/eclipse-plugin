@@ -25,6 +25,7 @@ import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.service.api.RestServiceFactory;
 import com.codenvy.eclipse.core.service.api.UserService;
+import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
 import com.codenvy.eclipse.core.service.api.model.User;
 
 /**
@@ -44,7 +45,7 @@ public class UserServiceTest extends RestApiBaseTest {
         final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
         Assert.assertNotNull(restServiceFactory);
 
-        userService = restServiceFactory.newRestService(UserService.class, REST_API_URL);
+        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, new CodenvyToken("dummy"));
     }
 
     @Test

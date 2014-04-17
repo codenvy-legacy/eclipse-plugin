@@ -48,9 +48,11 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.service.api.RestServiceFactory;
+import com.codenvy.eclipse.core.service.api.UserService;
 import com.codenvy.eclipse.core.service.api.WorkspaceService;
 import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
-import com.codenvy.eclipse.core.service.api.model.Workspace;
+import com.codenvy.eclipse.core.service.api.model.User;
+import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.Activator;
 import com.google.common.base.Optional;
 
@@ -115,7 +117,7 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangingList
         workspaceNameColumn.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                return element instanceof Workspace ? ((Workspace)element).workspaceRef.name : super.getText(element);
+                return element instanceof WorkspaceRef ? ((WorkspaceRef)element).name : super.getText(element);
             }
         });
 
@@ -147,21 +149,24 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangingList
 
                                 final String url = importWizardSharedData.getUrl().get();
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
+                                final UserService userService = restServiceFactory.newRestServiceWithAuth(UserService.class, url, token);
                                 final WorkspaceService workspaceService =
                                                                           restServiceFactory.newRestServiceWithAuth(WorkspaceService.class,
                                                                                                                     url, token);
-                                final List<Workspace> workspaces = workspaceService.getAllWorkspaces();
+
+                                final User currentUser = userService.getCurrentUser();
+                                final List<WorkspaceRef> workspaces = workspaceService.findWorkspacesByAccount(currentUser.id);
 
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
                                     public void run() {
                                         workspaceTableViewer.setInput(workspaces);
 
-                                        // restore previous state if needed
-                                        final Optional<Workspace> checkedWorkspace = importWizardSharedData.getWorkspace();
-                                        if (checkedWorkspace.isPresent()) {
-                                            workspaceTableViewer.setChecked(checkedWorkspace.get(), true);
+                                        final Optional<WorkspaceRef> checkedWorkspaceRef = importWizardSharedData.getWorkspaceRef();
+                                        if (checkedWorkspaceRef.isPresent()) {
+                                            workspaceTableViewer.setChecked(checkedWorkspaceRef.get(), true);
                                         }
+                                        setPageComplete(checkedWorkspaceRef.isPresent());
                                     }
                                 });
 
@@ -187,7 +192,7 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangingList
         if (getName().equals(currentPage.getName())) {
             final Object[] checkedElements = workspaceTableViewer.getCheckedElements();
             if (checkedElements.length > 0) {
-                importWizardSharedData.setWorkspace(Optional.fromNullable((Workspace)checkedElements[0]));
+                importWizardSharedData.setWorkspaceRef(Optional.fromNullable((WorkspaceRef)checkedElements[0]));
             }
         }
     }

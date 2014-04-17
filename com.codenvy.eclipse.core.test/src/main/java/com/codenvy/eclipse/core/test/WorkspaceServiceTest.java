@@ -52,7 +52,7 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
         Assert.assertNotNull(restServiceFactory);
 
         workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, REST_API_URL, new CodenvyToken("dummy"));
-        userService = restServiceFactory.newRestService(UserService.class, REST_API_URL);
+        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, new CodenvyToken("dummy"));
     }
 
     @Test

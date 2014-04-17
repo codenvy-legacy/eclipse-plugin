@@ -26,6 +26,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
+import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
 import com.codenvy.eclipse.core.service.api.model.User;
 
 /**
@@ -33,17 +34,20 @@ import com.codenvy.eclipse.core.service.api.model.User;
  * 
  * @author Kevin Pollet
  */
-public class UserService implements RestService {
-    private final WebTarget userWebTarget;
+public class UserService implements RestServiceWithAuth {
+    private final CodenvyToken codenvyToken;
+    private final WebTarget    userWebTarget;
 
     /**
      * Constructs an instance of {@linkplain UserService}.
      * 
      * @param url the Codenvy platform url.
-     * @throws NullPointerException if url is {@code null}.
+     * @param codenvyToken the Codenvy authentication token.
+     * @throws NullPointerException if url or codenvyToken is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
-    public UserService(String url) {
+    public UserService(String url, CodenvyToken codenvyToken) {
+        checkNotNull(codenvyToken);
         checkNotNull(url);
         checkArgument(!url.trim().isEmpty());
 
@@ -51,6 +55,7 @@ public class UserService implements RestService {
                                   .path("api/user")
                                   .build();
 
+        this.codenvyToken = codenvyToken;
         this.userWebTarget = ClientBuilder.newClient()
                                           .target(uri);
     }
@@ -61,7 +66,8 @@ public class UserService implements RestService {
      * @return the current user.
      */
     public User getCurrentUser() {
-        return userWebTarget.request()
+        return userWebTarget.queryParam("token", codenvyToken.value)
+                            .request()
                             .accept(APPLICATION_JSON)
                             .get(User.class);
     }

@@ -50,7 +50,6 @@ import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.service.api.ProjectService;
 import com.codenvy.eclipse.core.service.api.RestServiceFactory;
-import com.codenvy.eclipse.core.service.api.WorkspaceService;
 import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
 import com.codenvy.eclipse.core.service.api.model.Project;
 import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
@@ -172,29 +171,21 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
 
                                 final String url = importWizardSharedData.getUrl().get();
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
-                                final String selectedWorkspaceName = importWizardSharedData.getWorkspace().get().workspaceRef.name;
-                                final WorkspaceService workspaceService =
-                                                                          restServiceFactory.newRestServiceWithAuth(WorkspaceService.class,
-                                                                                                                    url, token);
-                                final ProjectService projectService =
-                                                                      restServiceFactory.newRestServiceWithAuth(ProjectService.class, url,
-                                                                                                                token);
-                                final WorkspaceRef workspace = workspaceService.getWorkspaceByName(selectedWorkspaceName);
-                                final List<Project> projects = projectService.getWorkspaceProjects(workspace.id);
+                                final WorkspaceRef selectedWorkspaceRef = importWizardSharedData.getWorkspaceRef().get();
+                                final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
+
+                                final List<Project> projects = projectService.getWorkspaceProjects(selectedWorkspaceRef.id);
 
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
                                     public void run() {
-                                        projectTableLabel.setText("Project(s) in workspace '" + selectedWorkspaceName + "'");
+                                        projectTableLabel.setText("Project(s) in workspace '" + selectedWorkspaceRef.name + "'");
                                         projectTableViewer.setInput(projects);
 
-                                        // restore previous state if needed
                                         final List<Project> checkedProjects = importWizardSharedData.getProjects();
-                                        if (!checkedProjects.isEmpty()) {
-                                            projectTableViewer.setCheckedElements(checkedProjects.toArray());
-                                        }
-
+                                        projectTableViewer.setCheckedElements(checkedProjects.toArray());                                        
                                         wizardContainer.layout();
+                                        setPageComplete(!checkedProjects.isEmpty());
                                     }
                                 });
 

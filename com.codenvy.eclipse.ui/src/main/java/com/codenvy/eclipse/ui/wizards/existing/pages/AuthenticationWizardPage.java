@@ -45,7 +45,7 @@ import com.codenvy.eclipse.core.service.api.RestServiceFactory;
 import com.codenvy.eclipse.core.service.api.exception.AuthenticationException;
 import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
 import com.codenvy.eclipse.core.service.api.model.Project;
-import com.codenvy.eclipse.core.service.api.model.Workspace;
+import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.Activator;
 import com.codenvy.eclipse.ui.wizards.existing.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
@@ -148,7 +148,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
                         importWizardSharedData.setCodenvyToken(Optional.fromNullable(token));
                         importWizardSharedData.setUrl(Optional.fromNullable(url.getText()));
-                        importWizardSharedData.setWorkspace(Optional.<Workspace> absent());
+                        importWizardSharedData.setWorkspaceRef(Optional.<WorkspaceRef> absent());
                         importWizardSharedData.setProjects(new ArrayList<Project>());
 
                         setErrorMessage(null);
