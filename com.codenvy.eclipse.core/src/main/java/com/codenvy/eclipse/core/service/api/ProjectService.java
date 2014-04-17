@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.UriBuilder;
@@ -58,8 +59,7 @@ public class ProjectService implements RestServiceWithAuth {
                                   .build();
 
         this.codenvyToken = codenvyToken;
-        this.projectWebTarget = ClientBuilder
-                                             .newClient()
+        this.projectWebTarget = ClientBuilder.newClient()
                                              .target(uri);
     }
 
@@ -79,6 +79,29 @@ public class ProjectService implements RestServiceWithAuth {
                                .path(workspaceId)
                                .request()
                                .accept(APPLICATION_JSON)
-                               .get(new GenericType<List<Project>>() {});
+                               .get(new GenericType<List<Project>>() {
+                               });
+    }
+
+    /**
+     * Creates a new project in the given workspace.
+     * 
+     * @param project the project to create.
+     * @param workspaceId the workspace id.
+     * @return the new project, never {@code null}.
+     * @throws NullPointerException if project or workspaceId parameter is {@code null}.
+     * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
+     */
+    public Project newProject(Project project, String workspaceId) {
+        checkNotNull(project);
+        checkNotNull(workspaceId);
+        checkArgument(!workspaceId.trim().isEmpty());
+
+        return projectWebTarget.path(workspaceId)
+                               .queryParam("token", codenvyToken.value)
+                               .queryParam("name", project.name)
+                               .request()
+                               .accept(APPLICATION_JSON)
+                               .post(Entity.json(project), Project.class);
     }
 }

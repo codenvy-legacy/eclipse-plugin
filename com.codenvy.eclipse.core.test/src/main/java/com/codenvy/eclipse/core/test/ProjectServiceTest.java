@@ -16,6 +16,8 @@
  */
 package com.codenvy.eclipse.core.test;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +27,10 @@ import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.service.api.ProjectService;
 import com.codenvy.eclipse.core.service.api.RestServiceFactory;
+import com.codenvy.eclipse.core.service.api.WorkspaceService;
 import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
+import com.codenvy.eclipse.core.service.api.model.Project;
+import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
 
 /**
  * Test the project service.
@@ -33,8 +38,9 @@ import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
  * @author Kevin Pollet
  */
 public class ProjectServiceTest extends RestApiBaseTest {
-    private ProjectService projectService;
-    
+    private ProjectService   projectService;
+    private WorkspaceService workspaceService;
+
     @Before
     public void initialize() {
         final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
@@ -45,10 +51,29 @@ public class ProjectServiceTest extends RestApiBaseTest {
         Assert.assertNotNull(restServiceFactory);
 
         projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, REST_API_URL, new CodenvyToken("dummy"));
+        workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, REST_API_URL, new CodenvyToken("dummy"));
     }
-    
+
     @Test(expected = NullPointerException.class)
-    public void getWorkspaceProjectsWithNull() {
+    public void testGetWorkspaceProjectsWithNull() {
         projectService.getWorkspaceProjects(null);
+    }
+
+    @Test
+    public void testGetWorkspaceProjects() {
+        final WorkspaceRef defaultWorkspace = workspaceService.getWorkspaceByName("default");
+        Assert.assertNotNull(defaultWorkspace);
+
+        final Project project = new Project(null, null, "jar", null, null, "jar-project", "description", defaultWorkspace.name, null, null, null);
+        final Project createdProject = projectService.newProject(project, defaultWorkspace.id);
+        Assert.assertNotNull(createdProject);
+
+        final List<Project> projects = projectService.getWorkspaceProjects(defaultWorkspace.id);
+
+        Assert.assertNotNull(projects);
+        Assert.assertFalse(projects.isEmpty());
+        Assert.assertEquals("jar-project", projects.get(0).name);
+        Assert.assertEquals("jar", projects.get(0).projectTypeId);
+        Assert.assertEquals(defaultWorkspace.id, projects.get(0).workspaceId);
     }
 }
