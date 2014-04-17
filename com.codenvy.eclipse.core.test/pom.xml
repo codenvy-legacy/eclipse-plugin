@@ -17,15 +17,15 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<artifactId>codenvy-eclipse-parent</artifactId>
 		<groupId>com.codenvy.eclipse</groupId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>com.codenvy.eclipse.core.test</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 
@@ -41,6 +41,19 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<configuration>
+					<extraClasspathElements>
+						<dependency>
+							<groupId>com.codenvy.eclipse</groupId>
+							<artifactId>com.codenvy.eclipse.lib</artifactId>
+							<version>1.0.0-SNAPSHOT</version>
+						</dependency>
+					</extraClasspathElements>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -149,6 +162,14 @@
 					<dependencies>
 						<dependency>
 							<artifactId>org.eclipse.equinox.ds</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
+						<dependency>
+							<artifactId>com.codenvy.eclipse.core</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
+						<dependency>
+							<artifactId>com.codenvy.eclipse.lib</artifactId>
 							<type>p2-installable-unit</type>
 						</dependency>
 					</dependencies>

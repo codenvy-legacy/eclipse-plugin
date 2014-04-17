@@ -17,18 +17,18 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<artifactId>codenvy-eclipse-parent</artifactId>
 		<groupId>com.codenvy.eclipse</groupId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>com.codenvy.eclipse.ui.test</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -44,6 +44,14 @@
 					<dependencies>
 						<dependency>
 							<artifactId>org.eclipse.equinox.ds</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
+						<dependency>
+							<artifactId>com.codenvy.eclipse.ui</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
+						<dependency>
+							<artifactId>com.codenvy.eclipse.lib</artifactId>
 							<type>p2-installable-unit</type>
 						</dependency>
 					</dependencies>

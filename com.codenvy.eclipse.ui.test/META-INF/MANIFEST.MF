@@ -6,8 +6,6 @@ Bundle-Name: Codenvy Eclipse Plugin UI Test
 Bundle-Vendor: Codenvy
 Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
-Require-Bundle: org.junit;bundle-version="4.11.0",
- org.eclipse.osgi,
- com.codenvy.eclipse.core;bundle-version="1.0.0",
- com.codenvy.eclipse.lib;bundle-version="1.0.0",
- com.codenvy.eclipse.ui;bundle-version="1.0.0"
+Comment: import org.junit.runner see https://bugs.eclipse.org/bugs/show_bug.cgi?id=369266
+Import-Package: org.junit;version="4.11.0",
+ org.junit.runner;version="4.11.0"
