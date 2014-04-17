@@ -7,9 +7,12 @@ Bundle-Name: Codenvy Eclipse Plugin Core
 Bundle-Vendor: Codenvy
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.9.100",
- com.google.guava;bundle-version="12.0.0",
- com.codenvy.eclipse.lib;bundle-version="1.0.0"
+ com.google.guava;bundle-version="12.0.0"
 Export-Package: com.codenvy.eclipse.core.service.api,
  com.codenvy.eclipse.core.service.api.exception,
  com.codenvy.eclipse.core.service.api.model
 Service-Component: OSGI-INF/serviceComponents.xml
+Import-Package: com.fasterxml.jackson.annotation;version="2.3.2",
+ javax.ws.rs;version="2.0.0",
+ javax.ws.rs.client;version="2.0.0",
+ javax.ws.rs.core;version="2.0.0"

@@ -37,6 +37,7 @@
 		<module>com.codenvy.eclipse.feature</module>
 		<module>com.codenvy.eclipse.update</module>
 		<module>com.codenvy.eclipse.core.test</module>
+		<module>com.codenvy.eclipse.ui.test</module>
 	</modules>
 
 	<properties>

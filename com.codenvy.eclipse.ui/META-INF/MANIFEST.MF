@@ -8,7 +8,9 @@ Bundle-Vendor: Codenvy
 Bundle-Activator: com.codenvy.eclipse.ui.Activator
 Require-Bundle: org.eclipse.ui;bundle-version="3.105.0",
  org.eclipse.core.runtime;bundle-version="3.9.100",
- com.codenvy.eclipse.core;bundle-version="1.0.0",
- com.codenvy.eclipse.lib;bundle-version="1.0.0",
  com.google.guava;bundle-version="12.0.0"
 Bundle-ActivationPolicy: lazy
+Import-Package: com.codenvy.eclipse.core.service.api,
+ com.codenvy.eclipse.core.service.api.exception,
+ com.codenvy.eclipse.core.service.api.model,
+ javax.ws.rs;version="2.0.0"
