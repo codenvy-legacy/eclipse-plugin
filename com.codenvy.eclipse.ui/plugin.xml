@@ -28,7 +28,7 @@
             class="com.codenvy.eclipse.ui.wizards.existing.ImportProjectFromCodenvyWizard"
             icon="images/Import.gif"
             id="com.codenvy.eclipse.ui.wizard.import"
-            name="Existing Codenvy Project">
+            name="Existing Codenvy Projects">
       </wizard>
    </extension>
    <extension
@@ -43,7 +43,7 @@
             hasPages="true"
             icon="images/New.gif"
             id="com.codenvy.eclipse.ui.wizard.new"
-            name="Projecs from Codenvy"
+            name="Projects from Codenvy"
             project="true">
       </wizard>
    </extension>
