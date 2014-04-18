@@ -16,59 +16,18 @@
  */
 package com.codenvy.eclipse.core.service.api;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-
-import java.net.URI;
-
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.UriBuilder;
-
-import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
 import com.codenvy.eclipse.core.service.api.model.User;
 
 /**
- * The Codenvy user client service.
+ * Codenvy user service contract.
  * 
  * @author Kevin Pollet
  */
-public class UserService implements RestServiceWithAuth {
-    private final CodenvyToken codenvyToken;
-    private final WebTarget    userWebTarget;
-
-    /**
-     * Constructs an instance of {@linkplain UserService}.
-     * 
-     * @param url the Codenvy platform url.
-     * @param codenvyToken the Codenvy authentication token.
-     * @throws NullPointerException if url or codenvyToken is {@code null}.
-     * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
-     */
-    public UserService(String url, CodenvyToken codenvyToken) {
-        checkNotNull(codenvyToken);
-        checkNotNull(url);
-        checkArgument(!url.trim().isEmpty());
-
-        final URI uri = UriBuilder.fromUri(url)
-                                  .path("api/user")
-                                  .build();
-
-        this.codenvyToken = codenvyToken;
-        this.userWebTarget = ClientBuilder.newClient()
-                                          .target(uri);
-    }
-
+public interface UserService extends RestServiceWithAuth {
     /**
      * Returns the current user.
      * 
      * @return the current user.
      */
-    public User getCurrentUser() {
-        return userWebTarget.queryParam("token", codenvyToken.value)
-                            .request()
-                            .accept(APPLICATION_JSON)
-                            .get(User.class);
-    }
+    User getCurrentUser();
 }

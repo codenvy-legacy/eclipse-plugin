@@ -32,7 +32,7 @@ public interface RestServiceFactory {
      * @return the new REST service instance never {@code null}.
      * @throws NullPointerException if clazz parameter is {@code null}.
      */
-    <T extends RestService> T newRestService(Class<T> clazz, String url);
+    <T extends RestService, S extends T> T newRestService(Class<T> clazz, String url);
 
     /**
      * Constructs an instance of a REST service with the given type.
@@ -43,5 +43,5 @@ public interface RestServiceFactory {
      * @return the new REST service instance never {@code null}.
      * @throws NullPointerException if clazz parameter is {@code null}.
      */
-    <T extends RestServiceWithAuth> T newRestServiceWithAuth(Class<T> clazz, String url, CodenvyToken token);
+    <T extends RestServiceWithAuth, S extends T> T newRestServiceWithAuth(Class<T> clazz, String url, CodenvyToken token);
 }

@@ -20,10 +20,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.codenvy.eclipse.core.service.api.AuthenticationService;
+import com.codenvy.eclipse.core.service.api.ProjectService;
 import com.codenvy.eclipse.core.service.api.RestService;
 import com.codenvy.eclipse.core.service.api.RestServiceFactory;
 import com.codenvy.eclipse.core.service.api.RestServiceWithAuth;
+import com.codenvy.eclipse.core.service.api.UserService;
+import com.codenvy.eclipse.core.service.api.WorkspaceService;
 import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
 
 /**
@@ -32,13 +38,28 @@ import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
  * @author Kevin Pollet
  */
 public class DefaultRestServiceFactory implements RestServiceFactory {
+    private final Map<Class< ? extends RestService>, Class< ? >>         restServiceBindings;
+    private final Map<Class< ? extends RestServiceWithAuth>, Class< ? >> restServiceWithAuthBindings;
+
+    public DefaultRestServiceFactory() {
+        this.restServiceBindings = new HashMap<>();
+        this.restServiceBindings.put(AuthenticationService.class, DefaultAuthenticationService.class);
+
+        this.restServiceWithAuthBindings = new HashMap<>();
+        this.restServiceWithAuthBindings.put(WorkspaceService.class, DefaultWorkspaceService.class);
+        this.restServiceWithAuthBindings.put(UserService.class, DefaultUserService.class);
+        this.restServiceWithAuthBindings.put(ProjectService.class, DefaultProjectService.class);
+    }
+
     @Override
-    public <T extends RestService> T newRestService(Class<T> clazz, String url) {
+    public <T extends RestService, S extends T> T newRestService(Class<T> clazz, String url) {
         checkNotNull(clazz);
 
         try {
 
-            final Constructor<T> constructor = clazz.getConstructor(String.class);
+            @SuppressWarnings("unchecked")
+            final Class<S> impl = (Class<S>)restServiceBindings.get(clazz);
+            final Constructor<S> constructor = impl.getConstructor(String.class);
             return constructor.newInstance(url);
 
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -48,12 +69,14 @@ public class DefaultRestServiceFactory implements RestServiceFactory {
     }
 
     @Override
-    public <T extends RestServiceWithAuth> T newRestServiceWithAuth(Class<T> clazz, String url, CodenvyToken token) {
+    public <T extends RestServiceWithAuth, S extends T> T newRestServiceWithAuth(Class<T> clazz, String url, CodenvyToken token) {
         checkNotNull(clazz);
 
         try {
 
-            final Constructor<T> constructor = clazz.getConstructor(String.class, CodenvyToken.class);
+            @SuppressWarnings("unchecked")
+            final Class<S> impl = (Class<S>)restServiceWithAuthBindings.get(clazz);
+            final Constructor<S> constructor = impl.getConstructor(String.class, CodenvyToken.class);
             return constructor.newInstance(url, token);
 
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
