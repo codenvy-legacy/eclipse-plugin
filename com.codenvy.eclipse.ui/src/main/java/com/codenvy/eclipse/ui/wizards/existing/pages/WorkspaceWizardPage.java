@@ -35,7 +35,6 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -107,7 +106,7 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangingList
                 workspaceTableViewer.setCheckedElements(new Object[0]);
                 workspaceTableViewer.setChecked(event.getElement(), event.getChecked());
 
-                WorkspaceWizardPage.this.setPageComplete(event.getChecked());
+                setPageComplete(event.getChecked());
             }
         });
 
@@ -166,7 +165,6 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangingList
                                         if (checkedWorkspaceRef.isPresent()) {
                                             workspaceTableViewer.setChecked(checkedWorkspaceRef.get(), true);
                                         }
-                                        setPageComplete(checkedWorkspaceRef.isPresent());
                                     }
                                 });
 
@@ -187,9 +185,7 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangingList
 
     @Override
     public void handlePageChanging(PageChangingEvent event) {
-        final IWizardPage currentPage = (IWizardPage)event.getCurrentPage();
-
-        if (getName().equals(currentPage.getName())) {
+        if (isCurrentPage()) {
             final Object[] checkedElements = workspaceTableViewer.getCheckedElements();
             if (checkedElements.length > 0) {
                 importWizardSharedData.setWorkspaceRef(Optional.fromNullable((WorkspaceRef)checkedElements[0]));
@@ -199,9 +195,8 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangingList
 
     @Override
     public void pageChanged(PageChangedEvent event) {
-        final IWizardPage currentPage = (IWizardPage)event.getSelectedPage();
-
-        if (getName().equals(currentPage.getName())) {
+        if (isCurrentPage()) {
+            setPageComplete(importWizardSharedData.getWorkspaceRef().isPresent());
             onEnterPage();
         }
     }

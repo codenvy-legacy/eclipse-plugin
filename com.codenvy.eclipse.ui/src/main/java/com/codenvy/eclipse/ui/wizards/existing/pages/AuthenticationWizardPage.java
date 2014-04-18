@@ -128,9 +128,8 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
     public void handlePageChanging(PageChangingEvent event) {
         final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
         final IWizardPage targetPage = (IWizardPage)event.getTargetPage();
-        final IWizardPage currentPage = (IWizardPage)event.getCurrentPage();
 
-        if (getName().equals(currentPage.getName()) && wizard.getWorkspaceWizardPage().getName().equals(targetPage.getName())) {
+        if (isCurrentPage() && wizard.getWorkspaceWizardPage().getName().equals(targetPage.getName())) {
             final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
             final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
 

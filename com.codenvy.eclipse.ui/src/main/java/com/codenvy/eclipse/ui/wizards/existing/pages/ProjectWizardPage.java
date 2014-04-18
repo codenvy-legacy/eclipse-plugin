@@ -35,7 +35,6 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -172,7 +171,9 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                                 final String url = importWizardSharedData.getUrl().get();
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
                                 final WorkspaceRef selectedWorkspaceRef = importWizardSharedData.getWorkspaceRef().get();
-                                final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
+                                final ProjectService projectService =
+                                                                      restServiceFactory.newRestServiceWithAuth(ProjectService.class, url,
+                                                                                                                token);
 
                                 final List<Project> projects = projectService.getWorkspaceProjects(selectedWorkspaceRef.id);
 
@@ -183,9 +184,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                                         projectTableViewer.setInput(projects);
 
                                         final List<Project> checkedProjects = importWizardSharedData.getProjects();
-                                        projectTableViewer.setCheckedElements(checkedProjects.toArray());                                        
+                                        projectTableViewer.setCheckedElements(checkedProjects.toArray());
                                         wizardContainer.layout();
-                                        setPageComplete(!checkedProjects.isEmpty());
                                     }
                                 });
 
@@ -206,9 +206,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
 
     @Override
     public void handlePageChanging(PageChangingEvent event) {
-        final IWizardPage currentPage = (IWizardPage)event.getCurrentPage();
-
-        if (getName().equals(currentPage.getName())) {
+        if (isCurrentPage()) {
             final List<Project> checkedProjects = new ArrayList<>();
             for (Object oneProject : projectTableViewer.getCheckedElements()) {
                 checkedProjects.add((Project)oneProject);
@@ -220,9 +218,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
 
     @Override
     public void pageChanged(PageChangedEvent event) {
-        final IWizardPage currentPage = (IWizardPage)event.getSelectedPage();
-
-        if (getName().equals(currentPage.getName())) {
+        if (isCurrentPage()) {
+            setPageComplete(!importWizardSharedData.getProjects().isEmpty());
             onEnterPage();
         }
     }
