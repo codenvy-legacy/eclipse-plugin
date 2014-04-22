@@ -21,9 +21,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
-import com.codenvy.eclipse.core.service.api.model.Project;
-import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.google.common.base.Optional;
 
 /**

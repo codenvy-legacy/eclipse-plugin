@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.service;
+package com.codenvy.eclipse.core.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -26,9 +26,9 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
-import com.codenvy.eclipse.core.service.api.UserService;
-import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
-import com.codenvy.eclipse.core.service.api.model.User;
+import com.codenvy.eclipse.core.UserService;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.User;
 
 /**
  * The Codenvy user client service.

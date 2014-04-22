@@ -14,20 +14,31 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.service.api;
+package com.codenvy.eclipse.core.model;
 
-import com.codenvy.eclipse.core.service.api.model.User;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Codenvy user service contract.
+ * Codenvy authentication token class.
  * 
  * @author Kevin Pollet
  */
-public interface UserService extends RestServiceWithAuth {
+public class CodenvyToken {
+    public final String value;
+
     /**
-     * Returns the current user.
+     * Constructs an instance of {@linkplain CodenvyToken}.
      * 
-     * @return the current user.
+     * @param value the authentication token.
+     * @throws NullPointerException if the value parameter is {@code null}.
      */
-    User getCurrentUser();
+    @JsonCreator
+    public CodenvyToken(@JsonProperty("value") String value) {
+        checkNotNull(value);
+        
+        this.value = value;
+    }
 }

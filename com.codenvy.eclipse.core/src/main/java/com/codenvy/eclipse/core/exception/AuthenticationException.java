@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.service.api.exception;
+package com.codenvy.eclipse.core.exception;
 
 /**
  * Exception used when the user cannot be authenticated.

@@ -40,12 +40,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.service.api.AuthenticationService;
-import com.codenvy.eclipse.core.service.api.RestServiceFactory;
-import com.codenvy.eclipse.core.service.api.exception.AuthenticationException;
-import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
-import com.codenvy.eclipse.core.service.api.model.Project;
-import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.AuthenticationService;
+import com.codenvy.eclipse.core.RestServiceFactory;
+import com.codenvy.eclipse.core.exception.AuthenticationException;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.Activator;
 import com.codenvy.eclipse.ui.wizards.existing.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
@@ -113,7 +113,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                 final boolean isUsernameBlank = isNullOrEmptyString(username.getText());
                 final boolean isPasswordBlank = isNullOrEmptyString(password.getText());
 
-                AuthenticationWizardPage.this.setPageComplete(!isHostBlank && !isUsernameBlank && !isPasswordBlank);
+                setPageComplete(!isHostBlank && !isUsernameBlank && !isPasswordBlank);
             }
         };
 

@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.service;
+package com.codenvy.eclipse.core.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,14 +23,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.codenvy.eclipse.core.service.api.AuthenticationService;
-import com.codenvy.eclipse.core.service.api.ProjectService;
-import com.codenvy.eclipse.core.service.api.RestService;
-import com.codenvy.eclipse.core.service.api.RestServiceFactory;
-import com.codenvy.eclipse.core.service.api.RestServiceWithAuth;
-import com.codenvy.eclipse.core.service.api.UserService;
-import com.codenvy.eclipse.core.service.api.WorkspaceService;
-import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
+import com.codenvy.eclipse.core.AuthenticationService;
+import com.codenvy.eclipse.core.ProjectService;
+import com.codenvy.eclipse.core.RestService;
+import com.codenvy.eclipse.core.RestServiceFactory;
+import com.codenvy.eclipse.core.RestServiceWithAuth;
+import com.codenvy.eclipse.core.UserService;
+import com.codenvy.eclipse.core.WorkspaceService;
+import com.codenvy.eclipse.core.model.CodenvyToken;
 
 /**
  * The default {@linkplain RestServiceFactory} implementation.

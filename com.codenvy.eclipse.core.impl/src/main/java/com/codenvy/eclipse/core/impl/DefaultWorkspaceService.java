@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.service;
+package com.codenvy.eclipse.core.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -29,10 +29,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.UriBuilder;
 
-import com.codenvy.eclipse.core.service.api.WorkspaceService;
-import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
-import com.codenvy.eclipse.core.service.api.model.Workspace;
-import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.WorkspaceService;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Workspace;
+import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 
 /**
  * The Codenvy workspace client service.

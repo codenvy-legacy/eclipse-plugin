@@ -47,11 +47,11 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.service.api.ProjectService;
-import com.codenvy.eclipse.core.service.api.RestServiceFactory;
-import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
-import com.codenvy.eclipse.core.service.api.model.Project;
-import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.ProjectService;
+import com.codenvy.eclipse.core.RestServiceFactory;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.Activator;
 import com.codenvy.eclipse.ui.utils.ImageConstants;
 

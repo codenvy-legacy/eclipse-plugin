@@ -14,31 +14,41 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.service.api.model;
+package com.codenvy.eclipse.core.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Codenvy authentication token class.
+ * This class represents the user resource on Codenvy.
  * 
  * @author Kevin Pollet
  */
-public class CodenvyToken {
-    public final String value;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class User {
+    public final String id;
+    public final String password;
+    public final String email;
 
     /**
-     * Constructs an instance of {@linkplain CodenvyToken}.
+     * Construct an instance of {@linkplain User}.
      * 
-     * @param value the authentication token.
-     * @throws NullPointerException if the value parameter is {@code null}.
+     * @param id the user id.
+     * @param password the user password.
+     * @param email the user email.
+     * @throws NullPointerException if id, password or email parameter is {@code null}.
      */
     @JsonCreator
-    public CodenvyToken(@JsonProperty("value") String value) {
-        checkNotNull(value);
-        
-        this.value = value;
+    public User(@JsonProperty("id") String id, @JsonProperty("password") String password, @JsonProperty("email") String email) {
+        checkNotNull(id);
+        checkNotNull(password);
+        checkNotNull(email);
+
+        this.id = id;
+        this.email = email;
+        this.password = password;
     }
 }

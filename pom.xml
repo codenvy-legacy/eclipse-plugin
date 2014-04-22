@@ -17,29 +17,30 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+	
 	<modelVersion>4.0.0</modelVersion>
-
+	
 	<parent>
 		<artifactId>maven-parent-pom</artifactId>
 		<groupId>com.codenvy</groupId>
 		<version>3.1.1</version>
 	</parent>
-
+	
 	<groupId>com.codenvy.eclipse</groupId>
 	<artifactId>codenvy-eclipse-parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-
+	
 	<modules>
 		<module>com.codenvy.eclipse.core</module>
+		<module>com.codenvy.eclipse.core.impl</module>
 		<module>com.codenvy.eclipse.ui</module>
 		<module>com.codenvy.eclipse.feature</module>
 		<module>com.codenvy.eclipse.update</module>
 		<module>com.codenvy.eclipse.core.test</module>
 		<module>com.codenvy.eclipse.ui.test</module>
 	</modules>
-
+	
 	<properties>
 		<assembly-sdk.version>3.0.0-M15-SNAPSHOT</assembly-sdk.version>
 		<com.codenvy.eclipse.lib.version>1.0.0-SNAPSHOT</com.codenvy.eclipse.lib.version>
@@ -47,7 +48,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho.version>0.20.0</tycho.version>
 	</properties>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.codenvy.eclipse</groupId>
@@ -55,7 +56,7 @@
 			<version>${com.codenvy.eclipse.lib.version}</version>
 		</dependency>
 	</dependencies>
-
+	
 	<repositories>
 		<repository>
 			<id>codenvy-public-repo</id>
@@ -67,8 +68,13 @@
 			<url>http://download.eclipse.org/releases/kepler</url>
 			<layout>p2</layout>
 		</repository>
+		<repository>
+			<id>swtbot</id>
+			<url>http://download.eclipse.org/technology/swtbot/releases/latest</url>
+			<layout>p2</layout>
+		</repository>
 	</repositories>
-
+	
 	<build>
 		<pluginManagement>
 			<plugins>

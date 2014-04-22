@@ -25,13 +25,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.service.api.RestServiceFactory;
-import com.codenvy.eclipse.core.service.api.UserService;
-import com.codenvy.eclipse.core.service.api.WorkspaceService;
-import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
-import com.codenvy.eclipse.core.service.api.model.User;
-import com.codenvy.eclipse.core.service.api.model.Workspace;
-import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.RestServiceFactory;
+import com.codenvy.eclipse.core.UserService;
+import com.codenvy.eclipse.core.WorkspaceService;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.User;
+import com.codenvy.eclipse.core.model.Workspace;
+import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 
 /**
  * Test the workspace service.

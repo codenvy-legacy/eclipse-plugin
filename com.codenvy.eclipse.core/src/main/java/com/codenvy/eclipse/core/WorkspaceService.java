@@ -14,12 +14,12 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.service.api;
+package com.codenvy.eclipse.core;
 
 import java.util.List;
 
-import com.codenvy.eclipse.core.service.api.model.Workspace;
-import com.codenvy.eclipse.core.service.api.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.model.Workspace;
+import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 
 /**
  * Codenvy workspace service contract.

@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.service.api;
+package com.codenvy.eclipse.core;
 
 /**
  * Marker interface used for type checking in {@linkplain RestServiceFactory}.

@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.service;
+package com.codenvy.eclipse.core.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -29,10 +29,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import com.codenvy.eclipse.core.service.api.AuthenticationService;
-import com.codenvy.eclipse.core.service.api.exception.AuthenticationException;
-import com.codenvy.eclipse.core.service.api.model.CodenvyToken;
-import com.codenvy.eclipse.core.service.api.model.Credentials;
+import com.codenvy.eclipse.core.AuthenticationService;
+import com.codenvy.eclipse.core.exception.AuthenticationException;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Credentials;
 
 /**
  * The Codenvy authentication client service.
