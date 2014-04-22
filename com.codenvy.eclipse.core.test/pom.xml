@@ -159,6 +159,7 @@
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
+					<parallel>both</parallel>
 					<dependencies>
 						<dependency>
 							<artifactId>org.eclipse.equinox.ds</artifactId>
