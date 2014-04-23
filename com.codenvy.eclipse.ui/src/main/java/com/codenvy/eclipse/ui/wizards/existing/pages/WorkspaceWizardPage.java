@@ -98,7 +98,6 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangingList
                                                                                  | SWT.V_SCROLL);
         workspaceTableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         workspaceTableViewer.getTable().setHeaderVisible(true);
-        workspaceTableViewer.getTable().setLinesVisible(true);
         workspaceTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         workspaceTableViewer.addCheckStateListener(new ICheckStateListener() {
             @Override

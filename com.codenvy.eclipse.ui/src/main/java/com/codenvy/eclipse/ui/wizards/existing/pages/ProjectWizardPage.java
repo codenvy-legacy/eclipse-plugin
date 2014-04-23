@@ -135,11 +135,10 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
             }
         });
 
-        final Table workspaceTable = projectTableViewer.getTable();
-        workspaceTable.getHorizontalBar().setEnabled(true);
-        workspaceTable.setHeaderVisible(true);
-        workspaceTable.setLinesVisible(true);
-        workspaceTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        final Table projectTable = projectTableViewer.getTable();
+        projectTable.getHorizontalBar().setEnabled(true);
+        projectTable.setHeaderVisible(true);
+        projectTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         setControl(wizardContainer);
     }
