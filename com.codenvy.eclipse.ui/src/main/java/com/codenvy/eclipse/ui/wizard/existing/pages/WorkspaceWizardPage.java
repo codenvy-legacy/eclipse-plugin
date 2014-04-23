@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.wizards.existing.pages;
+package com.codenvy.eclipse.ui.wizard.existing.pages;
 
 import static com.codenvy.eclipse.ui.utils.ImageConstants.WIZARD_LOGO_KEY;
 import static com.google.common.base.Preconditions.checkNotNull;

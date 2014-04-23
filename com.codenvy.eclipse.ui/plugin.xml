@@ -25,7 +25,7 @@
       </category>
       <wizard
             category="com.codenvy.eclipse.ui.category.import.codenvy"
-            class="com.codenvy.eclipse.ui.wizards.existing.ImportProjectFromCodenvyWizard"
+            class="com.codenvy.eclipse.ui.wizard.existing.ImportProjectFromCodenvyWizard"
             icon="images/Import.gif"
             id="com.codenvy.eclipse.ui.wizard.import"
             name="Existing Codenvy Projects">
@@ -39,7 +39,7 @@
       </category>
       <wizard
             category="com.codenvy.eclipse.ui.category.new.codenvy"
-            class="com.codenvy.eclipse.ui.wizards.existing.ImportProjectFromCodenvyWizard"
+            class="com.codenvy.eclipse.ui.wizard.existing.ImportProjectFromCodenvyWizard"
             hasPages="true"
             icon="images/New.gif"
             id="com.codenvy.eclipse.ui.wizard.new"
