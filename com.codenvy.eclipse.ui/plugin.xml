@@ -20,11 +20,11 @@
    <extension
          point="org.eclipse.ui.importWizards">
       <category
-            id="com.codenvy.eclipse.ui.category.import.codenvy"
+            id="com.codenvy.eclipse.ui.wizard.category.import"
             name="Codenvy">
       </category>
       <wizard
-            category="com.codenvy.eclipse.ui.category.import.codenvy"
+            category="com.codenvy.eclipse.ui.wizard.category.import"
             class="com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard"
             icon="images/Import.gif"
             id="com.codenvy.eclipse.ui.wizard.import"
@@ -34,17 +34,31 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-            id="com.codenvy.eclipse.ui.category.new.codenvy"
+            id="com.codenvy.eclipse.ui.wizard.category.new"
             name="Codenvy">
       </category>
       <wizard
-            category="com.codenvy.eclipse.ui.category.new.codenvy"
+            category="com.codenvy.eclipse.ui.wizard.category.new"
             class="com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard"
             hasPages="true"
             icon="images/New.gif"
             id="com.codenvy.eclipse.ui.wizard.new"
             name="Projects from Codenvy"
             project="true">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.exportWizards">
+      <category
+            id="com.codenvy.eclipse.ui.wizard.category.export"
+            name="Codenvy">
+      </category>
+      <wizard
+            category="com.codenvy.eclipse.ui.wizard.category.export"
+            class="com.codenvy.eclipse.ui.wizard.exporter.ExportProjectToCodenvyWizard"
+            icon="images/Export.gif"
+            id="com.codenvy.eclipse.ui.wizard.export"
+            name="Codenvy project">
       </wizard>
    </extension>
 </plugin>
