@@ -28,4 +28,5 @@
 	
 	<artifactId>com.codenvy.eclipse.feature</artifactId>
 	<packaging>eclipse-feature</packaging>
+	<name>Codenvy Eclipse Plugin :: Feature</name>
 </project>

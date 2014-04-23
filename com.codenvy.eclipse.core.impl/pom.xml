@@ -28,4 +28,5 @@
 	
 	<artifactId>com.codenvy.eclipse.core.impl</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	<name>Codenvy Eclipse Plugin :: Core Impl</name>
 </project>

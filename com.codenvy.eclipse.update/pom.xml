@@ -28,4 +28,5 @@
 	
 	<artifactId>com.codenvy.eclipse.update</artifactId>
 	<packaging>eclipse-repository</packaging>
+	<name>Codenvy Eclipse Plugin :: Update</name>
 </project>

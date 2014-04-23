@@ -3,7 +3,7 @@ Bundle-SymbolicName: com.codenvy.eclipse.core.impl;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2
-Bundle-Name: Codenvy Eclipse Plugin Core Impl
+Bundle-Name: Codenvy Eclipse Plugin :: Core Impl
 Bundle-Vendor: Codenvy
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/serviceComponents.xml

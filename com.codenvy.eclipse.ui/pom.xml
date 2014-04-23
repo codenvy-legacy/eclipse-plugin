@@ -28,4 +28,5 @@
 	
 	<artifactId>com.codenvy.eclipse.ui</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	<name>Codenvy Eclipse Plugin :: UI</name>
 </project>

@@ -28,6 +28,7 @@
 	
 	<artifactId>com.codenvy.eclipse.core.test</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
+	<name>Codenvy Eclipse Plugin :: Core Test</name>
 	
 	<properties>
 		<codenvy.ide.path>${project.build.directory}/tomcat-ide</codenvy.ide.path>

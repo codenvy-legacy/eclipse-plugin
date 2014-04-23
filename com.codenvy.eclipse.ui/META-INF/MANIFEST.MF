@@ -3,7 +3,7 @@ Bundle-SymbolicName: com.codenvy.eclipse.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2
-Bundle-Name: Codenvy Eclipse Plugin UI
+Bundle-Name: Codenvy Eclipse Plugin :: UI
 Bundle-Vendor: Codenvy
 Bundle-Activator: com.codenvy.eclipse.ui.Activator
 Bundle-ActivationPolicy: lazy
