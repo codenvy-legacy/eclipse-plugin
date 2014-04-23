@@ -39,8 +39,6 @@
 					<useUIHarness>true</useUIHarness>
 					<useUIThread>false</useUIThread>
 					<argLine>-XstartOnFirstThread</argLine>
-					<product>org.eclipse.sdk.ide</product>
-					<application>org.eclipse.ui.ide.workbench</application>
 					<dependencies>
 						<dependency>
 							<artifactId>org.eclipse.equinox.ds</artifactId>
