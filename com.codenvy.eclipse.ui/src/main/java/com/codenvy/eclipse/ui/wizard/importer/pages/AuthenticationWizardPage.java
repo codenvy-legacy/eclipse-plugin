@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.wizard.existing.pages;
+package com.codenvy.eclipse.ui.wizard.importer.pages;
 
 import static com.codenvy.eclipse.ui.utils.ImageConstants.WIZARD_LOGO_KEY;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -47,7 +47,7 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.Activator;
-import com.codenvy.eclipse.ui.wizard.existing.ImportProjectFromCodenvyWizard;
+import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
 
 /**

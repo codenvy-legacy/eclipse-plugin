@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.wizard.existing;
+package com.codenvy.eclipse.ui.wizard.importer;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardContainer;
@@ -26,10 +26,10 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
-import com.codenvy.eclipse.ui.wizard.existing.pages.AuthenticationWizardPage;
-import com.codenvy.eclipse.ui.wizard.existing.pages.ImportWizardSharedData;
-import com.codenvy.eclipse.ui.wizard.existing.pages.ProjectWizardPage;
-import com.codenvy.eclipse.ui.wizard.existing.pages.WorkspaceWizardPage;
+import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
+import com.codenvy.eclipse.ui.wizard.importer.pages.ImportWizardSharedData;
+import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
+import com.codenvy.eclipse.ui.wizard.importer.pages.WorkspaceWizardPage;
 
 /**
  * Wizard used to import Codenvy projects from the given Codenvy platform.

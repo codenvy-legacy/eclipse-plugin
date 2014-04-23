@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.wizard.existing.pages;
+package com.codenvy.eclipse.ui.wizard.importer.pages;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.core.runtime.IProgressMonitor.UNKNOWN;
