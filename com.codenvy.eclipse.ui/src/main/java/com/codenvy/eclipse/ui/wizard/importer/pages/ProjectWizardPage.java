@@ -17,12 +17,14 @@
 package com.codenvy.eclipse.ui.wizard.importer.pages;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Lists.asList;
 import static org.eclipse.core.runtime.IProgressMonitor.UNKNOWN;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.IPageChangingListener;
@@ -33,16 +35,26 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.IWorkingSet;
+import org.eclipse.ui.IWorkingSetManager;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -64,6 +76,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
     private CheckboxTableViewer          projectTableViewer;
     private Composite                    wizardContainer;
     private Label                        projectTableLabel;
+    private ComboViewer                  workingSetComboViewer;
     private final ImportWizardSharedData importWizardSharedData;
 
     /**
@@ -140,6 +153,35 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
         projectTable.setHeaderVisible(true);
         projectTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
+        final Button addToWorkingSet = new Button(wizardContainer, SWT.CHECK);
+        addToWorkingSet.setText("Add project(s) to working set");
+        addToWorkingSet.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                final Combo workingSetCombo = workingSetComboViewer.getCombo();
+                if (addToWorkingSet.getSelection()) {
+                    workingSetCombo.setEnabled(true);
+                    workingSetCombo.setFocus();
+                } else {
+                    workingSetCombo.setEnabled(false);
+                }
+            }
+        });
+
+        workingSetComboViewer = new ComboViewer(wizardContainer, SWT.NONE);
+        workingSetComboViewer.getCombo().setEnabled(false);
+        workingSetComboViewer.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        workingSetComboViewer.setContentProvider(new ArrayContentProvider());
+        workingSetComboViewer.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof IWorkingSet) {
+                    return ((IWorkingSet)element).getLabel();
+                }
+                return super.getText(element);
+            }
+        });
+
         setControl(wizardContainer);
     }
 
@@ -170,9 +212,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                                 final String url = importWizardSharedData.getUrl().get();
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
                                 final WorkspaceRef selectedWorkspaceRef = importWizardSharedData.getWorkspaceRef().get();
-                                final ProjectService projectService =
-                                                                      restServiceFactory.newRestServiceWithAuth(ProjectService.class, url,
-                                                                                                                token);
+                                final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
 
                                 final List<Project> projects = projectService.getWorkspaceProjects(selectedWorkspaceRef.id);
 
@@ -181,6 +221,13 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                                     public void run() {
                                         projectTableLabel.setText("Project(s) in workspace '" + selectedWorkspaceRef.name + "'");
                                         projectTableViewer.setInput(projects);
+
+                                        final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
+                                        final IWorkingSet codenvyWorkspaceWorkingSet = workingSetManager.createWorkingSet("codenvy-ws-" + selectedWorkspaceRef.name, new IAdaptable[0]);
+                                        final List<IWorkingSet> workingSets = asList(codenvyWorkspaceWorkingSet, workingSetManager.getWorkingSets());
+
+                                        workingSetComboViewer.setInput(workingSets.toArray());
+                                        workingSetComboViewer.setSelection(new StructuredSelection(codenvyWorkspaceWorkingSet));
 
                                         final List<Project> checkedProjects = importWizardSharedData.getProjects();
                                         projectTableViewer.setCheckedElements(checkedProjects.toArray());
