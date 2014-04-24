@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class ExportProjectToCodenvyWizardTest {
-
     @Test
     public void testThatExportProjectToCodenvyWizardIsInExportProjectDialog() {
         final SWTWorkbenchBot bot = new SWTWorkbenchBot();

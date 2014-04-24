@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class ImportProjectFromCodenvyWizardTest {
-
     @Test
     public void testThatImportProjectFromCodenvyWizardIsInNewProjectDialog() {
         final SWTWorkbenchBot bot = new SWTWorkbenchBot();
