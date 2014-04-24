@@ -270,6 +270,9 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                                     @Override
                                     public void run() {
                                         workspaceComboViewer.setInput(workspaces.toArray());
+                                        if (!workspaces.isEmpty()) {
+                                            workspaceComboViewer.setSelection(new StructuredSelection(workspaces.get(0)));
+                                        }
                                     }
                                 });
 

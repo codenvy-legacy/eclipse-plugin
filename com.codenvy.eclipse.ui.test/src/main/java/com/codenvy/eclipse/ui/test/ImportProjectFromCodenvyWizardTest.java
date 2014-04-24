@@ -113,8 +113,6 @@ public class ImportProjectFromCodenvyWizardTest {
         });
         Assert.assertEquals(MOCK_WORKSPACE_NAME, bot.comboBox(0).items()[0]);
 
-        bot.comboBox(0).setSelection(0);
-
         bot.waitUntil(tableHasRows(bot.table(0), 4));
         Assert.assertFalse(bot.button("Finish").isEnabled());
 
