@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 public class ImportProjectFromCodenvyWizardTest {
 
     @Test
-    public void testThatProjectFromCodenvyWizardIsInNewProjectDialog() {
+    public void testThatImportProjectFromCodenvyWizardIsInNewProjectDialog() {
         final SWTWorkbenchBot bot = new SWTWorkbenchBot();
         bot.menu("File").menu("New").menu("Project...").click();
 
@@ -50,7 +50,7 @@ public class ImportProjectFromCodenvyWizardTest {
     }
 
     @Test
-    public void testThatProjectFromCodenvyWizardIsInOtherProjectDialog() {
+    public void testThatImportProjectFromCodenvyWizardIsInOtherProjectDialog() {
         final SWTWorkbenchBot bot = new SWTWorkbenchBot();
         bot.menu("File").menu("New").menu("Other...").click();
 
@@ -62,7 +62,7 @@ public class ImportProjectFromCodenvyWizardTest {
     }
 
     @Test
-    public void testThatProjectFromCodenvyWizardIsInImportDialog() {
+    public void testThatImportProjectFromCodenvyWizardIsInImportDialog() {
         final SWTWorkbenchBot bot = new SWTWorkbenchBot();
         bot.menu("File").menu("Import...").click();
 
@@ -74,7 +74,7 @@ public class ImportProjectFromCodenvyWizardTest {
     }
 
     @Test
-    public void testImportProjectFromCodenvyWizardAuthenticationStep() {
+    public void testImportProjectFromCodenvyWizard() {
         final SWTWorkbenchBot bot = new SWTWorkbenchBot();
         bot.menu("File").menu("Import...").click();
 
