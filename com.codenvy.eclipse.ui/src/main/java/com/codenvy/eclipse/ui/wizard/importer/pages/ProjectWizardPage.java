@@ -19,6 +19,7 @@ package com.codenvy.eclipse.ui.wizard.importer.pages;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.asList;
 import static org.eclipse.core.runtime.IProgressMonitor.UNKNOWN;
+import static org.eclipse.jface.viewers.CheckboxTableViewer.newCheckList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -37,7 +38,10 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.wizard.WizardPage;
@@ -61,8 +65,11 @@ import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.RestServiceFactory;
+import com.codenvy.eclipse.core.UserService;
+import com.codenvy.eclipse.core.WorkspaceService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.User;
 import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.Activator;
 import com.codenvy.eclipse.ui.utils.ImageConstants;
@@ -73,9 +80,8 @@ import com.codenvy.eclipse.ui.utils.ImageConstants;
  * @author Kevin Pollet
  */
 public class ProjectWizardPage extends WizardPage implements IPageChangingListener, IPageChangedListener {
+    private ComboViewer                  workspaceComboViewer;
     private CheckboxTableViewer          projectTableViewer;
-    private Composite                    wizardContainer;
-    private Label                        projectTableLabel;
     private ComboViewer                  workingSetComboViewer;
     private final ImportWizardSharedData importWizardSharedData;
 
@@ -100,15 +106,37 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
 
     @Override
     public void createControl(Composite parent) {
-        wizardContainer = new Composite(parent, SWT.NONE);
-        wizardContainer.setLayout(new GridLayout());
+        final Composite wizardContainer = new Composite(parent, SWT.NONE);
+        wizardContainer.setLayout(new GridLayout(2, false));
         wizardContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        projectTableLabel = new Label(wizardContainer, SWT.NONE);
+        final Label workspaceLabel = new Label(wizardContainer, SWT.NONE);
+        workspaceLabel.setText("Workspace:");
 
-        projectTableViewer =
-                             CheckboxTableViewer.newCheckList(wizardContainer, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL
-                                                                               | SWT.V_SCROLL);
+        workspaceComboViewer = new ComboViewer(wizardContainer, SWT.DROP_DOWN | SWT.READ_ONLY);
+        workspaceComboViewer.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        workspaceComboViewer.setContentProvider(new ArrayContentProvider());
+        workspaceComboViewer.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+                return element instanceof WorkspaceRef ? ((WorkspaceRef)element).name : super.getText(element);
+            }
+        });
+        workspaceComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                final IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+                if (!selection.isEmpty()) {
+                    loadWorkspaceProjects((WorkspaceRef)selection.getFirstElement());
+                }
+            }
+        });
+
+        final Label projectTableLabel = new Label(wizardContainer, SWT.NONE);
+        projectTableLabel.setText("Projects:");
+        projectTableLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+
+        projectTableViewer = newCheckList(wizardContainer, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
 
         final TableViewerColumn projectNameColumn = new TableViewerColumn(projectTableViewer, SWT.NONE);
         projectNameColumn.getColumn().setWidth(150);
@@ -144,16 +172,17 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
         projectTableViewer.addCheckStateListener(new ICheckStateListener() {
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-                ProjectWizardPage.this.setPageComplete(projectTableViewer.getCheckedElements().length > 0);
+                setPageComplete(projectTableViewer.getCheckedElements().length > 0);
             }
         });
 
         final Table projectTable = projectTableViewer.getTable();
         projectTable.getHorizontalBar().setEnabled(true);
         projectTable.setHeaderVisible(true);
-        projectTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        projectTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
         final Button addToWorkingSet = new Button(wizardContainer, SWT.CHECK);
+        addToWorkingSet.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         addToWorkingSet.setText("Add project(s) to working set");
         addToWorkingSet.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -170,7 +199,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
 
         workingSetComboViewer = new ComboViewer(wizardContainer, SWT.NONE);
         workingSetComboViewer.getCombo().setEnabled(false);
-        workingSetComboViewer.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        workingSetComboViewer.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         workingSetComboViewer.setContentProvider(new ArrayContentProvider());
         workingSetComboViewer.setLabelProvider(new LabelProvider() {
             @Override
@@ -185,18 +214,39 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
         setControl(wizardContainer);
     }
 
-    /**
-     * Method used to load the workspace projects asynchronously when the wizard page is displayed.
-     */
-    private void onEnterPage() {
-        projectTableViewer.setInput(null);
+    @Override
+    public void handlePageChanging(PageChangingEvent event) {
+        if (isCurrentPage()) {
+            final List<Project> checkedProjects = new ArrayList<>();
+            for (Object oneProject : projectTableViewer.getCheckedElements()) {
+                checkedProjects.add((Project)oneProject);
+            }
 
+            importWizardSharedData.setProjects(checkedProjects);
+        }
+    }
+
+    @Override
+    public void pageChanged(PageChangedEvent event) {
+        if (isCurrentPage()) {
+            projectTableViewer.setInput(null);
+            workingSetComboViewer.setInput(null);
+            workspaceComboViewer.setInput(null);
+            setPageComplete(!importWizardSharedData.getProjects().isEmpty());
+            loadWorkspaces();
+        }
+    }
+
+    /**
+     * Method used to load the workspaces asynchronously when the wizard page is displayed.
+     */
+    private void loadWorkspaces() {
         try {
 
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
+                    monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
 
                     final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
                     final ServiceReference<RestServiceFactory> restServiceFactoryRef =
@@ -211,27 +261,15 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
 
                                 final String url = importWizardSharedData.getUrl().get();
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
-                                final WorkspaceRef selectedWorkspaceRef = importWizardSharedData.getWorkspaceRef().get();
-                                final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
-
-                                final List<Project> projects = projectService.getWorkspaceProjects(selectedWorkspaceRef.id);
+                                final UserService userService = restServiceFactory.newRestServiceWithAuth(UserService.class, url, token);
+                                final WorkspaceService workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, url, token);
+                                final User currentUser = userService.getCurrentUser();
+                                final List<WorkspaceRef> workspaces = workspaceService.findWorkspacesByAccount(currentUser.id);
 
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
                                     public void run() {
-                                        projectTableLabel.setText("Project(s) in workspace '" + selectedWorkspaceRef.name + "'");
-                                        projectTableViewer.setInput(projects);
-
-                                        final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
-                                        final IWorkingSet codenvyWorkspaceWorkingSet = workingSetManager.createWorkingSet("codenvy-ws-" + selectedWorkspaceRef.name, new IAdaptable[0]);
-                                        final List<IWorkingSet> workingSets = asList(codenvyWorkspaceWorkingSet, workingSetManager.getWorkingSets());
-
-                                        workingSetComboViewer.setInput(workingSets.toArray());
-                                        workingSetComboViewer.setSelection(new StructuredSelection(codenvyWorkspaceWorkingSet));
-
-                                        final List<Project> checkedProjects = importWizardSharedData.getProjects();
-                                        projectTableViewer.setCheckedElements(checkedProjects.toArray());
-                                        wizardContainer.layout();
+                                        workspaceComboViewer.setInput(workspaces.toArray());
                                     }
                                 });
 
@@ -250,23 +288,58 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
         }
     }
 
-    @Override
-    public void handlePageChanging(PageChangingEvent event) {
-        if (isCurrentPage()) {
-            final List<Project> checkedProjects = new ArrayList<>();
-            for (Object oneProject : projectTableViewer.getCheckedElements()) {
-                checkedProjects.add((Project)oneProject);
-            }
+    /**
+     * Method used to load the workspace projects asynchronously when the workspace is selected.
+     */
+    private void loadWorkspaceProjects(final WorkspaceRef workspaceRef) {
+        try {
 
-            importWizardSharedData.setProjects(checkedProjects);
-        }
-    }
+            getContainer().run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
 
-    @Override
-    public void pageChanged(PageChangedEvent event) {
-        if (isCurrentPage()) {
-            setPageComplete(!importWizardSharedData.getProjects().isEmpty());
-            onEnterPage();
+                    final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+                    final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
+
+                    if (restServiceFactoryRef != null) {
+                        final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
+
+                        if (restServiceFactory != null) {
+
+                            try {
+
+                                final String url = importWizardSharedData.getUrl().get();
+                                final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
+                                final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
+                                final List<Project> projects = projectService.getWorkspaceProjects(workspaceRef.id);
+
+                                Display.getDefault().syncExec(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        projectTableViewer.setInput(projects);
+
+                                        final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
+                                        final IWorkingSet codenvyWorkspaceWorkingSet = workingSetManager.createWorkingSet("codenvy-ws-" + workspaceRef.name, new IAdaptable[0]);
+                                        final List<IWorkingSet> workingSets = asList(codenvyWorkspaceWorkingSet, workingSetManager.getWorkingSets());
+
+                                        workingSetComboViewer.setInput(workingSets.toArray());
+                                        workingSetComboViewer.setSelection(new StructuredSelection(codenvyWorkspaceWorkingSet));
+                                    }
+                                });
+
+                            } finally {
+                                context.ungetService(restServiceFactoryRef);
+                            }
+                        }
+                    }
+
+                    monitor.done();
+                }
+            });
+
+        } catch (InvocationTargetException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

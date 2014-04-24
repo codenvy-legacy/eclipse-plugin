@@ -47,7 +47,6 @@ import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.exception.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.Activator;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
@@ -125,7 +124,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
         final IWizardPage targetPage = (IWizardPage)event.getTargetPage();
 
-        if (isCurrentPage() && wizard.getWorkspaceWizardPage().getName().equals(targetPage.getName())) {
+        if (isCurrentPage() && wizard.getProjectWizardPage().getName().equals(targetPage.getName())) {
             final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
             final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
 
@@ -141,7 +140,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
                         importWizardSharedData.setCodenvyToken(Optional.fromNullable(token));
                         importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
-                        importWizardSharedData.setWorkspaceRef(Optional.<WorkspaceRef> absent());
                         importWizardSharedData.setProjects(new ArrayList<Project>());
 
                         setErrorMessage(null);

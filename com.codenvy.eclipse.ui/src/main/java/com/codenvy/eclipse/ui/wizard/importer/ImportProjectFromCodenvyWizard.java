@@ -29,7 +29,6 @@ import org.eclipse.ui.IWorkbench;
 import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ImportWizardSharedData;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
-import com.codenvy.eclipse.ui.wizard.importer.pages.WorkspaceWizardPage;
 
 /**
  * Wizard used to import Codenvy projects from the given Codenvy platform.
@@ -38,7 +37,6 @@ import com.codenvy.eclipse.ui.wizard.importer.pages.WorkspaceWizardPage;
  */
 public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWizard, INewWizard {
     private final AuthenticationWizardPage authenticationWizardPage;
-    private final WorkspaceWizardPage      workspaceWizardPage;
     private final ProjectWizardPage        projectWizardPage;
     private final ImportWizardSharedData   importWizardSharedData;
 
@@ -48,7 +46,6 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
     public ImportProjectFromCodenvyWizard() {
         this.importWizardSharedData = new ImportWizardSharedData();
         this.authenticationWizardPage = new AuthenticationWizardPage(importWizardSharedData);
-        this.workspaceWizardPage = new WorkspaceWizardPage(importWizardSharedData);
         this.projectWizardPage = new ProjectWizardPage(importWizardSharedData);
         
         setNeedsProgressMonitor(true);
@@ -61,7 +58,6 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
     @Override
     public void addPages() {
         addPage(authenticationWizardPage);
-        addPage(workspaceWizardPage);
         addPage(projectWizardPage);
     }
 
@@ -79,8 +75,6 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
             final WizardDialog wizardDialog = (WizardDialog)wizardContainer;
 
             wizardDialog.addPageChangingListener(authenticationWizardPage);
-            wizardDialog.addPageChangingListener(workspaceWizardPage);
-            wizardDialog.addPageChangedListener(workspaceWizardPage);
             wizardDialog.addPageChangingListener(projectWizardPage);
             wizardDialog.addPageChangedListener(projectWizardPage);
         }
@@ -95,13 +89,13 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                && currentWizardPage.isPageComplete();
     }
 
+    // TODO do import stuff here!!!!
     @Override
     public boolean performFinish() {
-        // TODO do import stuff here!!!!
         return true;
     }
 
-    public WorkspaceWizardPage getWorkspaceWizardPage() {
-        return workspaceWizardPage;
+    public ProjectWizardPage getProjectWizardPage() {
+        return projectWizardPage;
     }
 }

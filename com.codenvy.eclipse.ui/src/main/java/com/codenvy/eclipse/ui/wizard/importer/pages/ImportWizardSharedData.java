@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.google.common.base.Optional;
 
 /**
@@ -34,7 +33,6 @@ import com.google.common.base.Optional;
 public final class ImportWizardSharedData {
     private Optional<String>       url;
     private Optional<CodenvyToken> codenvyToken;
-    private Optional<WorkspaceRef> workspaceRef;
     private List<Project>          projects;
 
     /**
@@ -43,7 +41,6 @@ public final class ImportWizardSharedData {
     public ImportWizardSharedData() {
         this.url = Optional.absent();
         this.codenvyToken = Optional.absent();
-        this.workspaceRef = Optional.absent();
         this.projects = new ArrayList<>();
     }
 
@@ -87,27 +84,6 @@ public final class ImportWizardSharedData {
         checkNotNull(codenvyToken);
 
         this.codenvyToken = codenvyToken;
-    }
-
-    /**
-     * Returns the Codenvy workspace reference checked by the user in step 2.
-     * 
-     * @return the checked Codenvy workspace reference never {@code null}.
-     */
-    public Optional<WorkspaceRef> getWorkspaceRef() {
-        return workspaceRef;
-    }
-
-    /**
-     * Defines the Codenvy workspace reference checked by the user.
-     * 
-     * @param workspaceRef the Codenvy workspace reference.
-     * @throws NullPointerException if workspaceRef parameter is {@code null}.
-     */
-    public void setWorkspaceRef(Optional<WorkspaceRef> workspaceRef) {
-        checkNotNull(workspaceRef);
-
-        this.workspaceRef = workspaceRef;
     }
 
     /**

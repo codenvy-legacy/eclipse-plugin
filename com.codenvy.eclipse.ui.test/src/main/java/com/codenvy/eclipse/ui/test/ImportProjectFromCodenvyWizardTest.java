@@ -24,6 +24,7 @@ import static org.eclipse.swtbot.swt.finder.waits.Conditions.tableHasRows;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
+import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.junit.Assert;
 import org.junit.Test;
@@ -83,7 +84,10 @@ public class ImportProjectFromCodenvyWizardTest {
         bot.tree().expandNode("Codenvy").select("Existing Codenvy Projects");
         bot.button("Next >").click();
 
+        // authentication
+
         bot.comboBox(0).typeText("http://localhost:8080");
+        Assert.assertEquals("https://codenvy.com", bot.comboBox(0).items()[0]);
         Assert.assertFalse(bot.button("Next >").isEnabled());
 
         bot.text(0).typeText("codenvy@codenvy.com");
@@ -93,15 +97,24 @@ public class ImportProjectFromCodenvyWizardTest {
         Assert.assertTrue(bot.button("Next >").isEnabled());
 
         bot.button("Next >").click();
-        bot.waitUntil(tableHasRows(bot.table(0), 4));
-        Assert.assertFalse(bot.button("Next >").isEnabled());
 
-        Assert.assertEquals(MOCK_WORKSPACE_NAME, bot.table(0).cell(0, 0));
+        // workspace projects selection
 
-        bot.table(0).getTableItem(0).check();
-        Assert.assertTrue(bot.button("Next >").isEnabled());
+        bot.waitUntil(new DefaultCondition() {
+            @Override
+            public boolean test() throws Exception {
+                return bot.comboBox(0).itemCount() > 0;
+            }
 
-        bot.button("Next >").click();
+            @Override
+            public String getFailureMessage() {
+                return "Timeout waiting for combobox data to be loaded";
+            }
+        });
+        Assert.assertEquals(MOCK_WORKSPACE_NAME, bot.comboBox(0).items()[0]);
+
+        bot.comboBox(0).setSelection(0);
+
         bot.waitUntil(tableHasRows(bot.table(0), 4));
         Assert.assertFalse(bot.button("Finish").isEnabled());
 
@@ -111,6 +124,12 @@ public class ImportProjectFromCodenvyWizardTest {
 
         bot.table(0).getTableItem(0).check();
         Assert.assertTrue(bot.button("Finish").isEnabled());
+
+        Assert.assertFalse(bot.comboBox(1).isEnabled());
+        Assert.assertEquals("codenvy-ws-" + MOCK_WORKSPACE_NAME, bot.comboBox(1).selection());
+
+        bot.checkBox(0).click();
+        Assert.assertTrue(bot.comboBox(1).isEnabled());
 
         bot.button("Finish").click();
     }
