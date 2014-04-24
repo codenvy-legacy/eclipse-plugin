@@ -84,13 +84,13 @@ public class ImportProjectFromCodenvyWizardTest {
         bot.tree().expandNode("Codenvy").select("Existing Codenvy Projects");
         bot.button("Next >").click();
 
-        bot.text(0).typeText("http://localhost:8080");
+        bot.comboBox(0).typeText("http://localhost:8080");
         Assert.assertFalse(bot.button("Next >").isEnabled());
 
-        bot.text(1).typeText("codenvy@codenvy.com");
+        bot.text(0).typeText("codenvy@codenvy.com");
         Assert.assertFalse(bot.button("Next >").isEnabled());
 
-        bot.text(2).typeText("secret");
+        bot.text(1).typeText("secret");
         Assert.assertTrue(bot.button("Next >").isEnabled());
 
         bot.button("Next >").click();

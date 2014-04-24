@@ -28,11 +28,13 @@ import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -56,7 +58,9 @@ import com.google.common.base.Optional;
  * @author Kevin Pollet
  */
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
-    private Text                         url;
+    private static final String          CODENVY_URL = "https://codenvy.com";
+
+    private Combo                        urls;
     private Text                         username;
     private Text                         password;
     private final ImportWizardSharedData importWizardSharedData;
@@ -91,8 +95,9 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         final Label hostLabel = new Label(wizardContainer, SWT.NONE);
         hostLabel.setText("URL:");
 
-        url = new Text(wizardContainer, SWT.SINGLE | SWT.BORDER | SWT.FOCUSED);
-        url.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
+        urls.add(CODENVY_URL);
+        urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         final Label usernameLabel = new Label(wizardContainer, SWT.NONE);
         usernameLabel.setText("Username:");
@@ -106,20 +111,11 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         password = new Text(wizardContainer, SWT.SINGLE | SWT.BORDER | SWT.PASSWORD);
         password.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        final KeyListener isPageCompleteKeyListener = new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                final boolean isHostBlank = isNullOrEmptyString(url.getText());
-                final boolean isUsernameBlank = isNullOrEmptyString(username.getText());
-                final boolean isPasswordBlank = isNullOrEmptyString(password.getText());
-
-                setPageComplete(!isHostBlank && !isUsernameBlank && !isPasswordBlank);
-            }
-        };
-
-        url.addKeyListener(isPageCompleteKeyListener);
-        username.addKeyListener(isPageCompleteKeyListener);
-        password.addKeyListener(isPageCompleteKeyListener);
+        final PageCompleteListener pageCompleteListener = new PageCompleteListener();
+        urls.addKeyListener(pageCompleteListener);
+        urls.addSelectionListener(pageCompleteListener);
+        username.addKeyListener(pageCompleteListener);
+        password.addKeyListener(pageCompleteListener);
 
         setControl(wizardContainer);
     }
@@ -140,13 +136,11 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
                     try {
 
-                        final AuthenticationService authenticationService =
-                                                                            restServiceFactory.newRestService(AuthenticationService.class,
-                                                                                                              url.getText());
+                        final AuthenticationService authenticationService = restServiceFactory.newRestService(AuthenticationService.class, urls.getText());
                         final CodenvyToken token = authenticationService.login(username.getText(), password.getText());
 
                         importWizardSharedData.setCodenvyToken(Optional.fromNullable(token));
-                        importWizardSharedData.setUrl(Optional.fromNullable(url.getText()));
+                        importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
                         importWizardSharedData.setWorkspaceRef(Optional.<WorkspaceRef> absent());
                         importWizardSharedData.setProjects(new ArrayList<Project>());
 
@@ -168,13 +162,46 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
     }
 
-    /**
-     * Tests that the given string is {@code null} or empty. A string containing only whitespace is assumed to be empty.
-     * 
-     * @param string the sting to test.
-     * @return {@code true} if the given string is {@code null} or empty, {@code false} otherwise.
-     */
-    private boolean isNullOrEmptyString(String string) {
-        return string == null || string.trim().isEmpty();
+    private class PageCompleteListener implements KeyListener, SelectionListener {
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            setPageComplete(!isBlankField());
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            setPageComplete(!isBlankField());
+        }
+
+        @Override
+        public void widgetDefaultSelected(SelectionEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+        }
+
+        /**
+         * Tests if one of urls, username, password field is blank.
+         * 
+         * @return {@code true} if one of urls, username, password field is blank, {@code false} otherwise.
+         */
+        private boolean isBlankField() {
+            final boolean isUrlsBlank = isNullOrEmptyString(urls.getText());
+            final boolean isUsernameBlank = isNullOrEmptyString(username.getText());
+            final boolean isPasswordBlank = isNullOrEmptyString(password.getText());
+
+            return isUrlsBlank || isUsernameBlank || isPasswordBlank;
+        }
+
+        /**
+         * Tests that the given string is {@code null} or empty. A string containing only whitespace is assumed to be empty.
+         * 
+         * @param string the sting to test.
+         * @return {@code true} if the given string is {@code null} or empty, {@code false} otherwise.
+         */
+        private boolean isNullOrEmptyString(String string) {
+            return string == null || string.trim().isEmpty();
+        }
     }
 }
