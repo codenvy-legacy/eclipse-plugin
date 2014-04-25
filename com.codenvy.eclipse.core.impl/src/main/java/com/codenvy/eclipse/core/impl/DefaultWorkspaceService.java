@@ -102,7 +102,7 @@ public class DefaultWorkspaceService implements WorkspaceService {
     }
 
     @Override
-    public WorkspaceRef createWorkspace(WorkspaceRef workspaceRef) {
+    public WorkspaceRef newWorkspace(WorkspaceRef workspaceRef) {
         return workspaceWebTarget.queryParam("token", codenvyToken.value)
                                  .request()
                                  .post(json(workspaceRef), WorkspaceRef.class);

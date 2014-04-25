@@ -60,5 +60,5 @@ public interface WorkspaceService extends RestServiceWithAuth {
      * @param workspaceRef the workspace to create.
      * @return the created workspace.
      */
-    WorkspaceRef createWorkspace(WorkspaceRef workspaceRef);
+    WorkspaceRef newWorkspace(WorkspaceRef workspaceRef);
 }

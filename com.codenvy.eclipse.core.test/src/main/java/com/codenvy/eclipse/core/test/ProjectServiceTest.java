@@ -17,9 +17,10 @@
 package com.codenvy.eclipse.core.test;
 
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -38,12 +39,14 @@ import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
  * @author Kevin Pollet
  */
 public class ProjectServiceTest extends RestApiBaseTest {
-    private ProjectService   projectService;
-    private WorkspaceService workspaceService;
+    private static ProjectService   projectService;
+    private static WorkspaceService workspaceService;
+    private static WorkspaceRef     defaultWorkspace;
+    private static Project          projectPrj1;
 
-    @Before
-    public void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+    @BeforeClass
+    public static void initialize() {
+        final BundleContext context = FrameworkUtil.getBundle(ProjectServiceTest.class).getBundleContext();
         final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
         Assert.assertNotNull(restServiceFactoryRef);
 
@@ -51,7 +54,16 @@ public class ProjectServiceTest extends RestApiBaseTest {
         Assert.assertNotNull(restServiceFactory);
 
         projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, REST_API_URL, new CodenvyToken("dummy"));
+        Assert.assertNotNull(projectService);
+
         workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, REST_API_URL, new CodenvyToken("dummy"));
+        Assert.assertNotNull(workspaceService);
+
+        defaultWorkspace = workspaceService.getWorkspaceByName("default");
+        Assert.assertNotNull(defaultWorkspace);
+
+        projectPrj1 = new Project(null, null, "jar", null, null, "prj1", "description", defaultWorkspace.name, null, null, null);
+        Assert.assertNotNull(projectService.newProject(projectPrj1, defaultWorkspace.id));
     }
 
     @Test(expected = NullPointerException.class)
@@ -61,19 +73,17 @@ public class ProjectServiceTest extends RestApiBaseTest {
 
     @Test
     public void testGetWorkspaceProjects() {
-        final WorkspaceRef defaultWorkspace = workspaceService.getWorkspaceByName("default");
-        Assert.assertNotNull(defaultWorkspace);
-
-        final Project project = new Project(null, null, "jar", null, null, "jar-project", "description", defaultWorkspace.name, null, null, null);
-        final Project createdProject = projectService.newProject(project, defaultWorkspace.id);
-        Assert.assertNotNull(createdProject);
-
         final List<Project> projects = projectService.getWorkspaceProjects(defaultWorkspace.id);
 
         Assert.assertNotNull(projects);
         Assert.assertFalse(projects.isEmpty());
-        Assert.assertEquals("jar-project", projects.get(0).name);
-        Assert.assertEquals("jar", projects.get(0).projectTypeId);
-        Assert.assertEquals(defaultWorkspace.id, projects.get(0).workspaceId);
+        Assert.assertTrue(projects.size() == 1);
+    }
+
+    @Test
+    public void testExportProject() {
+        final ZipInputStream zipInputStream = projectService.exportProject(projectPrj1, defaultWorkspace.id);
+
+        Assert.assertNotNull(zipInputStream);
     }
 }

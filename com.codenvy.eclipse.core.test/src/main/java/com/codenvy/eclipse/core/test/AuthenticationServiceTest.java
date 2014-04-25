@@ -18,7 +18,7 @@ package com.codenvy.eclipse.core.test;
 
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -34,11 +34,11 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
  * @author Kevin Pollet
  */
 public class AuthenticationServiceTest extends RestApiBaseTest {
-    private AuthenticationService authenticationService;
+    private static AuthenticationService authenticationService;
 
-    @Before
-    public void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+    @BeforeClass
+    public static void initialize() {
+        final BundleContext context = FrameworkUtil.getBundle(AuthenticationServiceTest.class).getBundleContext();
         final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
         Assert.assertNotNull(restServiceFactoryRef);
 
@@ -46,6 +46,7 @@ public class AuthenticationServiceTest extends RestApiBaseTest {
         Assert.assertNotNull(restServiceFactory);
 
         authenticationService = restServiceFactory.newRestService(AuthenticationService.class, REST_API_URL);
+        Assert.assertNotNull(authenticationService);
     }
 
     @Test(expected = NullPointerException.class)

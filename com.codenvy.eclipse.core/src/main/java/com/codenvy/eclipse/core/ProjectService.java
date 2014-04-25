@@ -17,6 +17,7 @@
 package com.codenvy.eclipse.core;
 
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 import com.codenvy.eclipse.core.model.Project;
 
@@ -46,4 +47,15 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
     Project newProject(Project project, String workspaceId);
+
+    /**
+     * Exports the given project from the given workspace.
+     * 
+     * @param project the project to export.
+     * @param workspaceId the workspace id.
+     * @return the exported project {@linkplain ZipInputStream}.
+     * @throws NullPointerException if project or workspaceId parameter is {@code null}.
+     * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
+     */
+    ZipInputStream exportProject(Project project, String workspaceId);
 }

@@ -19,7 +19,7 @@ package com.codenvy.eclipse.core.test;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -39,12 +39,12 @@ import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
  * @author Kevin Pollet
  */
 public class WorkspaceServiceTest extends RestApiBaseTest {
-    private WorkspaceService workspaceService;
-    private UserService      userService;
+    private static WorkspaceService workspaceService;
+    private static UserService      userService;
 
-    @Before
-    public void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+    @BeforeClass
+    public static void initialize() {
+        final BundleContext context = FrameworkUtil.getBundle(WorkspaceServiceTest.class).getBundleContext();
         final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
         Assert.assertNotNull(restServiceFactoryRef);
 
@@ -52,7 +52,10 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
         Assert.assertNotNull(restServiceFactory);
 
         workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, REST_API_URL, new CodenvyToken("dummy"));
+        Assert.assertNotNull(workspaceService);
+
         userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, new CodenvyToken("dummy"));
+        Assert.assertNotNull(userService);
     }
 
     @Test

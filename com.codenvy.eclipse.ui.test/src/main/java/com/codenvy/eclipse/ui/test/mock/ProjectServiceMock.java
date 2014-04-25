@@ -18,6 +18,7 @@ package com.codenvy.eclipse.ui.test.mock;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
@@ -53,6 +54,11 @@ public class ProjectServiceMock implements ProjectService {
 
     @Override
     public Project newProject(Project project, String workspaceId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ZipInputStream exportProject(Project project, String workspaceId) {
         throw new UnsupportedOperationException();
     }
 }

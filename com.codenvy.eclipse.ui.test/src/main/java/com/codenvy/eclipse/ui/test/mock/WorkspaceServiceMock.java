@@ -64,7 +64,7 @@ public class WorkspaceServiceMock implements WorkspaceService {
     }
 
     @Override
-    public WorkspaceRef createWorkspace(WorkspaceRef workspaceRef) {
+    public WorkspaceRef newWorkspace(WorkspaceRef workspaceRef) {
         throw new UnsupportedOperationException();
     }
 }

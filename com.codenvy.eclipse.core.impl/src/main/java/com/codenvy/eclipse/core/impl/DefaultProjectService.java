@@ -20,8 +20,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -89,5 +91,21 @@ public class DefaultProjectService implements ProjectService {
                                .request()
                                .accept(APPLICATION_JSON)
                                .post(Entity.json(project), Project.class);
+    }
+
+    @Override
+    public ZipInputStream exportProject(Project project, String workspaceId) {
+        checkNotNull(project);
+        checkNotNull(workspaceId);
+        checkArgument(!workspaceId.trim().isEmpty());
+
+        final InputStream entityStream = projectWebTarget.path(workspaceId)
+                                                         .path("export")
+                                                         .path(project.name)
+                                                         .queryParam("token", codenvyToken.value)
+                                                         .request()
+                                                         .get(InputStream.class);
+
+        return new ZipInputStream(entityStream);
     }
 }
