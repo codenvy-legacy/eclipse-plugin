@@ -120,6 +120,12 @@ public class ImportProjectFromCodenvyWizardTest {
         Assert.assertEquals(MOCK_PROJECT_TYPE_NAME, bot.table(0).cell(0, 1));
         Assert.assertEquals(MOCK_PROJECT_DESCRIPTION, bot.table(0).cell(0, 2));
 
+        bot.button("Select All").click();
+        Assert.assertTrue(bot.button("Finish").isEnabled());
+
+        bot.button("Deselect All").click();
+        Assert.assertFalse(bot.button("Finish").isEnabled());
+
         bot.table(0).getTableItem(0).check();
         Assert.assertTrue(bot.button("Finish").isEnabled());
 

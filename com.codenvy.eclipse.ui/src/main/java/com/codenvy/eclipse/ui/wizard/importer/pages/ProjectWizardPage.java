@@ -349,12 +349,11 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
                                     public void run() {
-                                        projectTableViewer.setInput(projects);
-
                                         final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
                                         final IWorkingSet codenvyWorkspaceWorkingSet = workingSetManager.createWorkingSet("codenvy-ws-" + workspaceRef.name, new IAdaptable[0]);
                                         final List<IWorkingSet> workingSets = asList(codenvyWorkspaceWorkingSet, workingSetManager.getWorkingSets());
 
+                                        projectTableViewer.setInput(projects);
                                         workingSetComboViewer.setInput(workingSets.toArray());
                                         workingSetComboViewer.setSelection(new StructuredSelection(codenvyWorkspaceWorkingSet));
                                     }
