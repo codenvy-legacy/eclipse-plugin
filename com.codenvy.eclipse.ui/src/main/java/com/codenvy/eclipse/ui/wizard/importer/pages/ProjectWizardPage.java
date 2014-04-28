@@ -110,10 +110,14 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
         wizardContainer.setLayout(new GridLayout(2, false));
         wizardContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        final Label workspaceLabel = new Label(wizardContainer, SWT.NONE);
+        final Composite workspaceSelectionContainer = new Composite(wizardContainer, SWT.NONE);
+        workspaceSelectionContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        workspaceSelectionContainer.setLayout(new GridLayout(2, false));
+
+        final Label workspaceLabel = new Label(workspaceSelectionContainer, SWT.NONE);
         workspaceLabel.setText("Workspace:");
 
-        workspaceComboViewer = new ComboViewer(wizardContainer, SWT.DROP_DOWN | SWT.READ_ONLY);
+        workspaceComboViewer = new ComboViewer(workspaceSelectionContainer, SWT.DROP_DOWN | SWT.READ_ONLY);
         workspaceComboViewer.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         workspaceComboViewer.setContentProvider(new ArrayContentProvider());
         workspaceComboViewer.setLabelProvider(new LabelProvider() {
@@ -179,7 +183,33 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
         final Table projectTable = projectTableViewer.getTable();
         projectTable.getHorizontalBar().setEnabled(true);
         projectTable.setHeaderVisible(true);
-        projectTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        projectTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        final Composite projectTableButtonsContainer = new Composite(wizardContainer, SWT.NONE);
+        projectTableButtonsContainer.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, true));
+        projectTableButtonsContainer.setLayout(new GridLayout());
+
+        final Button selectAll = new Button(projectTableButtonsContainer, SWT.NONE);
+        selectAll.setText("Select All");
+        selectAll.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        selectAll.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                projectTableViewer.setAllChecked(true);
+                setPageComplete(true);
+            }
+        });
+
+        final Button deselectAll = new Button(projectTableButtonsContainer, SWT.NONE);
+        deselectAll.setText("Deselect All");
+        deselectAll.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        deselectAll.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                projectTableViewer.setAllChecked(false);
+                setPageComplete(false);
+            }
+        });
 
         final Button addToWorkingSet = new Button(wizardContainer, SWT.CHECK);
         addToWorkingSet.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -249,8 +279,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                     monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
 
                     final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-                    final ServiceReference<RestServiceFactory> restServiceFactoryRef =
-                                                                                       context.getServiceReference(RestServiceFactory.class);
+                    final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
 
                     if (restServiceFactoryRef != null) {
                         final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
