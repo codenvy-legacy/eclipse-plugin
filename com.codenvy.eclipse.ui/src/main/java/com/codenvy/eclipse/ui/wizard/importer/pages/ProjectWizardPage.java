@@ -28,9 +28,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IPageChangedListener;
-import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
-import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -71,7 +69,7 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.model.User;
 import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
-import com.codenvy.eclipse.ui.Activator;
+import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.utils.ImageConstants;
 
 /**
@@ -79,7 +77,7 @@ import com.codenvy.eclipse.ui.utils.ImageConstants;
  * 
  * @author Kevin Pollet
  */
-public class ProjectWizardPage extends WizardPage implements IPageChangingListener, IPageChangedListener {
+public class ProjectWizardPage extends WizardPage implements IPageChangedListener {
     private ComboViewer                  workspaceComboViewer;
     private CheckboxTableViewer          projectTableViewer;
     private ComboViewer                  workingSetComboViewer;
@@ -100,7 +98,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
 
         setTitle("Codenvy Projects");
         setDescription("Select Codenvy projects to import");
-        setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(ImageConstants.WIZARD_LOGO_KEY));
+        setImageDescriptor(CodenvyUIPlugin.getDefault().getImageRegistry().getDescriptor(ImageConstants.WIZARD_LOGO_KEY));
         setPageComplete(false);
     }
 
@@ -177,6 +175,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
                 setPageComplete(projectTableViewer.getCheckedElements().length > 0);
+                setCheckedProjects();
             }
         });
 
@@ -197,6 +196,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
             public void widgetSelected(SelectionEvent e) {
                 projectTableViewer.setAllChecked(true);
                 setPageComplete(true);
+                setCheckedProjects();
             }
         });
 
@@ -208,6 +208,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
             public void widgetSelected(SelectionEvent e) {
                 projectTableViewer.setAllChecked(false);
                 setPageComplete(false);
+                setCheckedProjects();
             }
         });
 
@@ -245,18 +246,6 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
     }
 
     @Override
-    public void handlePageChanging(PageChangingEvent event) {
-        if (isCurrentPage()) {
-            final List<Project> checkedProjects = new ArrayList<>();
-            for (Object oneProject : projectTableViewer.getCheckedElements()) {
-                checkedProjects.add((Project)oneProject);
-            }
-
-            importWizardSharedData.setProjects(checkedProjects);
-        }
-    }
-
-    @Override
     public void pageChanged(PageChangedEvent event) {
         if (isCurrentPage()) {
             projectTableViewer.setInput(null);
@@ -276,8 +265,6 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
-
                     final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
                     final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
 
@@ -287,6 +274,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                         if (restServiceFactory != null) {
 
                             try {
+                                
+                                monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
 
                                 final String url = importWizardSharedData.getUrl().get();
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
@@ -307,11 +296,10 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
 
                             } finally {
                                 context.ungetService(restServiceFactoryRef);
+                                monitor.done();
                             }
                         }
                     }
-
-                    monitor.done();
                 }
             });
 
@@ -329,8 +317,6 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
-
                     final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
                     final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
 
@@ -340,6 +326,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                         if (restServiceFactory != null) {
 
                             try {
+                                
+                                monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
 
                                 final String url = importWizardSharedData.getUrl().get();
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
@@ -360,17 +348,28 @@ public class ProjectWizardPage extends WizardPage implements IPageChangingListen
                                 });
 
                             } finally {
-                                context.ungetService(restServiceFactoryRef);
+                                context.ungetService(restServiceFactoryRef);                                
+                                monitor.done();
                             }
                         }
                     }
-
-                    monitor.done();
                 }
             });
 
         } catch (InvocationTargetException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Defines the checked projects into the shared {@linkplain ImportWizardSharedData}.
+     */
+    private void setCheckedProjects() {
+        final List<Project> checkedProjects = new ArrayList<>();
+        for (Object oneProject : projectTableViewer.getCheckedElements()) {
+            checkedProjects.add((Project)oneProject);
+        }
+
+        importWizardSharedData.setProjects(checkedProjects);
     }
 }

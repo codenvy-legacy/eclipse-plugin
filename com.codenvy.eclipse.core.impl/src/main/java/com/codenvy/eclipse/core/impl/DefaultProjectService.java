@@ -20,9 +20,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -30,6 +34,13 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.UriBuilder;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
@@ -94,7 +105,7 @@ public class DefaultProjectService implements ProjectService {
     }
 
     @Override
-    public ZipInputStream exportProject(Project project, String workspaceId) {
+    public IProject exportProject(Project project, String workspaceId) {
         checkNotNull(project);
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
@@ -106,6 +117,43 @@ public class DefaultProjectService implements ProjectService {
                                                          .request()
                                                          .get(InputStream.class);
 
-        return new ZipInputStream(entityStream);
+        final ZipInputStream zipInputStream = new ZipInputStream(entityStream);
+        final NullProgressMonitor nullProgressMonitor = new NullProgressMonitor();
+        final IProject importedProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.name);
+
+        try {
+
+            if (!importedProject.exists()) {
+                importedProject.create(nullProgressMonitor);
+                importedProject.open(nullProgressMonitor);
+            }
+
+            ZipEntry entry;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                final String entryName = entry.getName();
+
+                if (entry.isDirectory()) {
+                    final IFolder folder = importedProject.getFolder(entryName);
+                    folder.create(true, true, nullProgressMonitor);
+
+                } else {
+                    int b;
+                    final IFile file = importedProject.getFile(entryName);
+                    final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+                    while ((b = zipInputStream.read()) != -1) {
+                        byteArrayOutputStream.write(b);
+                    }
+
+                    final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                    file.create(byteArrayInputStream, true, nullProgressMonitor);
+                }
+            }
+
+        } catch (CoreException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return importedProject;
     }
 }

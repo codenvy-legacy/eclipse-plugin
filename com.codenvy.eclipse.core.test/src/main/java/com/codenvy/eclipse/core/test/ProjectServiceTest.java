@@ -17,8 +17,8 @@
 package com.codenvy.eclipse.core.test;
 
 import java.util.List;
-import java.util.zip.ZipInputStream;
 
+import org.eclipse.core.resources.IProject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -82,8 +82,8 @@ public class ProjectServiceTest extends RestApiBaseTest {
 
     @Test
     public void testExportProject() {
-        final ZipInputStream zipInputStream = projectService.exportProject(projectPrj1, defaultWorkspace.id);
+        final IProject project = projectService.exportProject(projectPrj1, defaultWorkspace.id);
 
-        Assert.assertNotNull(zipInputStream);
+        Assert.assertNotNull(project);
     }
 }

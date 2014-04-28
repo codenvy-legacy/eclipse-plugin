@@ -28,13 +28,13 @@ import org.osgi.framework.BundleContext;
  * 
  * @author Kevin Pollet
  */
-public class Activator extends AbstractUIPlugin {
+public class CodenvyUIPlugin extends AbstractUIPlugin {
 
     // the plug-in ID
-    public static final String PLUGIN_ID = "com.codenvy.plugin.eclipse.ui"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "com.codenvy.eclipse.ui"; //$NON-NLS-1$
 
     // the shared instance
-    private static Activator   plugin;
+    private static CodenvyUIPlugin   plugin;
 
     public void start(BundleContext context) throws Exception {
         super.start(context);
@@ -51,12 +51,12 @@ public class Activator extends AbstractUIPlugin {
      * 
      * @return the shared instance
      */
-    public static Activator getDefault() {
+    public static CodenvyUIPlugin getDefault() {
         return plugin;
     }
 
     @Override
     protected void initializeImageRegistry(ImageRegistry registry) {
-        registry.put(WIZARD_LOGO_KEY, ImageDescriptor.createFromFile(Activator.class, "/images/WizardLogo.png"));
+        registry.put(WIZARD_LOGO_KEY, ImageDescriptor.createFromFile(CodenvyUIPlugin.class, "/images/WizardLogo.png"));
     }
 }

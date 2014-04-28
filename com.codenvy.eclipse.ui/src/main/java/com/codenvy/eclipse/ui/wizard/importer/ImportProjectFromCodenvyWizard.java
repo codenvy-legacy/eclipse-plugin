@@ -16,6 +16,12 @@
  */
 package com.codenvy.eclipse.ui.wizard.importer;
 
+import java.util.List;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -25,7 +31,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.progress.IProgressConstants2;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.ProjectService;
+import com.codenvy.eclipse.core.RestServiceFactory;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ImportWizardSharedData;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
@@ -47,7 +61,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
         this.importWizardSharedData = new ImportWizardSharedData();
         this.authenticationWizardPage = new AuthenticationWizardPage(importWizardSharedData);
         this.projectWizardPage = new ProjectWizardPage(importWizardSharedData);
-        
+
         setNeedsProgressMonitor(true);
     }
 
@@ -73,9 +87,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
         if (wizardContainer != null) {
             final WizardDialog wizardDialog = (WizardDialog)wizardContainer;
-
             wizardDialog.addPageChangingListener(authenticationWizardPage);
-            wizardDialog.addPageChangingListener(projectWizardPage);
             wizardDialog.addPageChangedListener(projectWizardPage);
         }
     }
@@ -89,9 +101,49 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                && currentWizardPage.isPageComplete();
     }
 
-    // TODO do import stuff here!!!!
     @Override
     public boolean performFinish() {
+        final Job importProjectsJob = new Job("Import projects from Codenvy") {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) {
+                final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+                final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
+
+                if (restServiceFactoryRef != null) {
+                    final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
+
+                    if (restServiceFactory != null) {
+
+                        try {
+
+                            final List<Project> projectsToImport = importWizardSharedData.getProjects();
+                            monitor.beginTask("Importing project", projectsToImport.size());
+
+                            final String url = importWizardSharedData.getUrl().get();
+                            final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
+                            final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
+
+                            for (Project oneProjectToImport : projectsToImport) {
+                                monitor.subTask(oneProjectToImport.name);
+                                projectService.exportProject(oneProjectToImport, oneProjectToImport.workspaceId);
+                                monitor.worked(1);
+                            }
+
+                        } finally {
+                            context.ungetService(restServiceFactoryRef);
+                            monitor.done();
+                        }
+                    }
+                }
+
+                return Status.OK_STATUS;
+            }
+        };
+
+        importProjectsJob.setProperty(IProgressConstants2.SHOW_IN_TASKBAR_ICON_PROPERTY, true);
+        importProjectsJob.schedule();
+
         return true;
     }
 
