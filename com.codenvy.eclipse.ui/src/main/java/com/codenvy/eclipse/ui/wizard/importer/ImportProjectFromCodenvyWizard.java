@@ -142,6 +142,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
         };
 
         importProjectsJob.setProperty(IProgressConstants2.SHOW_IN_TASKBAR_ICON_PROPERTY, true);
+        importProjectsJob.setUser(true);
         importProjectsJob.schedule();
 
         return true;
