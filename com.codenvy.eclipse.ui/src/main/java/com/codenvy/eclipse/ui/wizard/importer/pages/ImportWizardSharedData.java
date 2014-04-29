@@ -21,6 +21,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ui.IWorkingSet;
+
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.Project;
 import com.google.common.base.Optional;
@@ -34,6 +36,7 @@ public final class ImportWizardSharedData {
     private Optional<String>       url;
     private Optional<CodenvyToken> codenvyToken;
     private List<Project>          projects;
+    private Optional<IWorkingSet>  workingSet;
 
     /**
      * Default constructor.
@@ -42,10 +45,11 @@ public final class ImportWizardSharedData {
         this.url = Optional.absent();
         this.codenvyToken = Optional.absent();
         this.projects = new ArrayList<>();
+        this.workingSet = Optional.absent();
     }
 
     /**
-     * Returns the Codenvy platform url entered in step 1 of the wizard.
+     * Returns the Codenvy platform url entered.
      * 
      * @return the Codenvy platform url never {@code null}.
      */
@@ -66,7 +70,7 @@ public final class ImportWizardSharedData {
     }
 
     /**
-     * Returns the Codenvy authentication token negotiated in step 1 of the wizard.
+     * Returns the Codenvy authentication token negotiated.
      * 
      * @return the Codenvy authentication token never {@code null}.
      */
@@ -87,7 +91,7 @@ public final class ImportWizardSharedData {
     }
 
     /**
-     * Returns the Codenvy projects checked by the user in step 3.
+     * Returns the Codenvy projects checked by the user.
      * 
      * @return the checked Codenvy projects never {@code null}.
      */
@@ -105,5 +109,26 @@ public final class ImportWizardSharedData {
         checkNotNull(projects);
 
         this.projects = projects;
+    }
+
+    /**
+     * Returns the working set selected by the user.
+     * 
+     * @return the selected working set never {@code null}.
+     */
+    public Optional<IWorkingSet> getWorkingSet() {
+        return workingSet;
+    }
+
+    /**
+     * Defines the working set selected by the user.
+     * 
+     * @param workingSet the selected working set.
+     * @throws NullPointerException if workingSet parameter is {@code null}.
+     */
+    public void setWorkingSet(Optional<IWorkingSet> workingSet) {
+        checkNotNull(workingSet);
+
+        this.workingSet = workingSet;
     }
 }

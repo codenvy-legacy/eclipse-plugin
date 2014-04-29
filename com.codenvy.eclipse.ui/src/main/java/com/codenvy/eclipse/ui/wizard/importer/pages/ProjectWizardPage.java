@@ -16,8 +16,9 @@
  */
 package com.codenvy.eclipse.ui.wizard.importer.pages;
 
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Lists.asList;
+import static java.util.Arrays.asList;
 import static org.eclipse.core.runtime.IProgressMonitor.UNKNOWN;
 import static org.eclipse.jface.viewers.CheckboxTableViewer.newCheckList;
 
@@ -71,6 +72,7 @@ import com.codenvy.eclipse.core.model.User;
 import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.utils.ImageConstants;
+import com.google.common.base.Optional;
 
 /**
  * Project wizard page. In this wizard page the user selects the projects to import in Eclipse.
@@ -81,6 +83,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
     private ComboViewer                  workspaceComboViewer;
     private CheckboxTableViewer          projectTableViewer;
     private ComboViewer                  workingSetComboViewer;
+    private Button                       addToWorkingSet;
     private final ImportWizardSharedData importWizardSharedData;
 
     /**
@@ -212,7 +215,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             }
         });
 
-        final Button addToWorkingSet = new Button(wizardContainer, SWT.CHECK);
+        addToWorkingSet = new Button(wizardContainer, SWT.CHECK);
         addToWorkingSet.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         addToWorkingSet.setText("Add project(s) to working set");
         addToWorkingSet.addSelectionListener(new SelectionAdapter() {
@@ -225,6 +228,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                 } else {
                     workingSetCombo.setEnabled(false);
                 }
+
+                setWorkingSet();
             }
         });
 
@@ -239,6 +244,12 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                     return ((IWorkingSet)element).getLabel();
                 }
                 return super.getText(element);
+            }
+        });
+        workingSetComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                setWorkingSet();
             }
         });
 
@@ -274,7 +285,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                         if (restServiceFactory != null) {
 
                             try {
-                                
+
                                 monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
 
                                 final String url = importWizardSharedData.getUrl().get();
@@ -326,7 +337,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                         if (restServiceFactory != null) {
 
                             try {
-                                
+
                                 monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
 
                                 final String url = importWizardSharedData.getUrl().get();
@@ -337,9 +348,17 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
                                     public void run() {
+
+                                        final String codenvyWorkspaceWorkingSetName = "codenvy-ws-" + workspaceRef.name;
                                         final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
-                                        final IWorkingSet codenvyWorkspaceWorkingSet = workingSetManager.createWorkingSet("codenvy-ws-" + workspaceRef.name, new IAdaptable[0]);
-                                        final List<IWorkingSet> workingSets = asList(codenvyWorkspaceWorkingSet, workingSetManager.getWorkingSets());
+                                        final List<IWorkingSet> workingSets = new ArrayList<>(asList(workingSetManager.getWorkingSets()));
+
+                                        IWorkingSet codenvyWorkspaceWorkingSet =
+                                                                                 workingSetManager.getWorkingSet(codenvyWorkspaceWorkingSetName);
+                                        if (codenvyWorkspaceWorkingSet == null) {
+                                            codenvyWorkspaceWorkingSet = workingSetManager.createWorkingSet(codenvyWorkspaceWorkingSetName, new IAdaptable[0]);
+                                            workingSets.add(0, codenvyWorkspaceWorkingSet);
+                                        }
 
                                         projectTableViewer.setInput(projects);
                                         workingSetComboViewer.setInput(workingSets.toArray());
@@ -348,7 +367,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 });
 
                             } finally {
-                                context.ungetService(restServiceFactoryRef);                                
+                                context.ungetService(restServiceFactoryRef);
                                 monitor.done();
                             }
                         }
@@ -362,14 +381,30 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
     }
 
     /**
-     * Defines the checked projects into the shared {@linkplain ImportWizardSharedData}.
+     * Defines the checked projects in shared data.
+     * 
+     * @see ImportWizardSharedData
      */
     private void setCheckedProjects() {
         final List<Project> checkedProjects = new ArrayList<>();
         for (Object oneProject : projectTableViewer.getCheckedElements()) {
             checkedProjects.add((Project)oneProject);
         }
-
         importWizardSharedData.setProjects(checkedProjects);
+    }
+
+    /**
+     * Defines the working set in shared data.
+     * 
+     * @see ImportWizardSharedData
+     */
+    private void setWorkingSet() {
+        if (addToWorkingSet.getSelection()) {
+            final IStructuredSelection structuredSelection = (IStructuredSelection)workingSetComboViewer.getSelection();
+            final IWorkingSet selectedWorkingSet = (IWorkingSet)structuredSelection.getFirstElement();
+            importWizardSharedData.setWorkingSet(fromNullable(selectedWorkingSet));
+        } else {
+            importWizardSharedData.setWorkingSet(Optional.<IWorkingSet> absent());
+        }
     }
 }

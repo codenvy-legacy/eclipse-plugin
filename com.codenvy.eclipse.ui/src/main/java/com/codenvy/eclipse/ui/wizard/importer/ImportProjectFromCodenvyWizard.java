@@ -16,8 +16,13 @@
  */
 package com.codenvy.eclipse.ui.wizard.importer;
 
+import static com.google.common.collect.ObjectArrays.concat;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -31,6 +36,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkingSet;
+import org.eclipse.ui.IWorkingSetManager;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressConstants2;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -122,12 +130,28 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
                             final String url = importWizardSharedData.getUrl().get();
                             final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
+                            final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
+                            final List<IProject> exportedProjects = new ArrayList<>();
                             final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
 
                             for (Project oneProjectToImport : projectsToImport) {
                                 monitor.subTask(oneProjectToImport.name);
-                                projectService.exportProject(oneProjectToImport, oneProjectToImport.workspaceId);
+
+                                final IProject oneExportedProject = projectService.exportProject(oneProjectToImport, oneProjectToImport.workspaceId);
+                                exportedProjects.add(oneExportedProject);
+
                                 monitor.worked(1);
+                            }
+
+                            if (importWizardSharedData.getWorkingSet().isPresent()) {
+                                final IWorkingSet workingSet = importWizardSharedData.getWorkingSet().get();
+                                final boolean workingSetExists = workingSetManager.getWorkingSet(workingSet.getName()) != null;
+                                final IAdaptable[] workingSetElements = concat( workingSet.getElements(), workingSet.adaptElements(exportedProjects.toArray(new IProject[exportedProjects.size()])), IAdaptable.class);
+
+                                workingSet.setElements(workingSetElements);
+                                if (!workingSetExists) {
+                                    workingSetManager.addWorkingSet(workingSet);
+                                }
                             }
 
                         } finally {
