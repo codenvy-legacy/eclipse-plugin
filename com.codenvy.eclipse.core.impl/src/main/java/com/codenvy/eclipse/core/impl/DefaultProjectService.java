@@ -105,7 +105,7 @@ public class DefaultProjectService implements ProjectService {
     }
 
     @Override
-    public IProject exportProject(Project project, String workspaceId) {
+    public IProject importProject(Project project, String workspaceId) {
         checkNotNull(project);
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());

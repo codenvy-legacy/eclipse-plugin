@@ -50,13 +50,13 @@ public interface ProjectService extends RestServiceWithAuth {
     Project newProject(Project project, String workspaceId);
 
     /**
-     * Exports the given project from the given workspace.
+     * Imports the given project from the given workspace.
      * 
      * @param project the project to export.
      * @param workspaceId the workspace id.
-     * @return the exported project as an instance of {@linkplain IProject}.
+     * @return the imported project as an instance of {@linkplain IProject}.
      * @throws NullPointerException if project or workspaceId parameter is {@code null}.
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
-    IProject exportProject(Project project, String workspaceId);
+    IProject importProject(Project project, String workspaceId);
 }

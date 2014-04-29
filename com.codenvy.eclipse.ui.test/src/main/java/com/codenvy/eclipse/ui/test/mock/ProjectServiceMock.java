@@ -59,7 +59,7 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public IProject exportProject(Project project, String workspaceId) {
+    public IProject importProject(Project project, String workspaceId) {
         throw new UnsupportedOperationException();
     }
 }

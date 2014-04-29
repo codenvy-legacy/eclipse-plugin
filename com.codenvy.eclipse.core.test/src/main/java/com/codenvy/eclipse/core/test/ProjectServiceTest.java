@@ -81,8 +81,8 @@ public class ProjectServiceTest extends RestApiBaseTest {
     }
 
     @Test
-    public void testExportProject() {
-        final IProject project = projectService.exportProject(projectPrj1, defaultWorkspace.id);
+    public void testImportProject() {
+        final IProject project = projectService.importProject(projectPrj1, defaultWorkspace.id);
 
         Assert.assertNotNull(project);
     }
