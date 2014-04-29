@@ -26,6 +26,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IPageChangedListener;
@@ -47,6 +50,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -146,7 +150,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
         final TableViewerColumn projectNameColumn = new TableViewerColumn(projectTableViewer, SWT.NONE);
         projectNameColumn.getColumn().setWidth(150);
         projectNameColumn.getColumn().setText("Name");
-        projectNameColumn.setLabelProvider(new ColumnLabelProvider() {
+        projectNameColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
                 return element instanceof Project ? ((Project)element).name : super.getText(element);
@@ -156,7 +160,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
         final TableViewerColumn projectTypeNameColumn = new TableViewerColumn(projectTableViewer, SWT.NONE);
         projectTypeNameColumn.getColumn().setWidth(150);
         projectTypeNameColumn.getColumn().setText("Type");
-        projectTypeNameColumn.setLabelProvider(new ColumnLabelProvider() {
+        projectTypeNameColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
                 return element instanceof Project ? ((Project)element).projectTypeName : super.getText(element);
@@ -166,19 +170,18 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
         final TableViewerColumn projectDescriptionColumn = new TableViewerColumn(projectTableViewer, SWT.NONE);
         projectDescriptionColumn.getColumn().setWidth(150);
         projectDescriptionColumn.getColumn().setText("Description");
-        projectDescriptionColumn.setLabelProvider(new ColumnLabelProvider() {
+        projectDescriptionColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
                 return element instanceof Project ? ((Project)element).description : super.getText(element);
             }
         });
-
         projectTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         projectTableViewer.addCheckStateListener(new ICheckStateListener() {
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-                setPageComplete(projectTableViewer.getCheckedElements().length > 0);
                 setCheckedProjects();
+                setPageComplete(projectTableViewer.getCheckedElements().length > 0);
             }
         });
 
@@ -198,8 +201,9 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             @Override
             public void widgetSelected(SelectionEvent e) {
                 projectTableViewer.setAllChecked(true);
-                setPageComplete(true);
+
                 setCheckedProjects();
+                setPageComplete(projectTableViewer.getCheckedElements().length > 0);
             }
         });
 
@@ -210,8 +214,9 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             @Override
             public void widgetSelected(SelectionEvent e) {
                 projectTableViewer.setAllChecked(false);
-                setPageComplete(false);
+
                 setCheckedProjects();
+                setPageComplete(projectTableViewer.getCheckedElements().length > 0);
             }
         });
 
@@ -325,6 +330,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
     private void loadWorkspaceProjects(final WorkspaceRef workspaceRef) {
         try {
 
+            projectTableViewer.setInput(null);
+
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
@@ -353,16 +360,23 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                         final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
                                         final List<IWorkingSet> workingSets = new ArrayList<>(asList(workingSetManager.getWorkingSets()));
 
-                                        IWorkingSet codenvyWorkspaceWorkingSet =
-                                                                                 workingSetManager.getWorkingSet(codenvyWorkspaceWorkingSetName);
+                                        IWorkingSet codenvyWorkspaceWorkingSet = workingSetManager.getWorkingSet(codenvyWorkspaceWorkingSetName);
                                         if (codenvyWorkspaceWorkingSet == null) {
                                             codenvyWorkspaceWorkingSet = workingSetManager.createWorkingSet(codenvyWorkspaceWorkingSetName, new IAdaptable[0]);
                                             workingSets.add(0, codenvyWorkspaceWorkingSet);
                                         }
 
-                                        projectTableViewer.setInput(projects);
                                         workingSetComboViewer.setInput(workingSets.toArray());
                                         workingSetComboViewer.setSelection(new StructuredSelection(codenvyWorkspaceWorkingSet));
+                                        projectTableViewer.setInput(projects);
+
+                                        // existing projects should be grayed
+                                        final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+                                        for (Project oneProject : projects) {
+                                            final IProject workspaceProject = workspaceRoot.getProject(oneProject.name);
+                                            projectTableViewer.setGrayed(oneProject, workspaceProject.exists());
+                                        }
+                                        projectTableViewer.refresh();
                                     }
                                 });
 
@@ -381,11 +395,19 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
     }
 
     /**
-     * Defines the checked projects in shared data.
+     * Defines checked projects in UI and shared data.
      * 
      * @see ImportWizardSharedData
      */
     private void setCheckedProjects() {
+        for (Object oneCheckedElement : projectTableViewer.getCheckedElements()) {
+            final boolean isGrayed = projectTableViewer.getGrayed(oneCheckedElement);
+            if (isGrayed) {
+                projectTableViewer.setChecked(oneCheckedElement, false);
+            }
+        }
+
+        // updates the shared data
         final List<Project> checkedProjects = new ArrayList<>();
         for (Object oneProject : projectTableViewer.getCheckedElements()) {
             checkedProjects.add((Project)oneProject);
@@ -394,7 +416,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
     }
 
     /**
-     * Defines the working set in shared data.
+     * Defines selected working set in shared data.
      * 
      * @see ImportWizardSharedData
      */
@@ -405,6 +427,19 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             importWizardSharedData.setWorkingSet(fromNullable(selectedWorkingSet));
         } else {
             importWizardSharedData.setWorkingSet(Optional.<IWorkingSet> absent());
+        }
+    }
+
+    /**
+     * Custom label provider displaying grayed elements in grey.
+     * 
+     * @author Kevin Pollet
+     */
+    private class ColumnLabelProviderWithGreyElement extends ColumnLabelProvider {
+        @Override
+        public Color getForeground(Object element) {
+            final boolean isGrayed = projectTableViewer.getGrayed(element);
+            return isGrayed ? Display.getCurrent().getSystemColor(SWT.COLOR_GRAY) : super.getForeground(element);
         }
     }
 }
