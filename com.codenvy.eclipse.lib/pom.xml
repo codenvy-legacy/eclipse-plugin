@@ -47,6 +47,11 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
 			<version>${jackson.version}</version>
@@ -83,7 +88,8 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Embed-Dependency>*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
-						<Export-Package>javax.ws.rs.*, com.fasterxml.jackson.annotation.*</Export-Package>
+						<Export-Package>javax.ws.rs.*, com.fasterxml.jackson.annotation.*,
+							com.fasterxml.jackson.databind.*</Export-Package>
 						<Import-Package>sun.misc.*;resolution:=optional</Import-Package>
 					</instructions>
 				</configuration>

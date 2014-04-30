@@ -38,10 +38,12 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.Project;
@@ -117,11 +119,10 @@ public class DefaultProjectService implements ProjectService {
                                                          .request()
                                                          .get(InputStream.class);
 
-        final ZipInputStream zipInputStream = new ZipInputStream(entityStream);
         final NullProgressMonitor nullProgressMonitor = new NullProgressMonitor();
         final IProject importedProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.name);
 
-        try {
+        try (ZipInputStream zipInputStream = new ZipInputStream(entityStream)) {
 
             if (!importedProject.exists()) {
                 importedProject.create(nullProgressMonitor);
@@ -151,6 +152,16 @@ public class DefaultProjectService implements ProjectService {
             }
 
         } catch (CoreException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+
+            final IProjectDescription importedProjectDescription = importedProject.getDescription();
+            importedProjectDescription.setNatureIds(new String[]{CodenvyNature.NATURE_ID});
+            importedProject.setDescription(importedProjectDescription, new NullProgressMonitor());
+
+        } catch (CoreException e) {
             throw new RuntimeException(e);
         }
 

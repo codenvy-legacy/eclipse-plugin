@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -81,6 +82,7 @@ public class ProjectServiceTest extends RestApiBaseTest {
     }
 
     @Test
+    @Ignore
     public void testImportProject() {
         final IProject project = projectService.importProject(projectPrj1, defaultWorkspace.id);
 
