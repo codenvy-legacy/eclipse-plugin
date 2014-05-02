@@ -16,8 +16,6 @@
  */
 package com.codenvy.eclipse.core.impl;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.net.URI;
@@ -26,6 +24,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
+import com.codenvy.eclipse.core.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.UserService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.User;
@@ -35,9 +34,8 @@ import com.codenvy.eclipse.core.model.User;
  * 
  * @author Kevin Pollet
  */
-public class DefaultUserService implements UserService {
-    private final CodenvyToken codenvyToken;
-    private final WebTarget    userWebTarget;
+public class DefaultUserService extends AbstractRestServiceWithAuth implements UserService {
+    private final WebTarget userWebTarget;
 
     /**
      * Constructs an instance of {@linkplain DefaultUserService}.
@@ -48,22 +46,19 @@ public class DefaultUserService implements UserService {
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
     public DefaultUserService(String url, CodenvyToken codenvyToken) {
-        checkNotNull(codenvyToken);
-        checkNotNull(url);
-        checkArgument(!url.trim().isEmpty());
+        super(url, codenvyToken);
 
         final URI uri = UriBuilder.fromUri(url)
                                   .path("api/user")
                                   .build();
 
-        this.codenvyToken = codenvyToken;
         this.userWebTarget = ClientBuilder.newClient()
                                           .target(uri);
     }
 
     @Override
     public User getCurrentUser() {
-        return userWebTarget.queryParam("token", codenvyToken.value)
+        return userWebTarget.queryParam("token", getCodenvyToken().value)
                             .request()
                             .accept(APPLICATION_JSON)
                             .get(User.class);

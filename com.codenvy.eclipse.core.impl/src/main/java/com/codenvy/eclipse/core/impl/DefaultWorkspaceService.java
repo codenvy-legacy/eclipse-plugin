@@ -29,6 +29,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.UriBuilder;
 
+import com.codenvy.eclipse.core.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.WorkspaceService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.Workspace;
@@ -39,9 +40,8 @@ import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
  * 
  * @author Kevin Pollet
  */
-public class DefaultWorkspaceService implements WorkspaceService {
-    private final CodenvyToken codenvyToken;
-    private final WebTarget    workspaceWebTarget;
+public class DefaultWorkspaceService extends AbstractRestServiceWithAuth implements WorkspaceService {
+    private final WebTarget workspaceWebTarget;
 
     /**
      * Constructs an instance of {@linkplain DefaultWorkspaceService}.
@@ -52,15 +52,12 @@ public class DefaultWorkspaceService implements WorkspaceService {
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
     public DefaultWorkspaceService(String url, CodenvyToken codenvyToken) {
-        checkNotNull(codenvyToken);
-        checkNotNull(url);
-        checkArgument(!url.trim().isEmpty());
+        super(url, codenvyToken);
 
         final URI uri = UriBuilder.fromUri(url)
                                   .path("api/workspace")
                                   .build();
 
-        this.codenvyToken = codenvyToken;
         this.workspaceWebTarget = ClientBuilder.newClient()
                                                .target(uri);
     }
@@ -68,7 +65,7 @@ public class DefaultWorkspaceService implements WorkspaceService {
     @Override
     public List<Workspace> getAllWorkspaces() {
         return workspaceWebTarget.path("all")
-                                 .queryParam("token", codenvyToken.value)
+                                 .queryParam("token", getCodenvyToken().value)
                                  .request()
                                  .accept(APPLICATION_JSON)
                                  .get(new GenericType<List<Workspace>>() {
@@ -80,7 +77,7 @@ public class DefaultWorkspaceService implements WorkspaceService {
         checkNotNull(name);
         checkArgument(!name.trim().isEmpty());
 
-        return workspaceWebTarget.queryParam("token", codenvyToken.value)
+        return workspaceWebTarget.queryParam("token", getCodenvyToken().value)
                                  .queryParam("name", name)
                                  .request()
                                  .accept(APPLICATION_JSON)
@@ -93,7 +90,7 @@ public class DefaultWorkspaceService implements WorkspaceService {
         checkArgument(!accountId.trim().isEmpty());
 
         return workspaceWebTarget.path("find/account")
-                                 .queryParam("token", codenvyToken.value)
+                                 .queryParam("token", getCodenvyToken().value)
                                  .queryParam("id", accountId)
                                  .request()
                                  .accept(APPLICATION_JSON)
@@ -103,7 +100,7 @@ public class DefaultWorkspaceService implements WorkspaceService {
 
     @Override
     public WorkspaceRef newWorkspace(WorkspaceRef workspaceRef) {
-        return workspaceWebTarget.queryParam("token", codenvyToken.value)
+        return workspaceWebTarget.queryParam("token", getCodenvyToken().value)
                                  .request()
                                  .post(json(workspaceRef), WorkspaceRef.class);
 

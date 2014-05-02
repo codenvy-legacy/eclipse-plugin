@@ -16,7 +16,6 @@
  */
 package com.codenvy.eclipse.core.impl;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.Response.Status.OK;
@@ -29,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import com.codenvy.eclipse.core.AbstractRestService;
 import com.codenvy.eclipse.core.AuthenticationService;
 import com.codenvy.eclipse.core.exception.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyToken;
@@ -39,7 +39,7 @@ import com.codenvy.eclipse.core.model.Credentials;
  * 
  * @author Kevin Pollet
  */
-public class DefaultAuthenticationService implements AuthenticationService {
+public class DefaultAuthenticationService extends AbstractRestService implements AuthenticationService {
     private final WebTarget authWebTarget;
 
     /**
@@ -50,8 +50,7 @@ public class DefaultAuthenticationService implements AuthenticationService {
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
     public DefaultAuthenticationService(String url) {
-        checkNotNull(url);
-        checkArgument(!url.trim().isEmpty());
+        super(url);
 
         final URI uri = UriBuilder.fromUri(url)
                                   .path("api/auth")

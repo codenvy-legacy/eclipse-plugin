@@ -43,6 +43,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import com.codenvy.eclipse.core.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
@@ -53,9 +54,8 @@ import com.codenvy.eclipse.core.model.Project;
  * 
  * @author Kevin Pollet
  */
-public class DefaultProjectService implements ProjectService {
-    private final CodenvyToken codenvyToken;
-    private final WebTarget    projectWebTarget;
+public class DefaultProjectService extends AbstractRestServiceWithAuth implements ProjectService {
+    private final WebTarget projectWebTarget;
 
     /**
      * Constructs an instance of {@linkplain DefaultProjectService}.
@@ -66,15 +66,12 @@ public class DefaultProjectService implements ProjectService {
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
     public DefaultProjectService(String url, CodenvyToken codenvyToken) {
-        checkNotNull(codenvyToken);
-        checkNotNull(url);
-        checkArgument(!url.trim().isEmpty());
+        super(url, codenvyToken);
 
         final URI uri = UriBuilder.fromUri(url)
                                   .path("api/project")
                                   .build();
 
-        this.codenvyToken = codenvyToken;
         this.projectWebTarget = ClientBuilder.newClient()
                                              .target(uri);
     }
@@ -84,7 +81,7 @@ public class DefaultProjectService implements ProjectService {
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
 
-        return projectWebTarget.queryParam("token", codenvyToken.value)
+        return projectWebTarget.queryParam("token", getCodenvyToken().value)
                                .path(workspaceId)
                                .request()
                                .accept(APPLICATION_JSON)
@@ -99,7 +96,7 @@ public class DefaultProjectService implements ProjectService {
         checkArgument(!workspaceId.trim().isEmpty());
 
         return projectWebTarget.path(workspaceId)
-                               .queryParam("token", codenvyToken.value)
+                               .queryParam("token", getCodenvyToken().value)
                                .queryParam("name", project.name)
                                .request()
                                .accept(APPLICATION_JSON)
@@ -115,7 +112,7 @@ public class DefaultProjectService implements ProjectService {
         final InputStream entityStream = projectWebTarget.path(workspaceId)
                                                          .path("export")
                                                          .path(project.name)
-                                                         .queryParam("token", codenvyToken.value)
+                                                         .queryParam("token", getCodenvyToken().value)
                                                          .request()
                                                          .get(InputStream.class);
 
