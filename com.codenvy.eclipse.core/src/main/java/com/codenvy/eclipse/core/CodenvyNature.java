@@ -17,9 +17,11 @@
 package com.codenvy.eclipse.core;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Arrays.asList;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,8 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IProjectNatureDescriptor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
@@ -46,6 +50,8 @@ import com.google.common.collect.ObjectArrays;
  */
 public class CodenvyNature implements IProjectNature {
     public static final String        NATURE_ID          = "com.codenvy.eclipse.core.codenvyNature";
+    private static final String       MAVEN_NATURE_ID    = "org.eclipse.m2e.core.maven2Nature";
+    private static final String       SPRING_NATURE_ID   = "org.springframework.ide.eclipse.core.springnature";
     private static final String       BUILDER_NAME_KEY   = "builder.name";
     private static final String       MAVEN_BUILDER_NAME = "maven";
 
@@ -54,7 +60,7 @@ public class CodenvyNature implements IProjectNature {
 
     public CodenvyNature() {
         natureMappings = new HashMap<>();
-        natureMappings.put("spring", newArrayList(JavaCore.NATURE_ID));
+        natureMappings.put("spring", newArrayList(JavaCore.NATURE_ID, SPRING_NATURE_ID));
         natureMappings.put("jar", newArrayList(JavaCore.NATURE_ID));
         natureMappings.put("war", newArrayList(JavaCore.NATURE_ID));
     }
@@ -74,13 +80,20 @@ public class CodenvyNature implements IProjectNature {
 
                 final List<String> naturesToAdd = natureMappings.get(codenvyProjectDescriptor.type);
                 if (naturesToAdd != null) {
-                    codenvyProjectDescription.setNatureIds(ObjectArrays.concat(codenvyProjectDescription.getNatureIds(), naturesToAdd.toArray(new String[0]), String.class));
+                    final List<String> natures = new ArrayList<>(asList(codenvyProjectDescription.getNatureIds()));
+                    for (String oneNature : naturesToAdd) {
+                        if (isNatureWithId(oneNature)) {
+                            natures.add(oneNature);
+                        }
+                    }
+
+                    codenvyProjectDescription.setNatureIds(natures.toArray(new String[0]));
                     codenvyProject.setDescription(codenvyProjectDescription, new NullProgressMonitor());
                 }
 
                 final String builderName = codenvyProjectDescriptor.properties.get(BUILDER_NAME_KEY);
                 if (MAVEN_BUILDER_NAME.equals(builderName)) {
-                    codenvyProjectDescription.setNatureIds(ObjectArrays.concat(codenvyProjectDescription.getNatureIds(), "org.eclipse.m2e.core.maven2Nature"));
+                    codenvyProjectDescription.setNatureIds(ObjectArrays.concat(codenvyProjectDescription.getNatureIds(), MAVEN_NATURE_ID));
                     codenvyProject.setDescription(codenvyProjectDescription, new NullProgressMonitor());
                     MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(codenvyProject, new NullProgressMonitor());
                 }
@@ -93,7 +106,7 @@ public class CodenvyNature implements IProjectNature {
 
     @Override
     public void deconfigure() throws CoreException {
-
+        // Nothing to do
     }
 
     @Override
@@ -104,6 +117,17 @@ public class CodenvyNature implements IProjectNature {
     @Override
     public void setProject(IProject codenvyProject) {
         this.codenvyProject = codenvyProject;
+    }
+
+    /**
+     * Checks if the given nature exists in the workspace.
+     * 
+     * @param natureId the id of the nature.
+     * @return {@code true} if the given nature exists, {@code false} otherwise.
+     */
+    private boolean isNatureWithId(String natureId) {
+        final IProjectNatureDescriptor projectNatureDescriptor = ResourcesPlugin.getWorkspace().getNatureDescriptor(natureId);
+        return projectNatureDescriptor != null;
     }
 
     /**
