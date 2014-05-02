@@ -49,11 +49,13 @@ import com.google.common.collect.ObjectArrays;
  * @author Kevin Pollet
  */
 public class CodenvyNature implements IProjectNature {
-    public static final String        NATURE_ID          = "com.codenvy.eclipse.core.codenvyNature";
-    private static final String       MAVEN_NATURE_ID    = "org.eclipse.m2e.core.maven2Nature";
-    private static final String       SPRING_NATURE_ID   = "org.springframework.ide.eclipse.core.springnature";
-    private static final String       BUILDER_NAME_KEY   = "builder.name";
-    private static final String       MAVEN_BUILDER_NAME = "maven";
+    public static final String        NATURE_ID            = "com.codenvy.eclipse.core.codenvyNature";
+
+    private static final String       MAVEN_NATURE_ID      = "org.eclipse.m2e.core.maven2Nature";
+    private static final String       SPRING_NATURE_ID     = "org.springframework.ide.eclipse.core.springnature";
+    private static final String       JAVASCRIPT_NATURE_ID = "org.eclipse.wst.jsdt.core.jsNature";
+    private static final String       BUILDER_NAME_KEY     = "builder.name";
+    private static final String       MAVEN_BUILDER_NAME   = "maven";
 
     private IProject                  codenvyProject;
     private Map<String, List<String>> natureMappings;
@@ -63,6 +65,7 @@ public class CodenvyNature implements IProjectNature {
         natureMappings.put("spring", newArrayList(JavaCore.NATURE_ID, SPRING_NATURE_ID));
         natureMappings.put("jar", newArrayList(JavaCore.NATURE_ID));
         natureMappings.put("war", newArrayList(JavaCore.NATURE_ID));
+        natureMappings.put("AngularJS", newArrayList(JAVASCRIPT_NATURE_ID));
     }
 
     @Override
