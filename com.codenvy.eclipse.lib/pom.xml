@@ -89,7 +89,7 @@
 						<Embed-Dependency>*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 						<Export-Package>javax.ws.rs.*, com.fasterxml.jackson.annotation.*,
-							com.fasterxml.jackson.databind.*</Export-Package>
+							com.fasterxml.jackson.core.*, com.fasterxml.jackson.databind.*</Export-Package>
 						<Import-Package>sun.misc.*;resolution:=optional</Import-Package>
 					</instructions>
 				</configuration>
