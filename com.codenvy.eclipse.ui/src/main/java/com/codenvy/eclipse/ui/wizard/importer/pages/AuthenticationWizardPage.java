@@ -23,6 +23,9 @@ import java.util.ArrayList;
 
 import javax.ws.rs.ProcessingException;
 
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -57,6 +60,8 @@ import com.google.common.base.Optional;
  * @author Kevin Pollet
  */
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
+	private static final String          CODENVY_PASSWORD_KEY_NAME = "password";
+	private static final String			 CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
     private static final String          CODENVY_URL = "https://codenvy.com";
 
     private Combo                        urls;
@@ -142,15 +147,24 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
                         importWizardSharedData.setProjects(new ArrayList<CodenvyProject>());
 
+                        final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+                        final ISecurePreferences node = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME + '/' + urls.getText() + '/' + username.getText());
+                        node.put(CODENVY_PASSWORD_KEY_NAME, password.getText(), true);
+                        node.put(CODENVY_PASSWORD_KEY_NAME, token.value, true);
+                        
                         setErrorMessage(null);
-
+                        
                     } catch (AuthenticationException e) {
                         event.doit = false;
-                        setErrorMessage("Authentication failed: wrong Username and/or Password");
+                        setErrorMessage("Authentication failed: wrong Username and/or Password.");
 
                     } catch (ProcessingException e) {
                         event.doit = false;
-                        setErrorMessage("Authentication failed: wrong URL");
+                        setErrorMessage("Authentication failed: wrong URL.");
+
+                    } catch (StorageException e) {
+                        event.doit = false;
+                        setErrorMessage("Unable to store password in Eclipse secure storage.");
 
                     } finally {
                         context.ungetService(restServiceFactoryRef);
