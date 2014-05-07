@@ -20,13 +20,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.Response.Status.OK;
 
-import java.net.URI;
-
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 import com.codenvy.eclipse.core.AbstractRestService;
 import com.codenvy.eclipse.core.AuthenticationService;
@@ -40,8 +35,6 @@ import com.codenvy.eclipse.core.model.Credentials;
  * @author Kevin Pollet
  */
 public class DefaultAuthenticationService extends AbstractRestService implements AuthenticationService {
-    private final WebTarget authWebTarget;
-
     /**
      * Constructs an instance of {@linkplain DefaultAuthenticationService}.
      * 
@@ -50,14 +43,7 @@ public class DefaultAuthenticationService extends AbstractRestService implements
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
     public DefaultAuthenticationService(String url) {
-        super(url);
-
-        final URI uri = UriBuilder.fromUri(url)
-                                  .path("api/auth")
-                                  .build();
-
-        this.authWebTarget = ClientBuilder.newClient()
-                                          .target(uri);
+        super(url, "api/auth");
     }
 
     @Override
@@ -65,9 +51,9 @@ public class DefaultAuthenticationService extends AbstractRestService implements
         checkNotNull(username);
         checkNotNull(password);
 
-        final Response response = authWebTarget.path("login")
-                                               .request(MediaType.APPLICATION_JSON)
-                                               .post(json(new Credentials(username, password)));
+        final Response response = getWebTarget().path("login")
+                                                .request(MediaType.APPLICATION_JSON)
+                                                .post(json(new Credentials(username, password)));
 
         if (OK.getStatusCode() != response.getStatus()) {
             throw new AuthenticationException("Authentication failed : Wrong username or password");

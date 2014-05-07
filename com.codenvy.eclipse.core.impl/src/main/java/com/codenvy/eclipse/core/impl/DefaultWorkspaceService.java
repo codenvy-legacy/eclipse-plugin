@@ -21,13 +21,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import java.net.URI;
 import java.util.List;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.UriBuilder;
 
 import com.codenvy.eclipse.core.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.WorkspaceService;
@@ -41,8 +37,6 @@ import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
  * @author Kevin Pollet
  */
 public class DefaultWorkspaceService extends AbstractRestServiceWithAuth implements WorkspaceService {
-    private final WebTarget workspaceWebTarget;
-
     /**
      * Constructs an instance of {@linkplain DefaultWorkspaceService}.
      * 
@@ -52,24 +46,16 @@ public class DefaultWorkspaceService extends AbstractRestServiceWithAuth impleme
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
     public DefaultWorkspaceService(String url, CodenvyToken codenvyToken) {
-        super(url, codenvyToken);
-
-        final URI uri = UriBuilder.fromUri(url)
-                                  .path("api/workspace")
-                                  .build();
-
-        this.workspaceWebTarget = ClientBuilder.newClient()
-                                               .target(uri);
+        super(url, "api/workspace", codenvyToken);
     }
 
     @Override
     public List<Workspace> getAllWorkspaces() {
-        return workspaceWebTarget.path("all")
-                                 .queryParam("token", getCodenvyToken().value)
-                                 .request()
-                                 .accept(APPLICATION_JSON)
-                                 .get(new GenericType<List<Workspace>>() {
-                                 });
+        return getWebTarget().path("all")
+                             .request()
+                             .accept(APPLICATION_JSON)
+                             .get(new GenericType<List<Workspace>>() {
+                             });
     }
 
     @Override
@@ -77,11 +63,10 @@ public class DefaultWorkspaceService extends AbstractRestServiceWithAuth impleme
         checkNotNull(name);
         checkArgument(!name.trim().isEmpty());
 
-        return workspaceWebTarget.queryParam("token", getCodenvyToken().value)
-                                 .queryParam("name", name)
-                                 .request()
-                                 .accept(APPLICATION_JSON)
-                                 .get(WorkspaceRef.class);
+        return getWebTarget().queryParam("name", name)
+                             .request()
+                             .accept(APPLICATION_JSON)
+                             .get(WorkspaceRef.class);
     }
 
     @Override
@@ -89,20 +74,18 @@ public class DefaultWorkspaceService extends AbstractRestServiceWithAuth impleme
         checkNotNull(accountId);
         checkArgument(!accountId.trim().isEmpty());
 
-        return workspaceWebTarget.path("find/account")
-                                 .queryParam("token", getCodenvyToken().value)
-                                 .queryParam("id", accountId)
-                                 .request()
-                                 .accept(APPLICATION_JSON)
-                                 .get(new GenericType<List<WorkspaceRef>>() {
-                                 });
+        return getWebTarget().path("find/account")
+                             .queryParam("id", accountId)
+                             .request()
+                             .accept(APPLICATION_JSON)
+                             .get(new GenericType<List<WorkspaceRef>>() {
+                             });
     }
 
     @Override
     public WorkspaceRef newWorkspace(WorkspaceRef workspaceRef) {
-        return workspaceWebTarget.queryParam("token", getCodenvyToken().value)
-                                 .request()
-                                 .post(json(workspaceRef), WorkspaceRef.class);
+        return getWebTarget().request()
+                             .post(json(workspaceRef), WorkspaceRef.class);
 
     }
 }

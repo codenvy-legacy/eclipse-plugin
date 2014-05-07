@@ -19,6 +19,12 @@ package com.codenvy.eclipse.core;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.net.URI;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.UriBuilder;
+
 /**
  * Abstract rest service implementation.
  * 
@@ -26,23 +32,33 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see RestServiceFactory
  */
 public abstract class AbstractRestService {
-    private final String url;
+    private final String    url;
+    private final WebTarget webTarget;
 
     /**
      * Constructs an instance of {@linkplain RestService}.
      * 
      * @param url the Codenvy platform url.
-     * @throws NullPointerException if url parameter is {@code null}.
+     * @param rootPath the rest service root path
+     * @throws NullPointerException if url or rootPath parameter is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
-    public AbstractRestService(String url) {
+    public AbstractRestService(String url, String rootPath) {
         checkNotNull(url);
         checkArgument(!url.trim().isEmpty());
+        checkNotNull(rootPath);
 
         this.url = url;
+
+        final URI uri = UriBuilder.fromUri(url).path(rootPath).build();
+        this.webTarget = ClientBuilder.newClient().target(uri);
     }
 
     public String getUrl() {
         return url;
+    }
+
+    public WebTarget getWebTarget() {
+        return webTarget;
     }
 }

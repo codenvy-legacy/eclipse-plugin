@@ -24,16 +24,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -55,8 +51,6 @@ import com.codenvy.eclipse.core.model.Project;
  * @author Kevin Pollet
  */
 public class DefaultProjectService extends AbstractRestServiceWithAuth implements ProjectService {
-    private final WebTarget projectWebTarget;
-
     /**
      * Constructs an instance of {@linkplain DefaultProjectService}.
      * 
@@ -66,14 +60,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
     public DefaultProjectService(String url, CodenvyToken codenvyToken) {
-        super(url, codenvyToken);
-
-        final URI uri = UriBuilder.fromUri(url)
-                                  .path("api/project")
-                                  .build();
-
-        this.projectWebTarget = ClientBuilder.newClient()
-                                             .target(uri);
+        super(url, "api/project", codenvyToken);
     }
 
     @Override
@@ -81,12 +68,11 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
 
-        return projectWebTarget.queryParam("token", getCodenvyToken().value)
-                               .path(workspaceId)
-                               .request()
-                               .accept(APPLICATION_JSON)
-                               .get(new GenericType<List<Project>>() {
-                               });
+        return getWebTarget().path(workspaceId)
+                             .request()
+                             .accept(APPLICATION_JSON)
+                             .get(new GenericType<List<Project>>() {
+                             });
     }
 
     @Override
@@ -95,12 +81,11 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
 
-        return projectWebTarget.path(workspaceId)
-                               .queryParam("token", getCodenvyToken().value)
-                               .queryParam("name", project.name)
-                               .request()
-                               .accept(APPLICATION_JSON)
-                               .post(Entity.json(project), Project.class);
+        return getWebTarget().path(workspaceId)
+                             .queryParam("name", project.name)
+                             .request()
+                             .accept(APPLICATION_JSON)
+                             .post(Entity.json(project), Project.class);
     }
 
     @Override
@@ -109,12 +94,11 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
 
-        final InputStream entityStream = projectWebTarget.path(workspaceId)
-                                                         .path("export")
-                                                         .path(project.name)
-                                                         .queryParam("token", getCodenvyToken().value)
-                                                         .request()
-                                                         .get(InputStream.class);
+        final InputStream entityStream = getWebTarget().path(workspaceId)
+                                                       .path("export")
+                                                       .path(project.name)
+                                                       .request()
+                                                       .get(InputStream.class);
 
         final NullProgressMonitor nullProgressMonitor = new NullProgressMonitor();
         final IProject importedProject = ResourcesPlugin.getWorkspace().getRoot().getProject(project.name);

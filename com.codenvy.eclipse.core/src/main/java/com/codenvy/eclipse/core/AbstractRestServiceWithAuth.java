@@ -18,6 +18,8 @@ package com.codenvy.eclipse.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import javax.ws.rs.client.WebTarget;
+
 import com.codenvy.eclipse.core.model.CodenvyToken;
 
 /**
@@ -27,18 +29,22 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
  * @see RestServiceFactory
  */
 public class AbstractRestServiceWithAuth extends AbstractRestService {
-    private final CodenvyToken codenvyToken;
+    private static final String TOKEN_PARAMETER_NAME = "token";
+
+    private final CodenvyToken  codenvyToken;
 
     /**
      * Constructs an instance of {@linkplain AbstractRestServiceWithAuth}.
      * 
      * @param url the Codenvy platform url.
+     * @param rootPath the rest service root path
      * @param codenvyToken the Codenvy authentication token.
-     * @throws NullPointerException if url or codenvyToken parameter is {@code null}.
+     * @throws NullPointerException if url, rootPath or codenvyToken parameter is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
-    public AbstractRestServiceWithAuth(String url, CodenvyToken codenvyToken) {
-        super(url);
+    public AbstractRestServiceWithAuth(String url, String rootPath,
+                                       CodenvyToken codenvyToken) {
+        super(url, rootPath);
 
         checkNotNull(codenvyToken);
 
@@ -47,5 +53,10 @@ public class AbstractRestServiceWithAuth extends AbstractRestService {
 
     public CodenvyToken getCodenvyToken() {
         return codenvyToken;
+    }
+
+    @Override
+    public WebTarget getWebTarget() {
+        return super.getWebTarget().queryParam(TOKEN_PARAMETER_NAME, codenvyToken.value);
     }
 }
