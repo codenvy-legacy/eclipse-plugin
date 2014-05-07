@@ -11,5 +11,13 @@
          </run>
       </runtime>
    </extension>
+   <extension
+         point="org.eclipse.team.core.repository">
+      <repository
+            class="com.codenvy.eclipse.core.team.CodenvyProvider"
+            id="com.codenvy.eclipse.core.team.codenvyprovider"
+            typeClass="com.codenvy.eclipse.core.team.CodenvyProviderType">
+      </repository>
+   </extension>
 
 </plugin>

@@ -18,6 +18,8 @@ package com.codenvy.eclipse.core.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static javax.ws.rs.client.Entity.json;
+import static javax.ws.rs.client.Entity.text;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.io.ByteArrayInputStream;
@@ -28,22 +30,26 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.eclipse.core.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.ProjectService;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.team.CodenvyProvider;
+import com.codenvy.eclipse.core.team.CodenvyProviderMetaData;
 
 /**
  * The Codenvy project client service.
@@ -85,11 +91,11 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
                              .queryParam("name", project.name)
                              .request()
                              .accept(APPLICATION_JSON)
-                             .post(Entity.json(project), CodenvyProject.class);
+                             .post(json(project), CodenvyProject.class);
     }
 
     @Override
-    public IProject importProject(CodenvyProject project, String workspaceId) {
+    public IProject importCodenvyProject(CodenvyProject project, String workspaceId) {
         checkNotNull(project);
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
@@ -142,10 +148,53 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
             importedProjectDescription.setNatureIds(new String[]{CodenvyNature.NATURE_ID});
             importedProject.setDescription(importedProjectDescription, new NullProgressMonitor());
 
+            RepositoryProvider.map(importedProject, CodenvyProvider.PROVIDER_ID);
+            CodenvyProviderMetaData.create(importedProject, new CodenvyProviderMetaData(getUrl(), project.name, project.workspaceId,
+                                                                                        getCodenvyToken().value));
+
         } catch (CoreException e) {
             throw new RuntimeException(e);
         }
-
+        
         return importedProject;
+    }
+
+    
+    @Override
+    public void updateCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
+        switch (resource.getType()) {
+            case IResource.FILE: {
+                final IFile file = (IFile)resource;
+
+                try {
+
+                    getWebTarget().path(workspaceId)
+                                  .path("file")
+                                  .path(project.name)
+                                  .path(file.getProjectRelativePath().toString())
+                                  .request()
+                                  .put(text(file.getContents()));
+
+                } catch (CoreException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+                break;
+
+            case IResource.PROJECT: case IResource.FOLDER: {
+                final IContainer container = (IContainer)resource;
+                
+                try {
+
+                    for (IResource oneResource : container.members()) {
+                        updateCodenvyResource(project, workspaceId, oneResource);
+                    }
+
+                } catch (CoreException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+                break;
+        }
     }
 }

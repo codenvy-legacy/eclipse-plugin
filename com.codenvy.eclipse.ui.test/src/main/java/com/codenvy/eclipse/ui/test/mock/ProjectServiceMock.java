@@ -20,10 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 
 import com.codenvy.eclipse.core.ProjectService;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.CodenvyToken;
 
 /**
  * The Codenvy project client service mock.
@@ -59,7 +60,12 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public IProject importProject(CodenvyProject project, String workspaceId) {
+    public IProject importCodenvyProject(CodenvyProject project, String workspaceId) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void updateCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
         throw new UnsupportedOperationException();
     }
 }
