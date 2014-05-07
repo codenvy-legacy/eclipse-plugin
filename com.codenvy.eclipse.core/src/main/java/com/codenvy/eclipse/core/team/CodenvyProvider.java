@@ -16,6 +16,7 @@
  */
 package com.codenvy.eclipse.core.team;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.team.core.RepositoryProvider;
 
@@ -25,28 +26,41 @@ import org.eclipse.team.core.RepositoryProvider;
  * @author Kevin Pollet
  */
 public class CodenvyProvider extends RepositoryProvider {
-    public static final String PROVIDER_ID = "com.codenvy.eclipse.core.team.codenvyprovider";
+    public static final String      PROVIDER_ID = "com.codenvy.eclipse.core.team.codenvyprovider";
 
     private CodenvyProviderMetaData providerMetaData;
-    
+
     @Override
     public void configureProject() throws CoreException {
+        setCodenvyFolderAsTeamPrivate(true);
     }
 
     @Override
     public void deconfigure() throws CoreException {
         CodenvyProviderMetaData.delete(getProject());
+        setCodenvyFolderAsTeamPrivate(false);
     }
 
     @Override
     public String getID() {
         return PROVIDER_ID;
     }
-    
+
     public CodenvyProviderMetaData getProviderMetaData() {
         if (providerMetaData == null) {
             providerMetaData = CodenvyProviderMetaData.get(getProject());
         }
         return providerMetaData;
+    }
+
+    /**
+     * Defines the '.codenvy' folder as team private.
+     * 
+     * @param isTeamPrivate {@code true} if the '.codenvy' folder is team private, {@code false} otherwise.
+     * @throws CoreException if this method fails.
+     */
+    private void setCodenvyFolderAsTeamPrivate(boolean isTeamPrivate) throws CoreException {
+        final IFolder codenvyFolder = getProject().getFolder(".codenvy");
+        codenvyFolder.setTeamPrivateMember(isTeamPrivate);
     }
 }
