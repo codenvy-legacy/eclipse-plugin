@@ -23,7 +23,7 @@ import org.eclipse.core.resources.IProject;
 
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.CodenvyProject;
 
 /**
  * The Codenvy project client service mock.
@@ -35,18 +35,18 @@ public class ProjectServiceMock implements ProjectService {
     public static final String  MOCK_PROJECT_TYPE_NAME   = "spring";
     public static final String  MOCK_PROJECT_DESCRIPTION = "prj1-description";
 
-    private final List<Project> projects;
+    private final List<CodenvyProject> projects;
 
     public ProjectServiceMock(String url, CodenvyToken codenvyToken) {
         this.projects = new ArrayList<>();
-        this.projects.add(new Project(null, null, null, null, MOCK_PROJECT_TYPE_NAME, MOCK_PROJECT_NAME, MOCK_PROJECT_DESCRIPTION, null, null, null, null));
-        this.projects.add(new Project(null, null, null, null, "java", "prj2", "prj2-description", null, null, null, null));
-        this.projects.add(new Project(null, null, null, null, "angular", "prj3", "prj3-description", null, null, null, null));
-        this.projects.add(new Project(null, null, null, null, "codenvy", "prj4", "prj4-description", null, null, null, null));
+        this.projects.add(new CodenvyProject(null, null, null, null, MOCK_PROJECT_TYPE_NAME, MOCK_PROJECT_NAME, MOCK_PROJECT_DESCRIPTION, null, null, null, null));
+        this.projects.add(new CodenvyProject(null, null, null, null, "java", "prj2", "prj2-description", null, null, null, null));
+        this.projects.add(new CodenvyProject(null, null, null, null, "angular", "prj3", "prj3-description", null, null, null, null));
+        this.projects.add(new CodenvyProject(null, null, null, null, "codenvy", "prj4", "prj4-description", null, null, null, null));
     }
 
     @Override
-    public List<Project> getWorkspaceProjects(String workspaceId) {
+    public List<CodenvyProject> getWorkspaceProjects(String workspaceId) {
         if (WorkspaceServiceMock.MOCK_WORKSPACE_ID.equals(workspaceId)) {
             return projects;
         }
@@ -54,12 +54,12 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public Project newProject(Project project, String workspaceId) {
+    public CodenvyProject newProject(CodenvyProject project, String workspaceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public IProject importProject(Project project, String workspaceId) {
+    public IProject importProject(CodenvyProject project, String workspaceId) {
         throw new UnsupportedOperationException();
     }
 }

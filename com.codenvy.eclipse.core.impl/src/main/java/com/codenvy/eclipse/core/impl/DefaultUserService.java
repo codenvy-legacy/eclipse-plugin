@@ -21,7 +21,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import com.codenvy.eclipse.core.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.UserService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.User;
+import com.codenvy.eclipse.core.model.CodenvyUser;
 
 /**
  * The Codenvy user client service.
@@ -42,9 +42,9 @@ public class DefaultUserService extends AbstractRestServiceWithAuth implements U
     }
 
     @Override
-    public User getCurrentUser() {
+    public CodenvyUser getCurrentUser() {
         return getWebTarget().request()
                              .accept(APPLICATION_JSON)
-                             .get(User.class);
+                             .get(CodenvyUser.class);
     }
 }

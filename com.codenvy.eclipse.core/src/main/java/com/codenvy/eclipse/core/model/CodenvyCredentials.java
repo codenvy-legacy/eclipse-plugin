@@ -26,19 +26,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  * @author Kevin Pollet
  */
-public class Credentials {
+public class CodenvyCredentials {
     public final String username;
     public final String password;
 
     /**
-     * Construct an instance of {@linkplain Credentials}.
+     * Construct an instance of {@linkplain CodenvyCredentials}.
      * 
      * @param username the user username.
      * @param password the user password.
      * @throws NullPointerException if username or password parameter is {@code null}.
      */
     @JsonCreator
-    public Credentials(@JsonProperty("username") String username, @JsonProperty("password") String password) {
+    public CodenvyCredentials(@JsonProperty("username") String username, @JsonProperty("password") String password) {
         checkNotNull(username);
         checkNotNull(password);
         

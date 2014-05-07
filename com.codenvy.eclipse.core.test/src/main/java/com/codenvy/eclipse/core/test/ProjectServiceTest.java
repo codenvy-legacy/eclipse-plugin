@@ -31,8 +31,8 @@ import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.WorkspaceService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 
 /**
  * Test the project service.
@@ -43,7 +43,7 @@ public class ProjectServiceTest extends RestApiBaseTest {
     private static ProjectService   projectService;
     private static WorkspaceService workspaceService;
     private static WorkspaceRef     defaultWorkspace;
-    private static Project          projectPrj1;
+    private static CodenvyProject          projectPrj1;
 
     @BeforeClass
     public static void initialize() {
@@ -63,7 +63,7 @@ public class ProjectServiceTest extends RestApiBaseTest {
         defaultWorkspace = workspaceService.getWorkspaceByName("default");
         Assert.assertNotNull(defaultWorkspace);
 
-        projectPrj1 = new Project(null, null, "jar", null, null, "prj1", "description", defaultWorkspace.name, null, null, null);
+        projectPrj1 = new CodenvyProject(null, null, "jar", null, null, "prj1", "description", defaultWorkspace.name, null, null, null);
         Assert.assertNotNull(projectService.newProject(projectPrj1, defaultWorkspace.id));
     }
 
@@ -74,7 +74,7 @@ public class ProjectServiceTest extends RestApiBaseTest {
 
     @Test
     public void testGetWorkspaceProjects() {
-        final List<Project> projects = projectService.getWorkspaceProjects(defaultWorkspace.id);
+        final List<CodenvyProject> projects = projectService.getWorkspaceProjects(defaultWorkspace.id);
 
         Assert.assertNotNull(projects);
         Assert.assertFalse(projects.isEmpty());

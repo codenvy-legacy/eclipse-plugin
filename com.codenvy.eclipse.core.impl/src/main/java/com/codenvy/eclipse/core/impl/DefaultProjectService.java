@@ -43,7 +43,7 @@ import com.codenvy.eclipse.core.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.CodenvyProject;
 
 /**
  * The Codenvy project client service.
@@ -64,19 +64,19 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public List<Project> getWorkspaceProjects(String workspaceId) {
+    public List<CodenvyProject> getWorkspaceProjects(String workspaceId) {
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
 
         return getWebTarget().path(workspaceId)
                              .request()
                              .accept(APPLICATION_JSON)
-                             .get(new GenericType<List<Project>>() {
+                             .get(new GenericType<List<CodenvyProject>>() {
                              });
     }
 
     @Override
-    public Project newProject(Project project, String workspaceId) {
+    public CodenvyProject newProject(CodenvyProject project, String workspaceId) {
         checkNotNull(project);
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
@@ -85,11 +85,11 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
                              .queryParam("name", project.name)
                              .request()
                              .accept(APPLICATION_JSON)
-                             .post(Entity.json(project), Project.class);
+                             .post(Entity.json(project), CodenvyProject.class);
     }
 
     @Override
-    public IProject importProject(Project project, String workspaceId) {
+    public IProject importProject(CodenvyProject project, String workspaceId) {
         checkNotNull(project);
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());

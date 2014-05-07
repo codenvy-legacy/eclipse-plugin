@@ -71,9 +71,9 @@ import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.UserService;
 import com.codenvy.eclipse.core.WorkspaceService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.model.User;
-import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.CodenvyUser;
+import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.utils.ImageConstants;
 import com.google.common.base.Optional;
@@ -153,7 +153,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
         projectNameColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof Project ? ((Project)element).name : super.getText(element);
+                return element instanceof CodenvyProject ? ((CodenvyProject)element).name : super.getText(element);
             }
         });
 
@@ -163,7 +163,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
         projectTypeNameColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof Project ? ((Project)element).projectTypeName : super.getText(element);
+                return element instanceof CodenvyProject ? ((CodenvyProject)element).projectTypeName : super.getText(element);
             }
         });
 
@@ -173,7 +173,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
         projectDescriptionColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof Project ? ((Project)element).description : super.getText(element);
+                return element instanceof CodenvyProject ? ((CodenvyProject)element).description : super.getText(element);
             }
         });
         projectTableViewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -297,7 +297,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
                                 final UserService userService = restServiceFactory.newRestServiceWithAuth(UserService.class, url, token);
                                 final WorkspaceService workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, url, token);
-                                final User currentUser = userService.getCurrentUser();
+                                final CodenvyUser currentUser = userService.getCurrentUser();
                                 final List<WorkspaceRef> workspaces = workspaceService.findWorkspacesByAccount(currentUser.id);
 
                                 Display.getDefault().syncExec(new Runnable() {
@@ -350,7 +350,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 final String url = importWizardSharedData.getUrl().get();
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
                                 final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
-                                final List<Project> projects = projectService.getWorkspaceProjects(workspaceRef.id);
+                                final List<CodenvyProject> projects = projectService.getWorkspaceProjects(workspaceRef.id);
 
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
@@ -372,7 +372,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
                                         // existing projects should be grayed
                                         final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-                                        for (Project oneProject : projects) {
+                                        for (CodenvyProject oneProject : projects) {
                                             final IProject workspaceProject = workspaceRoot.getProject(oneProject.name);
                                             projectTableViewer.setGrayed(oneProject, workspaceProject.exists());
                                         }
@@ -408,9 +408,9 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
         }
 
         // updates the shared data
-        final List<Project> checkedProjects = new ArrayList<>();
+        final List<CodenvyProject> checkedProjects = new ArrayList<>();
         for (Object oneProject : projectTableViewer.getCheckedElements()) {
-            checkedProjects.add((Project)oneProject);
+            checkedProjects.add((CodenvyProject)oneProject);
         }
         importWizardSharedData.setProjects(checkedProjects);
     }

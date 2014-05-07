@@ -29,9 +29,9 @@ import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.UserService;
 import com.codenvy.eclipse.core.WorkspaceService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.User;
-import com.codenvy.eclipse.core.model.Workspace;
-import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.model.CodenvyUser;
+import com.codenvy.eclipse.core.model.CodenvyWorkspace;
+import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 
 /**
  * Test the workspace service.
@@ -60,7 +60,7 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
 
     @Test
     public void testGetAllWorkspaces() {
-        final List<Workspace> workspaces = workspaceService.getAllWorkspaces();
+        final List<CodenvyWorkspace> workspaces = workspaceService.getAllWorkspaces();
 
         Assert.assertNotNull(workspaces);
         Assert.assertTrue(workspaces.size() > 0);
@@ -85,7 +85,7 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
 
     @Test
     public void testFindWorkspacesByAccount() {
-        final User currentUser = userService.getCurrentUser();
+        final CodenvyUser currentUser = userService.getCurrentUser();
         Assert.assertNotNull(currentUser);
 
         final List<WorkspaceRef> workspaces = workspaceService.findWorkspacesByAccount(currentUser.id);

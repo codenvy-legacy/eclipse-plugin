@@ -47,7 +47,7 @@ import org.osgi.framework.ServiceReference;
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ImportWizardSharedData;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
@@ -125,7 +125,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
                         try {
 
-                            final List<Project> projectsToImport = importWizardSharedData.getProjects();
+                            final List<CodenvyProject> projectsToImport = importWizardSharedData.getProjects();
                             monitor.beginTask("Importing project", projectsToImport.size());
 
                             final String url = importWizardSharedData.getUrl().get();
@@ -134,7 +134,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                             final List<IProject> exportedProjects = new ArrayList<>();
                             final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
 
-                            for (Project oneProjectToImport : projectsToImport) {
+                            for (CodenvyProject oneProjectToImport : projectsToImport) {
                                 monitor.subTask(oneProjectToImport.name);
 
                                 final IProject oneExportedProject = projectService.importProject(oneProjectToImport, oneProjectToImport.workspaceId);

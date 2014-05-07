@@ -24,7 +24,7 @@ import java.util.List;
 import org.eclipse.ui.IWorkingSet;
 
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.google.common.base.Optional;
 
 /**
@@ -35,7 +35,7 @@ import com.google.common.base.Optional;
 public final class ImportWizardSharedData {
     private Optional<String>       url;
     private Optional<CodenvyToken> codenvyToken;
-    private List<Project>          projects;
+    private List<CodenvyProject>          projects;
     private Optional<IWorkingSet>  workingSet;
 
     /**
@@ -95,7 +95,7 @@ public final class ImportWizardSharedData {
      * 
      * @return the checked Codenvy projects never {@code null}.
      */
-    public List<Project> getProjects() {
+    public List<CodenvyProject> getProjects() {
         return projects;
     }
 
@@ -105,7 +105,7 @@ public final class ImportWizardSharedData {
      * @param projects the Codenvy projects.
      * @throws NullPointerException if projects parameter is {@code null}.
      */
-    public void setProjects(List<Project> projects) {
+    public void setProjects(List<CodenvyProject> projects) {
         checkNotNull(projects);
 
         this.projects = projects;

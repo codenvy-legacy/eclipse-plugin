@@ -28,13 +28,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Kevin Pollet
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class User {
+public class CodenvyUser {
     public final String id;
     public final String password;
     public final String email;
 
     /**
-     * Construct an instance of {@linkplain User}.
+     * Construct an instance of {@linkplain CodenvyUser}.
      * 
      * @param id the user id.
      * @param password the user password.
@@ -42,7 +42,7 @@ public class User {
      * @throws NullPointerException if id, password or email parameter is {@code null}.
      */
     @JsonCreator
-    public User(@JsonProperty("id") String id, @JsonProperty("password") String password, @JsonProperty("email") String email) {
+    public CodenvyUser(@JsonProperty("id") String id, @JsonProperty("password") String password, @JsonProperty("email") String email) {
         checkNotNull(id);
         checkNotNull(password);
         checkNotNull(email);

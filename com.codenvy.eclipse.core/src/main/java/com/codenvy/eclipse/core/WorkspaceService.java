@@ -18,8 +18,8 @@ package com.codenvy.eclipse.core;
 
 import java.util.List;
 
-import com.codenvy.eclipse.core.model.Workspace;
-import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.model.CodenvyWorkspace;
+import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 
 /**
  * Codenvy workspace service contract.
@@ -32,7 +32,7 @@ public interface WorkspaceService extends RestServiceWithAuth {
      * 
      * @return all Codenvy workspaces never {@code null}.
      */
-    List<Workspace> getAllWorkspaces();
+    List<CodenvyWorkspace> getAllWorkspaces();
 
     /**
      * Retrieves a Codenvy workspace by it's name.

@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 
-import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.CodenvyProject;
 
 /**
  * Codenvy project service contract.
@@ -36,7 +36,7 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws NullPointerException if workspaceId parameter is {@code null}.
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
-    List<Project> getWorkspaceProjects(String workspaceId);
+    List<CodenvyProject> getWorkspaceProjects(String workspaceId);
 
     /**
      * Creates a new project in the given workspace.
@@ -47,7 +47,7 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws NullPointerException if project or workspaceId parameter is {@code null}.
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
-    Project newProject(Project project, String workspaceId);
+    CodenvyProject newProject(CodenvyProject project, String workspaceId);
 
     /**
      * Imports the given project from the given workspace.
@@ -58,5 +58,5 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws NullPointerException if project or workspaceId parameter is {@code null}.
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
-    IProject importProject(Project project, String workspaceId);
+    IProject importProject(CodenvyProject project, String workspaceId);
 }

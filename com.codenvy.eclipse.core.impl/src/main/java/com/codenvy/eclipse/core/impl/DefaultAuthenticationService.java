@@ -27,7 +27,7 @@ import com.codenvy.eclipse.core.AbstractRestService;
 import com.codenvy.eclipse.core.AuthenticationService;
 import com.codenvy.eclipse.core.exception.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.CodenvyCredentials;
 
 /**
  * The Codenvy authentication client service.
@@ -53,7 +53,7 @@ public class DefaultAuthenticationService extends AbstractRestService implements
 
         final Response response = getWebTarget().path("login")
                                                 .request(MediaType.APPLICATION_JSON)
-                                                .post(json(new Credentials(username, password)));
+                                                .post(json(new CodenvyCredentials(username, password)));
 
         if (OK.getStatusCode() != response.getStatus()) {
             throw new AuthenticationException("Authentication failed : Wrong username or password");

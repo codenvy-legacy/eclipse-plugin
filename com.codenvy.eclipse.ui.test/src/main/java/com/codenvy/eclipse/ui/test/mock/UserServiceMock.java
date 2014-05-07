@@ -18,7 +18,7 @@ package com.codenvy.eclipse.ui.test.mock;
 
 import com.codenvy.eclipse.core.UserService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.User;
+import com.codenvy.eclipse.core.model.CodenvyUser;
 
 /**
  * The Codenvy user client service mock.
@@ -33,7 +33,7 @@ public class UserServiceMock implements UserService {
     }
 
     @Override
-    public User getCurrentUser() {
-        return new User(MOCK_USER_ID, "<none>", "codenvy@codenvy.com");
+    public CodenvyUser getCurrentUser() {
+        return new CodenvyUser(MOCK_USER_ID, "<none>", "codenvy@codenvy.com");
     }
 }
