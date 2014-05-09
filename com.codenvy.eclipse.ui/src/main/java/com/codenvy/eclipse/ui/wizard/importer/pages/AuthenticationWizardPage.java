@@ -37,6 +37,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -61,12 +62,14 @@ import com.google.common.base.Optional;
  */
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
     private static final String          CODENVY_PASSWORD_KEY_NAME = "password";
-    private static final String             CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
+    private static final String          CODENVY_PASSWORD_TOKEN_NAME = "token";
+    private static final String          CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
     private static final String          CODENVY_URL = "https://codenvy.com";
 
     private Combo                        urls;
     private Text                         username;
     private Text                         password;
+    private Button                       storeUserCredentials;
     private final ImportWizardSharedData importWizardSharedData;
 
     /**
@@ -101,7 +104,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
         urls.add(CODENVY_URL);
-        urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        urls.setLayoutData(new  GridData(SWT.FILL, SWT.CENTER, true, false));
 
         final Label usernameLabel = new Label(wizardContainer, SWT.NONE);
         usernameLabel.setText("Username:");
@@ -114,12 +117,18 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         password = new Text(wizardContainer, SWT.SINGLE | SWT.BORDER | SWT.PASSWORD);
         password.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        
+        storeUserCredentials = new Button(wizardContainer, SWT.CHECK | SWT.BORDER);
+        storeUserCredentials.setText("Store these user credentials in Eclipse secure storage.");
+        storeUserCredentials.setSelection(true);
+        storeUserCredentials.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         final PageCompleteListener pageCompleteListener = new PageCompleteListener();
         urls.addKeyListener(pageCompleteListener);
         urls.addSelectionListener(pageCompleteListener);
         username.addKeyListener(pageCompleteListener);
         password.addKeyListener(pageCompleteListener);
+        storeUserCredentials.addKeyListener(pageCompleteListener);
 
         setControl(wizardContainer);
     }
@@ -147,10 +156,12 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
                         importWizardSharedData.setProjects(new ArrayList<CodenvyProject>());
 
-                        final ISecurePreferences root = SecurePreferencesFactory.getDefault();
-                        final ISecurePreferences node = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME + '/' + urls.getText().replace("/", "\\") + '/' + username.getText());
-                        node.put(CODENVY_PASSWORD_KEY_NAME, password.getText(), true);
-                        node.put(CODENVY_PASSWORD_KEY_NAME, token.value, true);
+                        if (storeUserCredentials.getSelection()) {
+	                        final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+	                        final ISecurePreferences node = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME + '/' + urls.getText().replace("/", "\\") + '/' + username.getText());
+	                        node.put(CODENVY_PASSWORD_KEY_NAME, password.getText(), true);
+	                        node.put(CODENVY_PASSWORD_TOKEN_NAME, token.value, true);
+                        }
                         
                         setErrorMessage(null);
                         
