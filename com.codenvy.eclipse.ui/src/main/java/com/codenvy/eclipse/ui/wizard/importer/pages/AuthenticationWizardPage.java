@@ -60,8 +60,8 @@ import com.google.common.base.Optional;
  * @author Kevin Pollet
  */
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
-	private static final String          CODENVY_PASSWORD_KEY_NAME = "password";
-	private static final String			 CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
+    private static final String          CODENVY_PASSWORD_KEY_NAME = "password";
+    private static final String             CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
     private static final String          CODENVY_URL = "https://codenvy.com";
 
     private Combo                        urls;
@@ -148,7 +148,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         importWizardSharedData.setProjects(new ArrayList<CodenvyProject>());
 
                         final ISecurePreferences root = SecurePreferencesFactory.getDefault();
-                        final ISecurePreferences node = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME + '/' + urls.getText() + '/' + username.getText());
+                        final ISecurePreferences node = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME + '/' + urls.getText().replace("/", "\\") + '/' + username.getText());
                         node.put(CODENVY_PASSWORD_KEY_NAME, password.getText(), true);
                         node.put(CODENVY_PASSWORD_KEY_NAME, token.value, true);
                         
