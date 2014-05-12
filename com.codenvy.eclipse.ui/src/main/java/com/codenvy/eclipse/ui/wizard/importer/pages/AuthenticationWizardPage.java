@@ -66,7 +66,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
     private static final String          CODENVY_URL = "https://codenvy.com";
 
     private Combo                        urls;
-    private Text                         username;
+    private Combo                        usernames;
     private Text                         password;
     private Button                       storeUserCredentials;
     private final ImportWizardSharedData importWizardSharedData;
@@ -108,8 +108,8 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         final Label usernameLabel = new Label(wizardContainer, SWT.NONE);
         usernameLabel.setText("Username:");
 
-        username = new Text(wizardContainer, SWT.SINGLE | SWT.BORDER);
-        username.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        usernames = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER);
+        usernames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         final Label passwordLabel = new Label(wizardContainer, SWT.NONE);
         passwordLabel.setText("Password:");
@@ -125,8 +125,8 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         final PageCompleteListener pageCompleteListener = new PageCompleteListener();
         urls.addKeyListener(pageCompleteListener);
         urls.addSelectionListener(pageCompleteListener);
-        username.addKeyListener(pageCompleteListener);
-        username.addSelectionListener(pageCompleteListener);
+        usernames.addKeyListener(pageCompleteListener);
+        usernames.addSelectionListener(pageCompleteListener);
         password.addKeyListener(pageCompleteListener);
         storeUserCredentials.addKeyListener(pageCompleteListener);
 
@@ -153,7 +153,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         final AuthenticationService authenticationService =
                                                                             restServiceFactory.newRestService(AuthenticationService.class,
                                                                                                               urls.getText());
-                        final CodenvyToken token = authenticationService.login(username.getText(), password.getText());
+                        final CodenvyToken token = authenticationService.login(usernames.getText(), password.getText());
 
                         importWizardSharedData.setCodenvyToken(Optional.fromNullable(token));
                         importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
@@ -166,7 +166,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                                 final CodenvySecureStorageService codenvySecureStorageService =
                                                                                                 context.getService(codenvySecureStorageServiceRef);
                                 codenvySecureStorageService.storeCredentials(new URI(urls.getText()),
-                                                                             new CodenvyCredentials(username.getText(),
+                                                                             new CodenvyCredentials(usernames.getText(),
                                                                                                     password.getText()),
                                                                              token);
                             }
@@ -224,7 +224,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
          */
         private boolean isBlankField() {
             final boolean isUrlsBlank = isNullOrEmptyString(urls.getText());
-            final boolean isUsernameBlank = isNullOrEmptyString(username.getText());
+            final boolean isUsernameBlank = isNullOrEmptyString(usernames.getText());
             final boolean isPasswordBlank = isNullOrEmptyString(password.getText());
 
             return isUrlsBlank || isUsernameBlank || isPasswordBlank;
