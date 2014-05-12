@@ -105,7 +105,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
         setTitle("Codenvy Projects");
         setDescription("Select Codenvy projects to import");
-        setImageDescriptor(CodenvyUIPlugin.getDefault().getImageRegistry().getDescriptor(ImageConstants.WIZARD_LOGO_KEY));
+        setImageDescriptor(CodenvyUIPlugin.getDefault().getImageRegistry().getDescriptor(ImageConstants.WIZARD_LOGO));
         setPageComplete(false);
     }
 

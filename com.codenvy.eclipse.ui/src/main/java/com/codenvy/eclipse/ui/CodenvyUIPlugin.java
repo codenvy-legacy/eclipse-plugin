@@ -16,7 +16,7 @@
  */
 package com.codenvy.eclipse.ui;
 
-import static com.codenvy.eclipse.ui.utils.ImageConstants.WIZARD_LOGO_KEY;
+import static com.codenvy.eclipse.ui.utils.ImageConstants.WIZARD_LOGO;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -31,10 +31,10 @@ import org.osgi.framework.BundleContext;
 public class CodenvyUIPlugin extends AbstractUIPlugin {
 
     // the plug-in ID
-    public static final String PLUGIN_ID = "com.codenvy.eclipse.ui"; //$NON-NLS-1$
+    public static final String     PLUGIN_ID = "com.codenvy.eclipse.ui"; //$NON-NLS-1$
 
     // the shared instance
-    private static CodenvyUIPlugin   plugin;
+    private static CodenvyUIPlugin plugin;
 
     public void start(BundleContext context) throws Exception {
         super.start(context);
@@ -57,6 +57,6 @@ public class CodenvyUIPlugin extends AbstractUIPlugin {
 
     @Override
     protected void initializeImageRegistry(ImageRegistry registry) {
-        registry.put(WIZARD_LOGO_KEY, ImageDescriptor.createFromFile(CodenvyUIPlugin.class, "/images/WizardLogo.png"));
+        registry.put(WIZARD_LOGO, ImageDescriptor.createFromFile(CodenvyUIPlugin.class, "/images/WizardLogo.png"));
     }
 }

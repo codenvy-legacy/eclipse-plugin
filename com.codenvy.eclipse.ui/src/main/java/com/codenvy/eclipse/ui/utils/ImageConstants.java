@@ -23,9 +23,9 @@ package com.codenvy.eclipse.ui.utils;
  */
 public final class ImageConstants {
     /**
-     * Image registry constant of the logo used in Codenvy wizards.
+     * Codenvy wizard logo.
      */
-    public static final String WIZARD_LOGO_KEY = "CodenvyLogo";
+    public static final String WIZARD_LOGO = "WizardLogo";
 
     /**
      * Disable instantiation.
