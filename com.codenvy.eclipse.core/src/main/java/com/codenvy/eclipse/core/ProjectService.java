@@ -61,5 +61,14 @@ public interface ProjectService extends RestServiceWithAuth {
      */
     IProject importCodenvyProject(CodenvyProject project, String workspaceId);
 
+    /**
+     * Updates the given resource in the given project of the given workspace.
+     * 
+     * @param project the Codenvy project.
+     * @param workspaceId the workspace id.
+     * @param resource the resource to update.
+     * @throws NullPointerException if project, workspaceId or resource parameter is {@code null}.
+     * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
+     */
     void updateCodenvyResource(CodenvyProject project, String workspaceId, IResource resource);
 }

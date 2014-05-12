@@ -155,13 +155,18 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
         } catch (CoreException e) {
             throw new RuntimeException(e);
         }
-        
+
         return importedProject;
     }
 
-    
+
     @Override
     public void updateCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
+        checkNotNull(project);
+        checkNotNull(workspaceId);
+        checkArgument(!workspaceId.trim().isEmpty());
+        checkNotNull(resource);
+
         switch (resource.getType()) {
             case IResource.FILE: {
                 final IFile file = (IFile)resource;
@@ -181,9 +186,10 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
             }
                 break;
 
-            case IResource.PROJECT: case IResource.FOLDER: {
+            case IResource.PROJECT:
+            case IResource.FOLDER: {
                 final IContainer container = (IContainer)resource;
-                
+
                 try {
 
                     for (IResource oneResource : container.members()) {
