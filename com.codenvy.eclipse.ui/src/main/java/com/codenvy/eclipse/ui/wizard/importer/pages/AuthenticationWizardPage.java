@@ -19,8 +19,6 @@ package com.codenvy.eclipse.ui.wizard.importer.pages;
 import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import javax.ws.rs.ProcessingException;
@@ -103,6 +101,20 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
         urls.add(CODENVY_URL);
+        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        final ServiceReference<CodenvySecureStorageService> codenvySecureStorageServiceRef =
+                                                                                             context.getServiceReference(CodenvySecureStorageService.class);
+        if (codenvySecureStorageServiceRef != null) {
+            final CodenvySecureStorageService codenvySecureStorageService =
+                                                                            context.getService(codenvySecureStorageServiceRef);
+            try {
+                for (final String url : codenvySecureStorageService.getURLs()) {
+                    urls.add(url);
+                }
+            } catch (final StorageException e) {
+                // TODO Stéphane Daviet - 2012/05/12: See what to do in case of failure, nothing now.
+            }
+        }
         urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         final Label usernameLabel = new Label(wizardContainer, SWT.NONE);
@@ -129,6 +141,12 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         usernames.addSelectionListener(pageCompleteListener);
         password.addKeyListener(pageCompleteListener);
         storeUserCredentials.addKeyListener(pageCompleteListener);
+
+        final AutofillFieldsListener autofillFieldsListener = new AutofillFieldsListener();
+        urls.addKeyListener(autofillFieldsListener);
+        urls.addSelectionListener(autofillFieldsListener);
+        usernames.addKeyListener(autofillFieldsListener);
+        usernames.addSelectionListener(autofillFieldsListener);
 
         setControl(wizardContainer);
     }
@@ -165,9 +183,8 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                             if (codenvySecureStorageServiceRef != null) {
                                 final CodenvySecureStorageService codenvySecureStorageService =
                                                                                                 context.getService(codenvySecureStorageServiceRef);
-                                codenvySecureStorageService.storeCredentials(new URI(urls.getText()),
-                                                                             new CodenvyCredentials(usernames.getText(),
-                                                                                                    password.getText()),
+                                codenvySecureStorageService.storeCredentials(urls.getText(), new CodenvyCredentials(usernames.getText(),
+                                                                                                                    password.getText()),
                                                                              token);
                             }
                         }
@@ -185,10 +202,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                     } catch (final StorageException e) {
                         event.doit = false;
                         setErrorMessage("Unable to store password in Eclipse secure storage.");
-
-                    } catch (final URISyntaxException e) {
-                        event.doit = false;
-                        setErrorMessage("The URL is malformed.");
 
                     } finally {
                         context.ungetService(restServiceFactoryRef);
@@ -238,6 +251,53 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
          */
         private boolean isNullOrEmptyString(String string) {
             return string == null || string.trim().isEmpty();
+        }
+    }
+
+    private class AutofillFieldsListener implements KeyListener, SelectionListener {
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+            final ServiceReference<CodenvySecureStorageService> codenvySecureStorageServiceRef =
+                                                                                                 context.getServiceReference(CodenvySecureStorageService.class);
+            if (codenvySecureStorageServiceRef != null) {
+                final CodenvySecureStorageService codenvySecureStorageService =
+                                                                                context.getService(codenvySecureStorageServiceRef);
+                if (urls.getText() == null || urls.getText().trim().isEmpty()) {
+                    return;
+                }
+                try {
+                    for (final String username : codenvySecureStorageService.getUsernamesForURL(urls.getText())) {
+                        usernames.add(username);
+                    }
+                } catch (final StorageException e1) {
+                    // TODO Stéphane Daviet - 2012/05/12: See what to do in case of failure, nothing now.
+                }
+                if (usernames.getText() == null || usernames.getText().trim().isEmpty()) {
+                    return;
+                }
+                try {
+                    final String storedPassword = codenvySecureStorageService.getPassword(urls.getText(), usernames.getText());
+                    if (storedPassword == null || storedPassword.isEmpty()) {
+                        return;
+                    }
+                    password.setText(storedPassword);
+                } catch (final StorageException e1) {
+
+                }
+            }
+        }
+
+        @Override
+        public void widgetDefaultSelected(SelectionEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
         }
     }
 }

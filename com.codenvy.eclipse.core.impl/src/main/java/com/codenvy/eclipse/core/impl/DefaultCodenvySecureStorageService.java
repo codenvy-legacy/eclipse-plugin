@@ -1,7 +1,5 @@
 package com.codenvy.eclipse.core.impl;
 
-import java.net.URI;
-
 import org.eclipse.equinox.security.storage.EncodingUtils;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
@@ -17,30 +15,56 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
     private static final String CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
 
     @Override
-    public void storeCredentials(URI url, CodenvyCredentials credentials, CodenvyToken token) throws StorageException {
+    public void storeCredentials(String url, CodenvyCredentials credentials, CodenvyToken token) throws StorageException {
         final ISecurePreferences node = getNode(url, credentials.username);
         node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
         node.put(CODENVY_PASSWORD_TOKEN_NAME, token.value, true);
     }
 
     @Override
-    public String getPassword(URI url, String username) throws StorageException {
+    public String getPassword(String url, String username) throws StorageException {
         final ISecurePreferences node = getNode(url, username);
         return node.get(CODENVY_PASSWORD_KEY_NAME, null);
     }
 
     @Override
-    public String getToken(URI url, String username) throws StorageException {
+    public String getToken(String url, String username) throws StorageException {
         final ISecurePreferences node = getNode(url, username);
         return node.get(CODENVY_PASSWORD_TOKEN_NAME, null);
     }
 
     @Override
-    public void deleteCredentials(URI url, String username) throws StorageException {
+    public void deleteCredentials(String url, String username) throws StorageException {
         getNode(url, username).removeNode();
     }
 
-    static ISecurePreferences getNode(URI url, String username) {
+    @Override
+    public String[] getURLs() throws StorageException {
+        final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+        if (root == null) {
+            // TODO Stéphane Daviet - 2014/05/12: Throw an exception either.
+        }
+        final String[] urls = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME).childrenNames();
+        final String[] unescapedUrls = new String[urls.length];
+        for (int i = 0; i < urls.length; i++) {
+            unescapedUrls[i] = EncodingUtils.decodeSlashes(urls[i]);
+        }
+        return unescapedUrls;
+    }
+
+    @Override
+    public String[] getUsernamesForURL(String url) throws StorageException {
+        final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+        if (root == null) {
+            // TODO Stéphane Daviet - 2014/05/12: Throw an exception either.
+        }
+        if (!root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME).nodeExists(EncodingUtils.encodeSlashes(url))) {
+            return new String[]{};
+        }
+        return root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME).node(EncodingUtils.encodeSlashes(url)).childrenNames();
+    }
+
+    static ISecurePreferences getNode(String url, String username) {
         final ISecurePreferences root = SecurePreferencesFactory.getDefault();
         if (root == null) {
             // TODO Stéphane Daviet - 2014/05/12: Throw an exception either.
@@ -48,7 +72,7 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
         return root.node(calcNodeName(url, username));
     }
 
-    static String calcNodeName(URI url, String username) {
-        return CODENVY_PREFERENCE_STORAGE_NODE_NAME + '/' + EncodingUtils.encodeSlashes(url.toString()) + '/' + username;
+    static String calcNodeName(String url, String username) {
+        return CODENVY_PREFERENCE_STORAGE_NODE_NAME + '/' + EncodingUtils.encodeSlashes(url) + '/' + username;
     }
 }
