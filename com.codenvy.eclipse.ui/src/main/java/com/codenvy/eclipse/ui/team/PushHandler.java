@@ -18,6 +18,7 @@ package com.codenvy.eclipse.ui.team;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -29,8 +30,9 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.team.core.RepositoryProvider;
-import org.eclipse.ui.ISelectionService;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.ide.ResourceUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -53,23 +55,31 @@ import com.google.common.collect.FluentIterable;
 public class PushHandler extends AbstractHandler {
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        final ISelectionService service = (ISelectionService)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService();
-        final ISelection selection = service.getSelection();
+        final ISelection selection = HandlerUtil.getCurrentSelection(event);
+        List<IResource> resources = Collections.emptyList();
 
         if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
             final IStructuredSelection structuredSelection = (IStructuredSelection)selection;
-            final List<IResource> resources = FluentIterable.from(newArrayList(structuredSelection.toArray()))
-                                                            .transform(new Function<Object, IResource>() {
-                                                                @Override
-                                                                public IResource apply(Object adaptable) {
-                                                                    return (IResource)((IAdaptable)adaptable).getAdapter(IResource.class);
-                                                                }
-                                                            })
-                                                            .filter(Predicates.notNull())
-                                                            .toList();
+            resources = FluentIterable.from(newArrayList(structuredSelection.toArray()))
+                                      .transform(new Function<Object, IResource>() {
+                                          @Override
+                                          public IResource apply(Object adaptable) {
+                                              return (IResource)((IAdaptable)adaptable).getAdapter(IResource.class);
+                                          }
+                                      })
+                                      .filter(Predicates.notNull())
+                                      .toList();
+        }
+        else {
+            final IEditorInput editorInput = HandlerUtil.getActiveEditorInput(event);
+            final IResource resource = ResourceUtil.getResource(editorInput);
+            if (resource != null) {
+                resources = Collections.singletonList(resource);
+            }
+        }
 
-
-            final IProject project = ((IResource) structuredSelection.getFirstElement()).getProject();
+        if (!resources.isEmpty()) {
+            final IProject project = resources.get(0).getProject();
             final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(project);
             final CodenvyProviderMetaData codenvyProviderMetaData = codenvyProvider.getProviderMetaData();
             final BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();

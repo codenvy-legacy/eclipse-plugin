@@ -20,7 +20,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -28,6 +27,7 @@ import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.ui.ISharedImages;
 import org.eclipse.team.ui.TeamImages;
+import org.eclipse.ui.ide.ResourceUtil;
 
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 
@@ -65,30 +65,12 @@ public class CodenvyProviderLabelDecorator implements ILightweightLabelDecorator
 
     @Override
     public void decorate(Object element, IDecoration decoration) {
-        final IResource resource = getResource(element);
+        final IResource resource = ResourceUtil.getResource(element);
         if (resource != null) {
             if (isTracked(resource)) {
                 decoration.addOverlay(trackedImageDescriptor);
             }
         }
-    }
-
-    /**
-     * Converts the given element to an {@link IResource}.
-     * 
-     * @param element the element to convert.
-     * @return the {@link IResource} corresponding to the given element or {@code null}.
-     */
-    private IResource getResource(Object element) {
-        IResource resource = null;
-        if (element instanceof IResource) {
-            resource = (IResource)element;
-        }
-        else if (element instanceof IAdaptable) {
-            final IAdaptable adaptable = (IAdaptable)element;
-            resource = (IResource)adaptable.getAdapter(IResource.class);
-        }
-        return resource;
     }
 
     /**
