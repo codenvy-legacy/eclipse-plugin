@@ -19,12 +19,12 @@ package com.codenvy.eclipse.ui.wizard.importer.pages;
 import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import javax.ws.rs.ProcessingException;
 
-import org.eclipse.equinox.security.storage.ISecurePreferences;
-import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
@@ -47,10 +47,12 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.AuthenticationService;
+import com.codenvy.eclipse.core.CodenvySecureStorageService;
 import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
@@ -61,9 +63,6 @@ import com.google.common.base.Optional;
  * @author Kevin Pollet
  */
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
-    private static final String          CODENVY_PASSWORD_KEY_NAME = "password";
-    private static final String          CODENVY_PASSWORD_TOKEN_NAME = "token";
-    private static final String          CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
     private static final String          CODENVY_URL = "https://codenvy.com";
 
     private Combo                        urls;
@@ -104,7 +103,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
         urls.add(CODENVY_URL);
-        urls.setLayoutData(new  GridData(SWT.FILL, SWT.CENTER, true, false));
+        urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         final Label usernameLabel = new Label(wizardContainer, SWT.NONE);
         usernameLabel.setText("Username:");
@@ -117,7 +116,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         password = new Text(wizardContainer, SWT.SINGLE | SWT.BORDER | SWT.PASSWORD);
         password.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        
+
         storeUserCredentials = new Button(wizardContainer, SWT.CHECK | SWT.BORDER);
         storeUserCredentials.setText("Store these user credentials in Eclipse secure storage.");
         storeUserCredentials.setSelection(true);
@@ -127,6 +126,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         urls.addKeyListener(pageCompleteListener);
         urls.addSelectionListener(pageCompleteListener);
         username.addKeyListener(pageCompleteListener);
+        username.addSelectionListener(pageCompleteListener);
         password.addKeyListener(pageCompleteListener);
         storeUserCredentials.addKeyListener(pageCompleteListener);
 
@@ -143,13 +143,16 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
             final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
 
             if (restServiceFactoryRef != null) {
+                // TODO Stéphane Daviet - 2014/05/12: Throw an exception either.
                 final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
 
                 if (restServiceFactory != null) {
 
                     try {
 
-                        final AuthenticationService authenticationService = restServiceFactory.newRestService(AuthenticationService.class, urls.getText());
+                        final AuthenticationService authenticationService =
+                                                                            restServiceFactory.newRestService(AuthenticationService.class,
+                                                                                                              urls.getText());
                         final CodenvyToken token = authenticationService.login(username.getText(), password.getText());
 
                         importWizardSharedData.setCodenvyToken(Optional.fromNullable(token));
@@ -157,25 +160,35 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         importWizardSharedData.setProjects(new ArrayList<CodenvyProject>());
 
                         if (storeUserCredentials.getSelection()) {
-	                        final ISecurePreferences root = SecurePreferencesFactory.getDefault();
-	                        final ISecurePreferences node = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME + '/' + urls.getText().replace("/", "\\") + '/' + username.getText());
-	                        node.put(CODENVY_PASSWORD_KEY_NAME, password.getText(), true);
-	                        node.put(CODENVY_PASSWORD_TOKEN_NAME, token.value, true);
+                            final ServiceReference<CodenvySecureStorageService> codenvySecureStorageServiceRef =
+                                                                                                                 context.getServiceReference(CodenvySecureStorageService.class);
+                            if (codenvySecureStorageServiceRef != null) {
+                                final CodenvySecureStorageService codenvySecureStorageService =
+                                                                                                context.getService(codenvySecureStorageServiceRef);
+                                codenvySecureStorageService.storeCredentials(new URI(urls.getText()),
+                                                                             new CodenvyCredentials(username.getText(),
+                                                                                                    password.getText()),
+                                                                             token);
+                            }
                         }
-                        
+
                         setErrorMessage(null);
-                        
-                    } catch (AuthenticationException e) {
+
+                    } catch (final AuthenticationException e) {
                         event.doit = false;
                         setErrorMessage("Authentication failed: wrong Username and/or Password.");
 
-                    } catch (ProcessingException e) {
+                    } catch (final ProcessingException e) {
                         event.doit = false;
                         setErrorMessage("Authentication failed: wrong URL.");
 
-                    } catch (StorageException e) {
+                    } catch (final StorageException e) {
                         event.doit = false;
                         setErrorMessage("Unable to store password in Eclipse secure storage.");
+
+                    } catch (final URISyntaxException e) {
+                        event.doit = false;
+                        setErrorMessage("The URL is malformed.");
 
                     } finally {
                         context.ungetService(restServiceFactoryRef);
