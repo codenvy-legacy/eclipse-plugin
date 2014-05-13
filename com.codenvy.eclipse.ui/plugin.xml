@@ -81,9 +81,9 @@
             locationURI="popup:team.main?before=group1">
          <command
                commandId="com.codenvy.eclipse.ui.team.push"
+               icon="images/Push.png"
                id="com.codenvy.eclipse.ui.team.popup.push"
                label="Push"
-               mode="FORCE_TEXT"
                style="push">
             <visibleWhen
                   checkEnabled="false">
@@ -104,6 +104,7 @@
          </command>
          <command
                commandId="com.codenvy.eclipse.ui.team.update"
+               icon="images/Update.png"
                id="com.codenvy.eclipse.ui.team.popup.update"
                label="Update"
                style="push">
