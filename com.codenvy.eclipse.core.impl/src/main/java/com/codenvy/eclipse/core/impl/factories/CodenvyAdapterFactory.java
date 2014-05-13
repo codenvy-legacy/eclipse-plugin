@@ -14,11 +14,12 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.impl.team;
+package com.codenvy.eclipse.core.impl.factories;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdapterFactory;
 
+import com.codenvy.eclipse.core.impl.team.DefaultCodenvyMetaResource;
 import com.codenvy.eclipse.core.team.CodenvyMetaResource;
 
 /**
