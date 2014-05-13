@@ -68,6 +68,11 @@
             id="com.codenvy.eclipse.ui.team.push"
             name="Push">
       </command>
+      <command
+            defaultHandler="com.codenvy.eclipse.ui.team.UpdateHandler"
+            id="com.codenvy.eclipse.ui.team.update"
+            name="Update">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -95,6 +100,29 @@
                            definitionId="com.codenvy.eclipse.ui.team.IResourceContributions">
                      </reference>
                   </with></or>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="com.codenvy.eclipse.ui.team.update"
+               id="com.codenvy.eclipse.ui.team.popup.update"
+               label="Update"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <or>
+                  <with
+                        variable="activeMenuSelection">
+                     <reference
+                           definitionId="com.codenvy.eclipse.ui.team.IResourceContributions">
+                     </reference>
+                  </with>
+                  <with
+                        variable="activeMenuEditorInput">
+                     <reference
+                           definitionId="com.codenvy.eclipse.ui.team.IResourceContributions">
+                     </reference>
+                  </with>
+               </or>
             </visibleWhen>
          </command>
       </menuContribution>
