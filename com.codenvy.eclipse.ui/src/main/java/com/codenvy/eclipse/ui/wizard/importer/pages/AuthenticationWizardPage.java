@@ -50,6 +50,7 @@ import com.codenvy.eclipse.core.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.utils.StringHelper;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
@@ -228,21 +229,11 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
          * @return {@code true} if one of urls, username, password field is blank, {@code false} otherwise.
          */
         private boolean isBlankField() {
-            final boolean isUrlsBlank = isNullOrEmptyString(urls.getText());
-            final boolean isUsernameBlank = isNullOrEmptyString(usernames.getText());
-            final boolean isPasswordBlank = isNullOrEmptyString(password.getText());
+            final boolean isUrlsBlank = StringHelper.isNullOrEmpty(urls.getText());
+            final boolean isUsernameBlank = StringHelper.isNullOrEmpty(usernames.getText());
+            final boolean isPasswordBlank = StringHelper.isNullOrEmpty(password.getText());
 
             return isUrlsBlank || isUsernameBlank || isPasswordBlank;
-        }
-
-        /**
-         * Tests that the given string is {@code null} or empty. A string containing only whitespace is assumed to be empty.
-         * 
-         * @param string the sting to test.
-         * @return {@code true} if the given string is {@code null} or empty, {@code false} otherwise.
-         */
-        private boolean isNullOrEmptyString(String string) {
-            return string == null || string.trim().isEmpty();
         }
     }
 
@@ -255,7 +246,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
             if (codenvySecureStorageServiceRef != null) {
                 final CodenvySecureStorageService codenvySecureStorageService =
                                                                                 context.getService(codenvySecureStorageServiceRef);
-                if (urls.getText() == null || urls.getText().trim().isEmpty()) {
+                if (StringHelper.isNullOrEmpty(urls.getText())) {
                     return;
                 }
 
@@ -269,7 +260,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                     usernames.add(username);
                 }
 
-                if (usernames.getText() == null || usernames.getText().trim().isEmpty()) {
+                if (StringHelper.isNullOrEmpty(usernames.getText())) {
                     return;
                 }
 
