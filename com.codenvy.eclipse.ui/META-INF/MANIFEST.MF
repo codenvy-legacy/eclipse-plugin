@@ -8,7 +8,7 @@ Bundle-Vendor: Codenvy
 Bundle-Activator: com.codenvy.eclipse.ui.CodenvyUIPlugin
 Bundle-ActivationPolicy: lazy
 Import-Package: com.codenvy.eclipse.core;version="1.0.0.qualifier",
- com.codenvy.eclipse.core.exception;version="1.0.0.qualifier",
+ com.codenvy.eclipse.core.exceptions;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.model;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.team;version="1.0.0.qualifier",
  com.google.common.base;version="10.0.1",

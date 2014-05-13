@@ -7,7 +7,7 @@ Bundle-Name: Codenvy Eclipse Plugin :: Core
 Bundle-Vendor: Codenvy
 Bundle-ActivationPolicy: lazy
 Export-Package: com.codenvy.eclipse.core;version="1.0.0.qualifier",
- com.codenvy.eclipse.core.exception;version="1.0.0.qualifier",
+ com.codenvy.eclipse.core.exceptions;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.model;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.team;version="1.0.0.qualifier"
 Import-Package: com.fasterxml.jackson.annotation;version="2.3.2",

@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 
 import com.codenvy.eclipse.core.AbstractRestService;
 import com.codenvy.eclipse.core.AuthenticationService;
-import com.codenvy.eclipse.core.exception.AuthenticationException;
+import com.codenvy.eclipse.core.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
 

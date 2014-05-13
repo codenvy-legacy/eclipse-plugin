@@ -44,7 +44,7 @@ import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.AuthenticationService;
 import com.codenvy.eclipse.core.RestServiceFactory;
-import com.codenvy.eclipse.core.exception.AuthenticationException;
+import com.codenvy.eclipse.core.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
