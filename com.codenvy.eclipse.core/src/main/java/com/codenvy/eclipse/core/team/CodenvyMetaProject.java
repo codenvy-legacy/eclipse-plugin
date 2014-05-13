@@ -72,11 +72,11 @@ public class CodenvyMetaProject {
                 } catch (CoreException | IOException e) {
                     throw new RuntimeException(e);
                 }
-            }
-
-            final CodenvyMetaProject currentProviderMetaData = repositoryProviderCache.putIfAbsent(project, providerMetaData);
-            if (currentProviderMetaData != null) {
-                providerMetaData = currentProviderMetaData;
+                
+                final CodenvyMetaProject currentProviderMetaData = repositoryProviderCache.putIfAbsent(project, providerMetaData);
+                if (currentProviderMetaData != null) {
+                    providerMetaData = currentProviderMetaData;
+                }
             }
         }
 

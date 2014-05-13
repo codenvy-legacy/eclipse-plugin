@@ -146,9 +146,8 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
 
         try {
 
+            CodenvyMetaProject.create(importedProject, new CodenvyMetaProject(getUrl(), project.name, project.workspaceId, getCodenvyToken().value));
             RepositoryProvider.map(importedProject, CodenvyProvider.PROVIDER_ID);
-            CodenvyMetaProject.create(importedProject, new CodenvyMetaProject(getUrl(), project.name, project.workspaceId,
-                                                                              getCodenvyToken().value));
 
             final IProjectDescription importedProjectDescription = importedProject.getDescription();
             importedProjectDescription.setNatureIds(new String[]{CodenvyNature.NATURE_ID});

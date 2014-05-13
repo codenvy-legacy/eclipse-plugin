@@ -17,6 +17,7 @@
 package com.codenvy.eclipse.core.impl.team;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.impl.DefaultProjectService;
@@ -24,6 +25,7 @@ import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyMetaResource;
+import com.codenvy.eclipse.core.team.CodenvyProvider;
 
 /**
  * The default Codenvy resource mapping class implementation.
@@ -36,10 +38,22 @@ public class DefaultCodenvyMetaResource implements CodenvyMetaResource {
 
     public DefaultCodenvyMetaResource(IResource resource) {
         this.resource = resource;
-        
-        final CodenvyMetaProject metaProject = CodenvyMetaProject.get(resource.getProject());
-        final ProjectService projectService = new DefaultProjectService(metaProject.url, new CodenvyToken(metaProject.codenvyToken));
-        this.tracked = projectService.isResourceInProject(new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null), metaProject.workspaceId, resource);
+
+        final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(resource.getProject(), CodenvyProvider.PROVIDER_ID);
+        if (codenvyProvider != null) {
+            final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
+
+            if (metaProject != null) {
+                final ProjectService projectService = new DefaultProjectService(metaProject.url, new CodenvyToken(metaProject.codenvyToken));
+                this.tracked = projectService.isResourceInProject(new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null), metaProject.workspaceId, resource);
+            }
+            else {
+                this.tracked = false;
+            }
+        }
+        else {
+            this.tracked = false;
+        }
     }
 
     public IResource getResource() {
