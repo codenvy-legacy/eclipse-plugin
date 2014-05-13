@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 import javax.ws.rs.ProcessingException;
 
-import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -108,12 +107,8 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         if (codenvySecureStorageServiceRef != null) {
             final CodenvySecureStorageService codenvySecureStorageService =
                                                                             context.getService(codenvySecureStorageServiceRef);
-            try {
-                for (final String url : codenvySecureStorageService.getURLs()) {
-                    urls.add(url);
-                }
-            } catch (final StorageException e) {
-                // TODO Stéphane Daviet - 2012/05/12: See what to do in case of failure, nothing now.
+            for (final String url : codenvySecureStorageService.getURLs()) {
+                urls.add(url);
             }
         }
         urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -200,10 +195,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         event.doit = false;
                         setErrorMessage("Authentication failed: wrong URL.");
 
-                    } catch (final StorageException e) {
-                        event.doit = false;
-                        setErrorMessage("Unable to store password in Eclipse secure storage.");
-
                     } finally {
                         context.ungetService(restServiceFactoryRef);
                     }
@@ -267,25 +258,20 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                 if (urls.getText() == null || urls.getText().trim().isEmpty()) {
                     return;
                 }
-                try {
-                    for (final String username : codenvySecureStorageService.getUsernamesForURL(urls.getText())) {
-                        usernames.add(username);
-                    }
-                } catch (final StorageException e1) {
-                    // TODO Stéphane Daviet - 2012/05/12: See what to do in case of failure, nothing now.
+
+                for (final String username : codenvySecureStorageService.getUsernamesForURL(urls.getText())) {
+                    usernames.add(username);
                 }
+
                 if (usernames.getText() == null || usernames.getText().trim().isEmpty()) {
                     return;
                 }
-                try {
-                    final String storedPassword = codenvySecureStorageService.getPassword(urls.getText(), usernames.getText());
-                    if (storedPassword == null || storedPassword.isEmpty()) {
-                        return;
-                    }
-                    password.setText(storedPassword);
-                } catch (final StorageException e1) {
 
+                final String storedPassword = codenvySecureStorageService.getPassword(urls.getText(), usernames.getText());
+                if (storedPassword == null || storedPassword.isEmpty()) {
+                    return;
                 }
+                password.setText(storedPassword);
             }
         }
 

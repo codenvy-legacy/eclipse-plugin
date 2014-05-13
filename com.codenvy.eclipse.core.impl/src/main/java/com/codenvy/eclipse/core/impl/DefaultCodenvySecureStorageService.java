@@ -6,6 +6,7 @@ import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 
 import com.codenvy.eclipse.core.CodenvySecureStorageService;
+import com.codenvy.eclipse.core.exceptions.SecureStorageRuntimException;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 
@@ -21,31 +22,43 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
     private static final String CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
 
     @Override
-    public void storeCredentials(String url, CodenvyCredentials credentials, CodenvyToken token) throws StorageException {
-        final ISecurePreferences node = getNode(url, credentials.username);
-        node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
-        node.put(CODENVY_PASSWORD_TOKEN_NAME, token.value, true);
+    public void storeCredentials(String url, CodenvyCredentials credentials, CodenvyToken token) {
+        try {
+            final ISecurePreferences node = getNode(url, credentials.username);
+            node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
+            node.put(CODENVY_PASSWORD_TOKEN_NAME, token.value, true);
+        } catch (StorageException e) {
+            throw new SecureStorageRuntimException(e);
+        }
     }
 
     @Override
-    public String getPassword(String url, String username) throws StorageException {
-        final ISecurePreferences node = getNode(url, username);
-        return node.get(CODENVY_PASSWORD_KEY_NAME, null);
+    public String getPassword(String url, String username) {
+        try {
+            final ISecurePreferences node = getNode(url, username);
+            return node.get(CODENVY_PASSWORD_KEY_NAME, null);
+        } catch (StorageException e) {
+            throw new SecureStorageRuntimException(e);
+        }
     }
 
     @Override
-    public String getToken(String url, String username) throws StorageException {
-        final ISecurePreferences node = getNode(url, username);
-        return node.get(CODENVY_PASSWORD_TOKEN_NAME, null);
+    public String getToken(String url, String username) {
+        try {
+            final ISecurePreferences node = getNode(url, username);
+            return node.get(CODENVY_PASSWORD_TOKEN_NAME, null);
+        } catch (StorageException e) {
+            throw new SecureStorageRuntimException(e);
+        }
     }
 
     @Override
-    public void deleteCredentials(String url, String username) throws StorageException {
+    public void deleteCredentials(String url, String username) {
         getNode(url, username).removeNode();
     }
 
     @Override
-    public String[] getURLs() throws StorageException {
+    public String[] getURLs() {
         final ISecurePreferences root = SecurePreferencesFactory.getDefault();
         if (root == null) {
             // TODO Stéphane Daviet - 2014/05/12: Throw an exception either.
@@ -59,7 +72,7 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
     }
 
     @Override
-    public String[] getUsernamesForURL(String url) throws StorageException {
+    public String[] getUsernamesForURL(String url) {
         final ISecurePreferences root = SecurePreferencesFactory.getDefault();
         if (root == null) {
             // TODO Stéphane Daviet - 2014/05/12: Throw an exception either.

@@ -1,7 +1,5 @@
 package com.codenvy.eclipse.core;
 
-import org.eclipse.equinox.security.storage.StorageException;
-
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 
@@ -11,16 +9,15 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
  * @author Stéphane Daviet
  */
 public interface CodenvySecureStorageService {
-    void storeCredentials(String url, CodenvyCredentials credentials, CodenvyToken token) throws StorageException;
+    void storeCredentials(String url, CodenvyCredentials credentials, CodenvyToken token);
 
-    String getPassword(String url, String username) throws StorageException;
+    String getPassword(String url, String username);
 
-    String getToken(String url, String username) throws StorageException;
+    String getToken(String url, String username);
 
-    void deleteCredentials(String url, String username) throws StorageException;
+    void deleteCredentials(String url, String username);
 
-    String[] getURLs() throws StorageException;
+    String[] getURLs();
 
-    String[] getUsernamesForURL(String url) throws StorageException;
-
+    String[] getUsernamesForURL(String url);
 }
