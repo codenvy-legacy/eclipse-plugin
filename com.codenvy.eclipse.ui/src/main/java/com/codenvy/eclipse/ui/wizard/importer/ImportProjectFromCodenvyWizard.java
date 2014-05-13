@@ -137,8 +137,8 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                             for (CodenvyProject oneProjectToImport : projectsToImport) {
                                 monitor.subTask(oneProjectToImport.name);
 
-                                final IProject oneExportedProject = projectService.importCodenvyProject(oneProjectToImport, oneProjectToImport.workspaceId);
-                                exportedProjects.add(oneExportedProject);
+                                final IProject project = projectService.importProject(oneProjectToImport, oneProjectToImport.workspaceId);
+                                exportedProjects.add(project);
 
                                 monitor.worked(1);
                             }

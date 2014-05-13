@@ -60,17 +60,17 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public IProject importCodenvyProject(CodenvyProject project, String workspaceId) {
+    public IProject importProject(CodenvyProject project, String workspaceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
+    public void updateProjectResource(CodenvyProject project, String workspaceId, IResource resource) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
+    public boolean isResourceInProject(CodenvyProject project, String workspaceId, IResource resource) {
         throw new UnsupportedOperationException();
     }
 }

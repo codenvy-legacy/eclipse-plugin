@@ -93,7 +93,7 @@ public class PushHandler extends AbstractHandler {
 
                     for (IResource oneResource : resources) {
                         final CodenvyProject codenvyProject = new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null);
-                        projectService.updateCodenvyResource(codenvyProject, metaProject.workspaceId, oneResource);
+                        projectService.updateProjectResource(codenvyProject, metaProject.workspaceId, oneResource);
                     }
                 }
 

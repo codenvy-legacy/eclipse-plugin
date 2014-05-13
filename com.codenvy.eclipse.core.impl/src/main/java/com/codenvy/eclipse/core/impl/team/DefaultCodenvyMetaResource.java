@@ -39,7 +39,7 @@ public class DefaultCodenvyMetaResource implements CodenvyMetaResource {
         
         final CodenvyMetaProject metaProject = CodenvyMetaProject.get(resource.getProject());
         final ProjectService projectService = new DefaultProjectService(metaProject.url, new CodenvyToken(metaProject.codenvyToken));
-        this.tracked = projectService.isCodenvyResource(new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null), metaProject.workspaceId, resource);
+        this.tracked = projectService.isResourceInProject(new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null), metaProject.workspaceId, resource);
     }
 
     public IResource getResource() {

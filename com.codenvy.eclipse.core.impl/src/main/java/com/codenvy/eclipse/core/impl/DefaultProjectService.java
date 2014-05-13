@@ -97,7 +97,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public IProject importCodenvyProject(CodenvyProject project, String workspaceId) {
+    public IProject importProject(CodenvyProject project, String workspaceId) {
         checkNotNull(project);
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
@@ -163,7 +163,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
 
 
     @Override
-    public void updateCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
+    public void updateProjectResource(CodenvyProject project, String workspaceId, IResource resource) {
         checkNotNull(project);
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());
@@ -195,7 +195,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
                 try {
 
                     for (IResource oneResource : container.members()) {
-                        updateCodenvyResource(project, workspaceId, oneResource);
+                        updateProjectResource(project, workspaceId, oneResource);
                     }
 
                 } catch (CoreException e) {
@@ -207,7 +207,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public boolean isCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
+    public boolean isResourceInProject(CodenvyProject project, String workspaceId, IResource resource) {
         checkNotNull(project);
         checkNotNull(workspaceId);
         checkArgument(!workspaceId.trim().isEmpty());

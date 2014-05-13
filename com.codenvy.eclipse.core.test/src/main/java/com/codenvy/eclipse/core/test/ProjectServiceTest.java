@@ -84,7 +84,7 @@ public class ProjectServiceTest extends RestApiBaseTest {
     @Test
     @Ignore
     public void testImportProject() {
-        final IProject project = projectService.importCodenvyProject(projectPrj1, defaultWorkspace.id);
+        final IProject project = projectService.importProject(projectPrj1, defaultWorkspace.id);
 
         Assert.assertNotNull(project);
     }

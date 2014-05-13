@@ -59,7 +59,7 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws NullPointerException if project or workspaceId parameter is {@code null}.
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
-    IProject importCodenvyProject(CodenvyProject project, String workspaceId);
+    IProject importProject(CodenvyProject project, String workspaceId);
 
     /**
      * Updates the given resource in the given project of the given workspace.
@@ -70,7 +70,7 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws NullPointerException if project, workspaceId or resource parameter is {@code null}.
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
-    void updateCodenvyResource(CodenvyProject project, String workspaceId, IResource resource);
+    void updateProjectResource(CodenvyProject project, String workspaceId, IResource resource);
 
     /**
      * Returns if the given resource exists in the given codenvy project.
@@ -82,6 +82,6 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws NullPointerException if project, workspaceId or resource parameter is {@code null}.
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
-    // TODO workaround to check if a resource exists in codenvy
-    boolean isCodenvyResource(CodenvyProject project, String workspaceId, IResource resource);
+    // TODO workaround to check if a resource exists
+    boolean isResourceInProject(CodenvyProject project, String workspaceId, IResource resource);
 }
