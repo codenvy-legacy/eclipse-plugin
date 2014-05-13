@@ -121,7 +121,7 @@
          point="org.eclipse.ui.decorators">
       <decorator
             adaptable="true"
-            class="com.codenvy.eclipse.ui.team.CodenvyProviderLabelDecorator"
+            class="com.codenvy.eclipse.ui.team.CodenvyLightweightLabelDecorator"
             id="com.codenvy.eclipse.ui.team.decorator"
             label="Codenvy Provider"
             lightweight="true"

@@ -28,14 +28,14 @@ import org.eclipse.ui.ide.ResourceUtil;
 import com.codenvy.eclipse.core.team.CodenvyMetaResource;
 
 /**
- * The Codenvy provider label decorator.
+ * The Codenvy label decorator.
  * 
  * @author Kevin Pollet
  */
-public class CodenvyProviderLabelDecorator implements ILightweightLabelDecorator {
+public class CodenvyLightweightLabelDecorator implements ILightweightLabelDecorator {
     private final ImageDescriptor trackedImageDescriptor;
 
-    public CodenvyProviderLabelDecorator() {
+    public CodenvyLightweightLabelDecorator() {
         trackedImageDescriptor = TeamImages.getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR);
     }
 
@@ -62,10 +62,10 @@ public class CodenvyProviderLabelDecorator implements ILightweightLabelDecorator
     @Override
     public void decorate(Object element, IDecoration decoration) {
         final IResource resource = ResourceUtil.getResource(element);
-        if (resource.getType() != IResource.ROOT) {
-            final CodenvyMetaResource codenvyResource = (CodenvyMetaResource)ResourceUtil.getAdapter(resource, CodenvyMetaResource.class, true);
+        if (resource != null && resource.getType() != IResource.ROOT) {
 
-            if (codenvyResource != null && codenvyResource.isTracked()) {
+            final CodenvyMetaResource metaResource = (CodenvyMetaResource)ResourceUtil.getAdapter(resource, CodenvyMetaResource.class, true);
+            if (metaResource != null && metaResource.isTracked()) {
                 decoration.addOverlay(trackedImageDescriptor);
             }
         }
