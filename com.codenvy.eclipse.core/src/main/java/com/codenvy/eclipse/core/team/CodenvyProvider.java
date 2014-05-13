@@ -28,7 +28,7 @@ import org.eclipse.team.core.RepositoryProvider;
 public class CodenvyProvider extends RepositoryProvider {
     public static final String      PROVIDER_ID = "com.codenvy.eclipse.core.team.codenvyprovider";
 
-    private CodenvyProviderMetaData providerMetaData;
+    private CodenvyMetaProject metaProject;
 
     @Override
     public void configureProject() throws CoreException {
@@ -37,7 +37,7 @@ public class CodenvyProvider extends RepositoryProvider {
 
     @Override
     public void deconfigure() throws CoreException {
-        CodenvyProviderMetaData.delete(getProject());
+        CodenvyMetaProject.delete(getProject());
         setCodenvyFolderAsTeamPrivate(false);
     }
 
@@ -46,11 +46,11 @@ public class CodenvyProvider extends RepositoryProvider {
         return PROVIDER_ID;
     }
 
-    public CodenvyProviderMetaData getProviderMetaData() {
-        if (providerMetaData == null) {
-            providerMetaData = CodenvyProviderMetaData.get(getProject());
+    public CodenvyMetaProject getMetaProject() {
+        if (metaProject == null) {
+            metaProject = CodenvyMetaProject.get(getProject());
         }
-        return providerMetaData;
+        return metaProject;
     }
 
     /**

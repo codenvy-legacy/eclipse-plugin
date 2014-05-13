@@ -31,6 +31,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -49,7 +51,7 @@ import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
-import com.codenvy.eclipse.core.team.CodenvyProviderMetaData;
+import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 
 /**
  * The Codenvy project client service.
@@ -144,13 +146,13 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
 
         try {
 
+            RepositoryProvider.map(importedProject, CodenvyProvider.PROVIDER_ID);
+            CodenvyMetaProject.create(importedProject, new CodenvyMetaProject(getUrl(), project.name, project.workspaceId,
+                                                                              getCodenvyToken().value));
+
             final IProjectDescription importedProjectDescription = importedProject.getDescription();
             importedProjectDescription.setNatureIds(new String[]{CodenvyNature.NATURE_ID});
             importedProject.setDescription(importedProjectDescription, new NullProgressMonitor());
-
-            RepositoryProvider.map(importedProject, CodenvyProvider.PROVIDER_ID);
-            CodenvyProviderMetaData.create(importedProject, new CodenvyProviderMetaData(getUrl(), project.name, project.workspaceId,
-                                                                                        getCodenvyToken().value));
 
         } catch (CoreException e) {
             throw new RuntimeException(e);
@@ -202,5 +204,22 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
             }
                 break;
         }
+    }
+
+    @Override
+    public boolean isCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
+        checkNotNull(project);
+        checkNotNull(workspaceId);
+        checkArgument(!workspaceId.trim().isEmpty());
+        checkNotNull(resource);
+
+        final Response response = getWebTarget().path(workspaceId)
+                                                .path("file")
+                                                .path(project.name)
+                                                .path(resource.getProjectRelativePath().toString())
+                                                .request()
+                                                .head();
+
+        return response.getStatus() != Status.NOT_FOUND.getStatusCode();
     }
 }

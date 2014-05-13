@@ -16,20 +16,16 @@
  */
 package com.codenvy.eclipse.ui.team;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
-import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.ui.ISharedImages;
 import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.ide.ResourceUtil;
 
-import com.codenvy.eclipse.core.team.CodenvyProvider;
+import com.codenvy.eclipse.core.team.CodenvyMetaResource;
 
 /**
  * The Codenvy provider label decorator.
@@ -66,29 +62,12 @@ public class CodenvyProviderLabelDecorator implements ILightweightLabelDecorator
     @Override
     public void decorate(Object element, IDecoration decoration) {
         final IResource resource = ResourceUtil.getResource(element);
-        if (resource != null) {
-            if (isTracked(resource)) {
+        if (resource.getType() != IResource.ROOT) {
+            final CodenvyMetaResource codenvyResource = (CodenvyMetaResource)ResourceUtil.getAdapter(resource, CodenvyMetaResource.class, true);
+
+            if (codenvyResource != null && codenvyResource.isTracked()) {
                 decoration.addOverlay(trackedImageDescriptor);
             }
         }
-    }
-
-    /**
-     * Returns the tacked state of the given resource.
-     * 
-     * @param resource the resource.
-     * @return {@code true} if the given resource is tracked, {@code false} otherwise.
-     * @throws NullPointerException if resource parameter is {@code null}.
-     */
-    private boolean isTracked(IResource resource) {
-        checkNotNull(resource);
-
-        if (resource.getType() != IResource.ROOT) {
-            final IProject project = resource.getProject();
-            final RepositoryProvider repositoryProvider = RepositoryProvider.getProvider(project, CodenvyProvider.PROVIDER_ID);
-            return repositoryProvider != null;
-        }
-
-        return false;
     }
 }

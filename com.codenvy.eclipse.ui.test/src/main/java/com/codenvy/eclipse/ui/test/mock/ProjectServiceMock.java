@@ -32,9 +32,9 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
  * @author Kevin Pollet
  */
 public class ProjectServiceMock implements ProjectService {
-    public static final String  MOCK_PROJECT_NAME        = "prj1";
-    public static final String  MOCK_PROJECT_TYPE_NAME   = "spring";
-    public static final String  MOCK_PROJECT_DESCRIPTION = "prj1-description";
+    public static final String         MOCK_PROJECT_NAME        = "prj1";
+    public static final String         MOCK_PROJECT_TYPE_NAME   = "spring";
+    public static final String         MOCK_PROJECT_DESCRIPTION = "prj1-description";
 
     private final List<CodenvyProject> projects;
 
@@ -63,9 +63,14 @@ public class ProjectServiceMock implements ProjectService {
     public IProject importCodenvyProject(CodenvyProject project, String workspaceId) {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public void updateCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isCodenvyResource(CodenvyProject project, String workspaceId, IResource resource) {
         throw new UnsupportedOperationException();
     }
 }

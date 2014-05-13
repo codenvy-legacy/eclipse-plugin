@@ -32,15 +32,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The Codenvy provider meta data.
+ * The Codenvy project meta data.
  * 
  * @author Kevin Pollet
  */
-public class CodenvyProviderMetaData {
-    private static final ConcurrentMap<IProject, CodenvyProviderMetaData> providerMetaDataCache = new ConcurrentHashMap<>();
+public class CodenvyMetaProject {
+    private static final ConcurrentMap<IProject, CodenvyMetaProject> repositoryProviderCache = new ConcurrentHashMap<>();
 
-    public static CodenvyProviderMetaData create(IProject project, CodenvyProviderMetaData providerMetaData) {
-        final CodenvyProviderMetaData currentProviderMetaData = providerMetaDataCache.putIfAbsent(project, providerMetaData);
+    public static CodenvyMetaProject create(IProject project, CodenvyMetaProject providerMetaData) {
+        final CodenvyMetaProject currentProviderMetaData = repositoryProviderCache.putIfAbsent(project, providerMetaData);
         if (currentProviderMetaData == null) {
             final IFile providerMetaDataFile = project.getFolder(".codenvy").getFile("team");
             if (!providerMetaDataFile.exists()) {
@@ -59,22 +59,22 @@ public class CodenvyProviderMetaData {
         return currentProviderMetaData;
     }
 
-    public static CodenvyProviderMetaData get(IProject project) {
-        CodenvyProviderMetaData providerMetaData = providerMetaDataCache.get(project);
+    public static CodenvyMetaProject get(IProject project) {
+        CodenvyMetaProject providerMetaData = repositoryProviderCache.get(project);
         if (providerMetaData == null) {
             final IFile providerMetaDataFile = project.getFolder(".codenvy").getFile("team");
             if (providerMetaDataFile.exists()) {
                 final ObjectMapper mapper = new ObjectMapper();
                 try {
 
-                    providerMetaData = mapper.readValue(providerMetaDataFile.getContents(), CodenvyProviderMetaData.class);
+                    providerMetaData = mapper.readValue(providerMetaDataFile.getContents(), CodenvyMetaProject.class);
 
                 } catch (CoreException | IOException e) {
                     throw new RuntimeException(e);
                 }
             }
 
-            final CodenvyProviderMetaData currentProviderMetaData = providerMetaDataCache.putIfAbsent(project, providerMetaData);
+            final CodenvyMetaProject currentProviderMetaData = repositoryProviderCache.putIfAbsent(project, providerMetaData);
             if (currentProviderMetaData != null) {
                 providerMetaData = currentProviderMetaData;
             }
@@ -84,18 +84,18 @@ public class CodenvyProviderMetaData {
     }
 
     public static void delete(IProject project) {
-        final CodenvyProviderMetaData currentProviderMetaData = providerMetaDataCache.get(project);
+        final CodenvyMetaProject currentProviderMetaData = repositoryProviderCache.get(project);
         if (currentProviderMetaData != null) {
             final IFile providerMetaDataFile = project.getFolder(".codenvy").getFile("team");
             try {
-                
+
                 providerMetaDataFile.delete(true, new NullProgressMonitor());
-                
+
             } catch (CoreException e) {
                 throw new RuntimeException(e);
             }
-            
-            providerMetaDataCache.remove(currentProviderMetaData);
+
+            repositoryProviderCache.remove(currentProviderMetaData);
         }
     }
 
@@ -105,10 +105,10 @@ public class CodenvyProviderMetaData {
     public final String codenvyToken;
 
     @JsonCreator
-    public CodenvyProviderMetaData(@JsonProperty("url") String url,
-                                   @JsonProperty("projectName") String projectName,
-                                   @JsonProperty("workspaceId") String workspaceId,
-                                   @JsonProperty("codenvyToken") String codenvyToken) {
+    public CodenvyMetaProject(@JsonProperty("url") String url,
+                              @JsonProperty("projectName") String projectName,
+                              @JsonProperty("workspaceId") String workspaceId,
+                              @JsonProperty("codenvyToken") String codenvyToken) {
 
         this.url = url;
         this.projectName = projectName;

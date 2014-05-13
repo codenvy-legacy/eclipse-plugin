@@ -42,7 +42,7 @@ import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
-import com.codenvy.eclipse.core.team.CodenvyProviderMetaData;
+import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
@@ -81,7 +81,7 @@ public class PushHandler extends AbstractHandler {
         if (!resources.isEmpty()) {
             final IProject project = resources.get(0).getProject();
             final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(project);
-            final CodenvyProviderMetaData codenvyProviderMetaData = codenvyProvider.getProviderMetaData();
+            final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
             final BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
             final ServiceReference<RestServiceFactory> serviceReference = bundleContext.getServiceReference(RestServiceFactory.class);
 
@@ -89,11 +89,11 @@ public class PushHandler extends AbstractHandler {
 
                 if (serviceReference != null) {
                     final RestServiceFactory restServiceFactory = bundleContext.getService(serviceReference);
-                    final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, codenvyProviderMetaData.url, new CodenvyToken(codenvyProviderMetaData.codenvyToken));
+                    final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, metaProject.url, new CodenvyToken(metaProject.codenvyToken));
 
                     for (IResource oneResource : resources) {
-                        final CodenvyProject codenvyProject = new CodenvyProject(null, null, null, null, null, codenvyProviderMetaData.projectName, null, null, null, null, null);
-                        projectService.updateCodenvyResource(codenvyProject, codenvyProviderMetaData.workspaceId, oneResource);
+                        final CodenvyProject codenvyProject = new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null);
+                        projectService.updateCodenvyResource(codenvyProject, metaProject.workspaceId, oneResource);
                     }
                 }
 
