@@ -259,7 +259,13 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                     return;
                 }
 
+                String currentUsername = usernames.getText();
+                usernames.removeAll();
+                usernames.setText(currentUsername);
                 for (final String username : codenvySecureStorageService.getUsernamesForURL(urls.getText())) {
+                    if (currentUsername.equals(username)) {
+                        continue;
+                    }
                     usernames.add(username);
                 }
 
