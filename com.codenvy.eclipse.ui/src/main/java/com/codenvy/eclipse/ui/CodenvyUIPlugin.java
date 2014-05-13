@@ -16,7 +16,7 @@
  */
 package com.codenvy.eclipse.ui;
 
-import static com.codenvy.eclipse.ui.utils.ImageConstants.WIZARD_LOGO;
+import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;

@@ -14,14 +14,14 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.utils;
+package com.codenvy.eclipse.ui;
 
 /**
  * Image registry constants.
  * 
  * @author Kevin Pollet
  */
-public final class ImageConstants {
+public final class Images {
     /**
      * Codenvy wizard logo.
      */
@@ -30,6 +30,6 @@ public final class ImageConstants {
     /**
      * Disable instantiation.
      */
-    private ImageConstants() {
+    private Images() {
     }
 }

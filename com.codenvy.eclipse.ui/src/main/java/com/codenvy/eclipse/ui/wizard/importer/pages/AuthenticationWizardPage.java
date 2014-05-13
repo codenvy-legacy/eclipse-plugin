@@ -16,7 +16,7 @@
  */
 package com.codenvy.eclipse.ui.wizard.importer.pages;
 
-import static com.codenvy.eclipse.ui.utils.ImageConstants.WIZARD_LOGO;
+import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;

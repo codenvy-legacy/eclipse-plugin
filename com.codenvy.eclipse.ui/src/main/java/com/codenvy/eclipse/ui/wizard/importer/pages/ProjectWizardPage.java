@@ -75,7 +75,7 @@ import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyUser;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
-import com.codenvy.eclipse.ui.utils.ImageConstants;
+import com.codenvy.eclipse.ui.Images;
 import com.google.common.base.Optional;
 
 /**
@@ -105,7 +105,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
         setTitle("Codenvy Projects");
         setDescription("Select Codenvy projects to import");
-        setImageDescriptor(CodenvyUIPlugin.getDefault().getImageRegistry().getDescriptor(ImageConstants.WIZARD_LOGO));
+        setImageDescriptor(CodenvyUIPlugin.getDefault().getImageRegistry().getDescriptor(Images.WIZARD_LOGO));
         setPageComplete(false);
     }
 
