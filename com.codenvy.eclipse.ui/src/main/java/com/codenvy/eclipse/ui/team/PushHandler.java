@@ -16,8 +16,7 @@
  */
 package com.codenvy.eclipse.ui.team;
 
-import static com.google.common.collect.Lists.newArrayList;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,7 +25,6 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.team.core.RepositoryProvider;
@@ -41,11 +39,8 @@ import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.team.CodenvyProvider;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
-import com.google.common.base.Function;
-import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
+import com.codenvy.eclipse.core.team.CodenvyProvider;
 
 /**
  * Handler pushing resource data to Codenvy.
@@ -56,19 +51,17 @@ public class PushHandler extends AbstractHandler {
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
         final ISelection selection = HandlerUtil.getCurrentSelection(event);
-        List<IResource> resources = Collections.emptyList();
+        List<IResource> resources = new ArrayList<>();
 
         if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
             final IStructuredSelection structuredSelection = (IStructuredSelection)selection;
-            resources = FluentIterable.from(newArrayList(structuredSelection.toArray()))
-                                      .transform(new Function<Object, IResource>() {
-                                          @Override
-                                          public IResource apply(Object adaptable) {
-                                              return (IResource)((IAdaptable)adaptable).getAdapter(IResource.class);
-                                          }
-                                      })
-                                      .filter(Predicates.notNull())
-                                      .toList();
+            
+            for (Object oneObject : structuredSelection.toArray()) {
+                final IResource oneResource = ResourceUtil.getResource(oneObject);
+                if (oneResource != null) {
+                    resources.add(oneResource);
+                }
+            }
         }
         else {
             final IEditorInput editorInput = HandlerUtil.getActiveEditorInput(event);
