@@ -9,6 +9,12 @@ import com.codenvy.eclipse.core.CodenvySecureStorageService;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 
+/**
+ * Convenient OSGI service that provides all the operations related to secure storage for Codenvy credentials. This is the default
+ * implementation.
+ * 
+ * @author Stéphane Daviet
+ */
 public class DefaultCodenvySecureStorageService implements CodenvySecureStorageService {
     private static final String CODENVY_PASSWORD_KEY_NAME            = "password";
     private static final String CODENVY_PASSWORD_TOKEN_NAME          = "token";

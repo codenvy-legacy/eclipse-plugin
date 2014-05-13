@@ -59,6 +59,7 @@ import com.google.common.base.Optional;
  * Authentication wizard page. In this wizard page the user authenticates with the Codenvy platform by it's URL, Username and Password.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
     private static final String          CODENVY_URL = "https://codenvy.com";
