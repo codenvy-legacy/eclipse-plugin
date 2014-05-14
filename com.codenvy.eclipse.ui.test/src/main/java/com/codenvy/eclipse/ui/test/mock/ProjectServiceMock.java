@@ -34,17 +34,38 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
  */
 public class ProjectServiceMock implements ProjectService {
     public static final String         MOCK_PROJECT_NAME        = "prj1";
-    public static final String         MOCK_PROJECT_TYPE_NAME   = "spring";
+    public static final String         MOCK_PROJECT_TYPE_NAME   = "maven";
     public static final String         MOCK_PROJECT_DESCRIPTION = "prj1-description";
 
     private final List<CodenvyProject> projects;
 
     public ProjectServiceMock(String url, CodenvyToken codenvyToken) {
         this.projects = new ArrayList<>();
-        this.projects.add(new CodenvyProject(null, null, null, null, MOCK_PROJECT_TYPE_NAME, MOCK_PROJECT_NAME, MOCK_PROJECT_DESCRIPTION, null, null, null, null));
-        this.projects.add(new CodenvyProject(null, null, null, null, "java", "prj2", "prj2-description", null, null, null, null));
-        this.projects.add(new CodenvyProject(null, null, null, null, "angular", "prj3", "prj3-description", null, null, null, null));
-        this.projects.add(new CodenvyProject(null, null, null, null, "codenvy", "prj4", "prj4-description", null, null, null, null));
+
+        final CodenvyProject prj1 = new CodenvyProject.Builder().withName(MOCK_PROJECT_NAME)
+                                                                .withProjectTypeName(MOCK_PROJECT_TYPE_NAME)
+                                                                .withDescription(MOCK_PROJECT_DESCRIPTION)
+                                                                .build();
+
+        final CodenvyProject prj2 = new CodenvyProject.Builder().withName("prj2")
+                                                                .withProjectTypeName("maven")
+                                                                .withDescription("prj2-description")
+                                                                .build();
+
+        final CodenvyProject prj3 = new CodenvyProject.Builder().withName("prj3")
+                                                                .withProjectTypeName("maven")
+                                                                .withDescription("prj3-description")
+                                                                .build();
+
+        final CodenvyProject prj4 = new CodenvyProject.Builder().withName("prj4")
+                                                                .withProjectTypeName("maven")
+                                                                .withDescription("prj4-description")
+                                                                .build();
+
+        this.projects.add(prj1);
+        this.projects.add(prj2);
+        this.projects.add(prj3);
+        this.projects.add(prj4);
     }
 
     @Override

@@ -72,9 +72,12 @@ public class UpdateHandler extends AbstractResourceHandler {
                                 try {
                                 
                                     for (IResource oneResource : resources) {
-                                        final CodenvyProject codenvyProject = new CodenvyProject(null, null, null, metaProject.workspaceId, null, metaProject.projectName, null, null, null, null, null);
+                                        final CodenvyProject codenvyProject = new CodenvyProject.Builder().withName(metaProject.projectName)
+                                                                                                          .withWorkspaceId(metaProject.workspaceId)
+                                                                                                          .build();
+
                                         EclipseProjectHelper.updateIResource(codenvyProject, oneResource, projectService, monitor);
-                                        
+
                                         monitor.worked(1);
                                     }
                                     

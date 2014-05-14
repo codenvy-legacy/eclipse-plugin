@@ -42,7 +42,7 @@ public class ProjectServiceTest extends RestApiBaseTest {
     private static ProjectService   projectService;
     private static WorkspaceService workspaceService;
     private static WorkspaceRef     defaultWorkspace;
-    private static CodenvyProject          projectPrj1;
+    private static CodenvyProject   projectPrj1;
 
     @BeforeClass
     public static void initialize() {
@@ -62,7 +62,12 @@ public class ProjectServiceTest extends RestApiBaseTest {
         defaultWorkspace = workspaceService.getWorkspaceByName("default");
         Assert.assertNotNull(defaultWorkspace);
 
-        projectPrj1 = new CodenvyProject(null, null, "jar", null, null, "prj1", "description", defaultWorkspace.name, null, null, null);
+        projectPrj1 = new CodenvyProject.Builder().withProjectTypeId("maven")
+                                                  .withName("prj1")
+                                                  .withDescription("description")
+                                                  .withWorkspaceName(defaultWorkspace.name)
+                                                  .build();
+
         Assert.assertNotNull(projectService.newProject(projectPrj1, defaultWorkspace.id));
     }
 

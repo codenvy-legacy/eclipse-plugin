@@ -45,7 +45,11 @@ public class DefaultCodenvyMetaResource implements CodenvyMetaResource {
 
             if (metaProject != null) {
                 final ProjectService projectService = new DefaultProjectService(metaProject.url, new CodenvyToken(metaProject.codenvyToken));
-                this.tracked = projectService.isResourceInProject(new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null), metaProject.workspaceId, resource);
+                final CodenvyProject codenvyProject = new CodenvyProject.Builder().withName(metaProject.projectName)
+                                                                                  .withWorkspaceId(metaProject.workspaceId)
+                                                                                  .build();
+                
+                this.tracked = projectService.isResourceInProject(codenvyProject, metaProject.workspaceId, resource);
             }
             else {
                 this.tracked = false;

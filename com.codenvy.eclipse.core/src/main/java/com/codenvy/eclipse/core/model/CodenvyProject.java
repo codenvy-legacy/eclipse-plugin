@@ -62,17 +62,17 @@ public class CodenvyProject {
      */
     @JsonCreator
     public CodenvyProject(
-                   @JsonProperty("url") String url,
-                   @JsonProperty("visibility") String visibility,
-                   @JsonProperty("projectTypeId") String projectTypeId,
-                   @JsonProperty("workspaceId") String workspaceId,
-                   @JsonProperty("projectTypeName") String projectTypeName,
-                   @JsonProperty("name") String name,
-                   @JsonProperty("description") String description,
-                   @JsonProperty("workspaceName") String workspaceName,
-                   @JsonProperty("modificationDate") Date modificationDate,
-                   @JsonProperty("creationDate") Date creationDate,
-                   @JsonProperty("ideUrl") String ideUrl) {
+                          @JsonProperty("url") String url,
+                          @JsonProperty("visibility") String visibility,
+                          @JsonProperty("projectTypeId") String projectTypeId,
+                          @JsonProperty("workspaceId") String workspaceId,
+                          @JsonProperty("projectTypeName") String projectTypeName,
+                          @JsonProperty("name") String name,
+                          @JsonProperty("description") String description,
+                          @JsonProperty("workspaceName") String workspaceName,
+                          @JsonProperty("modificationDate") Date modificationDate,
+                          @JsonProperty("creationDate") Date creationDate,
+                          @JsonProperty("ideUrl") String ideUrl) {
 
         this.url = url;
         this.visibility = visibility;
@@ -85,6 +85,74 @@ public class CodenvyProject {
         this.modificationDate = modificationDate;
         this.creationDate = creationDate;
         this.ideUrl = ideUrl;
+    }
+
+
+    /**
+     * The Codenvy project builder.
+     * 
+     * @author Kevin Pollet
+     */
+    public static class Builder {
+        private String url;
+        private String visibility;
+        private String projectTypeId;
+        private String workspaceId;
+        private String projectTypeName;
+        private String name;
+        private String description;
+        private String workspaceName;
+        private String ideUrl;
+
+        public Builder withUrl(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public Builder withVisibility(String visibility) {
+            this.visibility = visibility;
+            return this;
+        }
+
+        public Builder withProjectTypeId(String projectTypeId) {
+            this.projectTypeId = projectTypeId;
+            return this;
+        }
+
+        public Builder withWorkspaceId(String workspaceId) {
+            this.workspaceId = workspaceId;
+            return this;
+        }
+
+        public Builder withProjectTypeName(String projectTypeName) {
+            this.projectTypeName = projectTypeName;
+            return this;
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder withWorkspaceName(String workspaceName) {
+            this.workspaceName = workspaceName;
+            return this;
+        }
+
+        public Builder withIdeUrl(String ideUrl) {
+            this.ideUrl = ideUrl;
+            return this;
+        }
+
+        public CodenvyProject build() {
+            return new CodenvyProject(url, visibility, projectTypeId, workspaceId, projectTypeName, name, description, workspaceName,
+                                      null, new Date(), ideUrl);
+        }
     }
 
     @Override
