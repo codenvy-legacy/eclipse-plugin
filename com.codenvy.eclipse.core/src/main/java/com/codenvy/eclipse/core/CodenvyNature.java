@@ -47,7 +47,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Enums;
-import com.google.common.base.Optional;
 import com.google.common.collect.ObjectArrays;
 
 /**
