@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -34,7 +35,10 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IProjectNatureDescriptor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.m2e.core.MavenPlugin;
 
@@ -54,11 +58,13 @@ public class CodenvyNature implements IProjectNature {
     private static final String       MAVEN_NATURE_ID      = "org.eclipse.m2e.core.maven2Nature";
     private static final String       SPRING_NATURE_ID     = "org.springframework.ide.eclipse.core.springnature";
     private static final String       JAVASCRIPT_NATURE_ID = "org.eclipse.wst.jsdt.core.jsNature";
+
     private static final String       BUILDER_NAME_KEY     = "builder.name";
     private static final String       MAVEN_BUILDER_NAME   = "maven";
 
     private IProject                  codenvyProject;
     private Map<String, List<String>> natureMappings;
+    private Map<String, List<String>> builderMappings;
 
     public CodenvyNature() {
         natureMappings = new HashMap<>();
@@ -66,45 +72,82 @@ public class CodenvyNature implements IProjectNature {
         natureMappings.put("jar", newArrayList(JavaCore.NATURE_ID));
         natureMappings.put("war", newArrayList(JavaCore.NATURE_ID));
         natureMappings.put("AngularJS", newArrayList(JAVASCRIPT_NATURE_ID));
+
+        builderMappings = new HashMap<>();
+        builderMappings.put("spring", newArrayList(JavaCore.BUILDER_ID));
+        builderMappings.put("jar", newArrayList(JavaCore.BUILDER_ID));
+        builderMappings.put("war", newArrayList(JavaCore.BUILDER_ID));
     }
 
     @Override
     public void configure() throws CoreException {
-        final CodenvyProjectDescriptor codenvyProjectDescriptor;
         final IFolder codenvyDesciptorFolder = codenvyProject.getFolder(".codenvy");
         final IFile codenvyDesciptorFile = codenvyDesciptorFolder.getFile("project");
-        final IProjectDescription codenvyProjectDescription = codenvyProject.getDescription();
 
         if (codenvyDesciptorFile.exists()) {
-            try (InputStream inputStream = codenvyDesciptorFile.getContents()) {
 
-                final ObjectMapper mapper = new ObjectMapper();
-                codenvyProjectDescriptor = mapper.readValue(codenvyDesciptorFile.getContents(), CodenvyProjectDescriptor.class);
+            final Job job = new Job("Configure project") {
+                @Override
+                protected IStatus run(IProgressMonitor monitor) {
+                    monitor.beginTask("Configure project natures and builders", IProgressMonitor.UNKNOWN);
 
-                final List<String> naturesToAdd = natureMappings.get(codenvyProjectDescriptor.type);
-                if (naturesToAdd != null) {
-                    final List<String> natures = new ArrayList<>(asList(codenvyProjectDescription.getNatureIds()));
-                    for (String oneNature : naturesToAdd) {
-                        if (isNatureWithId(oneNature)) {
-                            natures.add(oneNature);
+                    try (InputStream inputStream = codenvyDesciptorFile.getContents()) {
+
+                        final CodenvyProjectDescriptor codenvyProjectDescriptor;
+                        final IProjectDescription codenvyProjectDescription = codenvyProject.getDescription();
+
+                        final ObjectMapper mapper = new ObjectMapper();
+                        codenvyProjectDescriptor = mapper.readValue(codenvyDesciptorFile.getContents(), CodenvyProjectDescriptor.class);
+
+                        final List<String> naturesToAdd = natureMappings.get(codenvyProjectDescriptor.type);
+                        if (naturesToAdd != null) {
+                            final List<String> natures = new ArrayList<>(asList(codenvyProjectDescription.getNatureIds()));
+                            for (String oneNature : naturesToAdd) {
+                                if (isNatureWithId(oneNature)) {
+                                    natures.add(oneNature);
+                                }
+                            }
+
+                            codenvyProjectDescription.setNatureIds(natures.toArray(new String[0]));
                         }
+
+                        final List<String> buildersToAdd = builderMappings.get(codenvyProjectDescriptor.type);
+                        if (buildersToAdd != null) {
+                            final List<ICommand> builders = new ArrayList<>();
+                            for (String oneBuilder : buildersToAdd) {
+                                final ICommand command = codenvyProjectDescription.newCommand();
+                                command.setBuilderName(oneBuilder);
+                                builders.add(command);
+                            }
+
+                            codenvyProjectDescription.setBuildSpec(builders.toArray(new ICommand[0]));
+                        }
+
+                        // save nature and builders added to the project
+                        codenvyProject.setDescription(codenvyProjectDescription, monitor);
+
+                        final String builderName = codenvyProjectDescriptor.properties.get(BUILDER_NAME_KEY);
+                        if (MAVEN_BUILDER_NAME.equals(builderName)) {
+                            codenvyProjectDescription.setNatureIds(ObjectArrays.concat(codenvyProjectDescription.getNatureIds(),
+                                                                                       MAVEN_NATURE_ID));
+                            codenvyProject.setDescription(codenvyProjectDescription, monitor);
+                            MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(codenvyProject, monitor);
+                        }
+
+                    } catch (CoreException | IOException e) {
+                        throw new RuntimeException(e);
+
+                    } finally {
+                        monitor.done();
                     }
 
-                    codenvyProjectDescription.setNatureIds(natures.toArray(new String[0]));
-                    codenvyProject.setDescription(codenvyProjectDescription, new NullProgressMonitor());
+                    return Status.OK_STATUS;
                 }
+            };
 
-                final String builderName = codenvyProjectDescriptor.properties.get(BUILDER_NAME_KEY);
-                if (MAVEN_BUILDER_NAME.equals(builderName)) {
-                    codenvyProjectDescription.setNatureIds(ObjectArrays.concat(codenvyProjectDescription.getNatureIds(), MAVEN_NATURE_ID));
-                    codenvyProject.setDescription(codenvyProjectDescription, new NullProgressMonitor());
-                    MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(codenvyProject, new NullProgressMonitor());
-                }
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            job.schedule();
         }
+
     }
 
     @Override
