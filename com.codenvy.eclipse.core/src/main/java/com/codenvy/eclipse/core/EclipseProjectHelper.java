@@ -35,6 +35,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.team.core.RepositoryProvider;
 
@@ -61,10 +62,8 @@ public final class EclipseProjectHelper {
         checkNotNull(stream);
         checkNotNull(metaProject);
 
-        final SubMonitor subMonitor = SubMonitor.convert(monitor);
+        final SubMonitor subMonitor = SubMonitor.convert(monitor, "Create project " + metaProject.projectName, 1);
         final IProject newProject = ResourcesPlugin.getWorkspace().getRoot().getProject(metaProject.projectName);
-
-        subMonitor.setTaskName("Create project " + metaProject.projectName);
 
         try (ZipInputStream zipInputStream = stream) {
 
@@ -72,31 +71,7 @@ public final class EclipseProjectHelper {
                 newProject.create(subMonitor);
                 newProject.open(subMonitor);
 
-                ZipEntry entry;
-                while ((entry = zipInputStream.getNextEntry()) != null) {
-                    subMonitor.setWorkRemaining(1000);
-
-                    final String entryName = entry.getName();
-
-                    if (entry.isDirectory()) {
-                        final IFolder folder = newProject.getFolder(entryName);
-                        folder.create(true, true, subMonitor);
-
-                    } else {
-                        int b;
-                        final IFile file = newProject.getFile(entryName);
-                        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-                        while ((b = zipInputStream.read()) != -1) {
-                            byteArrayOutputStream.write(b);
-                        }
-
-                        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                        file.create(byteArrayInputStream, true, subMonitor);
-                    }
-
-                    subMonitor.worked(1);
-                }
+                createOrUpdateResourcesFromZip(stream, newProject, subMonitor);
 
                 try {
 
@@ -111,6 +86,8 @@ public final class EclipseProjectHelper {
                     throw new RuntimeException(e);
                 }
             }
+            
+            subMonitor.worked(1);
 
         } catch (CoreException | IOException e) {
             throw new RuntimeException(e);
@@ -184,22 +161,40 @@ public final class EclipseProjectHelper {
     }
 
     /**
-     * Updates the given {@link IFile} with the given {@link InputStream} content.
+     * Updates the given {@link IResource} from codenvy (no resource are deleted).
      * 
-     * @param stream the {@link InputStream}.
-     * @param file the {@link IFile} to update.
+     * @param codenvyProject the {@link CodenvyProject}.
+     * @param resource the {@link IResource} to update in Codenvy.
+     * @param projectService the {@link ProjectService} instance.
      * @param monitor the {@link IProgressMonitor} or {@code null} if none.
      * @throws NullPointerException if stream, file or monitor parameter is {@code null}.
      */
-    public static void updateIFile(InputStream stream, IFile file, IProgressMonitor monitor) {
-        checkNotNull(stream);
-        checkNotNull(file);
+    public static void updateIResource(CodenvyProject codenvyProject,
+                                       IResource resource,
+                                       ProjectService projectService,
+                                       IProgressMonitor monitor) {
+        checkNotNull(codenvyProject);
+        checkNotNull(resource);
+        checkNotNull(projectService);
 
-        final SubMonitor subMonitor = SubMonitor.convert(monitor, 1);
+        final SubMonitor subMonitor = SubMonitor.convert(monitor, "Update " + resource.getName(), 1);
 
         try {
 
-            file.setContents(stream, true, true, monitor);
+            switch (resource.getType()) {
+                case IResource.FILE: {
+                    final InputStream stream = projectService.getFile(codenvyProject, codenvyProject.workspaceId, resource.getProjectRelativePath().toString());
+                    ((IFile) resource).setContents(stream, true, true, monitor);
+                }
+                    break;
+
+                case IResource.FOLDER:
+                case IResource.PROJECT: {
+                    final ZipInputStream stream = projectService.exportResources(codenvyProject, codenvyProject.workspaceId, resource.getProjectRelativePath().toString());
+                    createOrUpdateResourcesFromZip(stream, (IContainer)resource, subMonitor);
+                }
+                    break;
+            }
 
             subMonitor.worked(1);
 
@@ -211,6 +206,53 @@ public final class EclipseProjectHelper {
         }
     }
 
+    private static void createOrUpdateResourcesFromZip(ZipInputStream stream, IContainer container, IProgressMonitor monitor) {
+        final SubMonitor subMonitor = SubMonitor.convert(monitor);
+        subMonitor.setTaskName("Create resources");
+    
+        try (ZipInputStream zipInputStream = stream) {
+            
+            ZipEntry entry;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                subMonitor.setWorkRemaining(1000);
+
+                final String entryName = entry.getName();
+
+                if (entry.isDirectory()) {
+                    final IFolder folder = container.getFolder(new Path(entryName));
+                    if (!folder.exists()) {
+                        folder.create(true, true, subMonitor);
+                    }
+
+                } else {
+                    int b;
+                    final IFile file = container.getFile(new Path(entryName));
+                    final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+                    while ((b = zipInputStream.read()) != -1) {
+                        byteArrayOutputStream.write(b);
+                    }
+
+                    final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                    if (file.exists()) {
+                        file.setContents(byteArrayInputStream, true,  true, subMonitor);
+                    } else {
+                        file.create(byteArrayInputStream, true, subMonitor);
+                    }
+                }
+
+                subMonitor.worked(1);
+            }
+        
+        } catch (CoreException | IOException e) {
+            throw new RuntimeException(e);
+            
+        } finally {
+            subMonitor.done();
+        }
+    }
+    
+    
     /**
      * Disable instantiation.
      */

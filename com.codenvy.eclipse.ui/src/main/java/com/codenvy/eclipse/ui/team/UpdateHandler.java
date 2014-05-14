@@ -16,13 +16,11 @@
  */
 package com.codenvy.eclipse.ui.team;
 
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -74,12 +72,8 @@ public class UpdateHandler extends AbstractResourceHandler {
                                 try {
                                 
                                     for (IResource oneResource : resources) {
-                                        if (oneResource.getType() == IResource.FILE) {
-                                            final CodenvyProject codenvyProject = new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null);
-                                            final InputStream fileInputStream = projectService.getFile(codenvyProject, metaProject.workspaceId, oneResource.getProjectRelativePath().toString());
-                                            
-                                            EclipseProjectHelper.updateIFile(fileInputStream, (IFile) oneResource, monitor);
-                                        }
+                                        final CodenvyProject codenvyProject = new CodenvyProject(null, null, null, metaProject.workspaceId, null, metaProject.projectName, null, null, null, null, null);
+                                        EclipseProjectHelper.updateIResource(codenvyProject, oneResource, projectService, monitor);
                                         
                                         monitor.worked(1);
                                     }
