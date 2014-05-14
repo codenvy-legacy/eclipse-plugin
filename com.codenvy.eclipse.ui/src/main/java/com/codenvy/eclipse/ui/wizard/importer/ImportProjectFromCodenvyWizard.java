@@ -20,6 +20,7 @@ import static com.google.common.collect.ObjectArrays.concat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
@@ -44,10 +45,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.EclipseProjectHelper;
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ImportWizardSharedData;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
@@ -126,19 +129,18 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                         try {
 
                             final List<CodenvyProject> projectsToImport = importWizardSharedData.getProjects();
-                            monitor.beginTask("Importing project", projectsToImport.size());
+                            monitor.beginTask("Importing projects", projectsToImport.size());
 
                             final String url = importWizardSharedData.getUrl().get();
                             final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
                             final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
-                            final List<IProject> exportedProjects = new ArrayList<>();
+                            final List<IProject> importedProjects = new ArrayList<>();
                             final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
 
-                            for (CodenvyProject oneProjectToImport : projectsToImport) {
-                                monitor.subTask(oneProjectToImport.name);
-
-                                final IProject project = projectService.importProject(oneProjectToImport, oneProjectToImport.workspaceId);
-                                exportedProjects.add(project);
+                            for (CodenvyProject oneProject : projectsToImport) {
+                                final ZipInputStream zipInputStream = projectService.exportResources(oneProject, oneProject.workspaceId, null);
+                                final IProject newProject = EclipseProjectHelper.createIProjectFromZipStream(zipInputStream, new CodenvyMetaProject(url, oneProject.name, oneProject.workspaceId, token.value), monitor);
+                                importedProjects.add(newProject);
 
                                 monitor.worked(1);
                             }
@@ -146,7 +148,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                             if (importWizardSharedData.getWorkingSet().isPresent()) {
                                 final IWorkingSet workingSet = importWizardSharedData.getWorkingSet().get();
                                 final boolean workingSetExists = workingSetManager.getWorkingSet(workingSet.getName()) != null;
-                                final IAdaptable[] workingSetElements = concat( workingSet.getElements(), workingSet.adaptElements(exportedProjects.toArray(new IProject[exportedProjects.size()])), IAdaptable.class);
+                                final IAdaptable[] workingSetElements = concat( workingSet.getElements(), workingSet.adaptElements(importedProjects.toArray(new IProject[importedProjects.size()])), IAdaptable.class);
 
                                 workingSet.setElements(workingSetElements);
                                 if (!workingSetExists) {

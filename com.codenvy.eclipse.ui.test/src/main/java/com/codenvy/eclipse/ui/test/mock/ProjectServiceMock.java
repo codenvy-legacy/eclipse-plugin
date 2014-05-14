@@ -16,11 +16,11 @@
  */
 package com.codenvy.eclipse.ui.test.mock;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
 import com.codenvy.eclipse.core.ProjectService;
@@ -61,12 +61,12 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public IProject importProject(CodenvyProject project, String workspaceId) {
+    public ZipInputStream exportResources(CodenvyProject project, String workspaceId, String resourcePath) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateProjectResource(CodenvyProject project, String workspaceId, IResource resource) {
+    public void updateFile(CodenvyProject project, String workspaceId, String filePath, InputStream fileInputStream) {
         throw new UnsupportedOperationException();
     }
 
@@ -76,7 +76,7 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public void updateEclipseFile(CodenvyProject project, String workspaceId, IFile file) {
+    public InputStream getFile(CodenvyProject project, String workspaceId, String filePath) {
         throw new UnsupportedOperationException();
     }
 }

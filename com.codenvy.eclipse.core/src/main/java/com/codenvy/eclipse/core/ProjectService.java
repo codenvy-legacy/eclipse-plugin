@@ -16,10 +16,10 @@
  */
 package com.codenvy.eclipse.core;
 
+import java.io.InputStream;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
 import com.codenvy.eclipse.core.model.CodenvyProject;
@@ -52,26 +52,38 @@ public interface ProjectService extends RestServiceWithAuth {
     CodenvyProject newProject(CodenvyProject project, String workspaceId);
 
     /**
-     * Imports given project from the given workspace into Eclipse.
+     * Exports a resource in the given project.
      * 
-     * @param project the project to export.
+     * @param project the project.
      * @param workspaceId the workspace id.
-     * @return the imported project as an instance of {@linkplain IProject}.
-     * @throws NullPointerException if project or workspaceId parameter is {@code null}.
+     * @param resourcePath the path of the resource to export, must be a folder.
+     * @return the resource {@link ZipInputStream} or {@code null} if the resource is not found.
+     * @throws NullPointerException if project, workspaceId parameter is {@code null}.
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
-    IProject importProject(CodenvyProject project, String workspaceId);
+    ZipInputStream exportResources(CodenvyProject project, String workspaceId, String resourcePath);
 
     /**
-     * Updates the given resource in the given project of the given workspace.
+     * Updates a resource in the given project.
      * 
-     * @param project the Codenvy project.
+     * @param project the project.
      * @param workspaceId the workspace id.
-     * @param resource the resource to update.
-     * @throws NullPointerException if project, workspaceId or resource parameter is {@code null}.
-     * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
+     * @param filePath the path to the file to update.
+     * @param fileInputStream the file {@link InputStream}.
+     * @throws NullPointerException if project, workspaceId, filePath or fileInputStream parameter is {@code null}.
+     * @throws IllegalArgumentException if workspaceId or filePath parameter is an empty {@linkplain String}.
      */
-    void updateProjectResource(CodenvyProject project, String workspaceId, IResource resource);
+    void updateFile(CodenvyProject project, String workspaceId, String filePath, InputStream fileInputStream);
+
+    /**
+     * Gets file content in the given project.
+     * 
+     * @param project the project.
+     * @param workspaceId the workspace id.
+     * @param filePath the file path.
+     * @return the file {@link InputStream} or {@code null} if not found.
+     */
+    InputStream getFile(CodenvyProject project, String workspaceId, String filePath);
 
     /**
      * Returns if the given resource exists in the given codenvy project.
@@ -85,15 +97,4 @@ public interface ProjectService extends RestServiceWithAuth {
      */
     // TODO workaround to check if a resource exists
     boolean isResourceInProject(CodenvyProject project, String workspaceId, IResource resource);
-
-    /**
-     * Updates the given file with the contents of the corresponding file in the given codenvy project.
-     * 
-     * @param project the Codenvy project.
-     * @param workspaceId the workspace id.
-     * @param file the file to update.
-     * @throws NullPointerException if project, workspaceId or file parameter is {@code null}.
-     * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
-     */
-    void updateEclipseFile(CodenvyProject project, String workspaceId, IFile file);
 }

@@ -17,11 +17,10 @@
 package com.codenvy.eclipse.core.test;
 
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
-import org.eclipse.core.resources.IProject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -30,8 +29,8 @@ import org.osgi.framework.ServiceReference;
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.WorkspaceService;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 
 /**
@@ -82,10 +81,9 @@ public class ProjectServiceTest extends RestApiBaseTest {
     }
 
     @Test
-    @Ignore
-    public void testImportProject() {
-        final IProject project = projectService.importProject(projectPrj1, defaultWorkspace.id);
+    public void testExportResources() {
+        final ZipInputStream zipInputStream = projectService.exportResources(projectPrj1, defaultWorkspace.id, null);
 
-        Assert.assertNotNull(project);
+        Assert.assertNotNull(zipInputStream);
     }
 }

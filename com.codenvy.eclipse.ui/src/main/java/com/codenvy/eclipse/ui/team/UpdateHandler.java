@@ -16,6 +16,8 @@
  */
 package com.codenvy.eclipse.ui.team;
 
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -23,11 +25,16 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.team.core.RepositoryProvider;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.EclipseProjectHelper;
 import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.model.CodenvyProject;
@@ -42,7 +49,7 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
  */
 public class UpdateHandler extends AbstractResourceHandler {
     @Override
-    public Object execute(List<IResource> resources, ExecutionEvent event) throws ExecutionException {
+    public Object execute(final List<IResource> resources, ExecutionEvent event) throws ExecutionException {
         if (!resources.isEmpty()) {
             final IProject project = resources.get(0).getProject();
             final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(project);
@@ -54,16 +61,40 @@ public class UpdateHandler extends AbstractResourceHandler {
 
                 if (serviceReference != null) {
                     final RestServiceFactory restServiceFactory = bundleContext.getService(serviceReference);
-                    final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, metaProject.url, new CodenvyToken(metaProject.codenvyToken));
-
-                    for (IResource oneResource : resources) {
-                        if (oneResource.getType() == IResource.FILE) {
-                            final CodenvyProject codenvyProject = new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null);
-                            projectService.updateEclipseFile(codenvyProject, metaProject.workspaceId, (IFile)oneResource);
-                        }
+                    
+                    if (restServiceFactory != null) {
+                        final IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+                        final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, metaProject.url, new CodenvyToken(metaProject.codenvyToken));                        
+                        
+                        progressService.run(false, false, new IRunnableWithProgress() {
+                            @Override
+                            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                                monitor.beginTask("Update resources", resources.size());
+                                
+                                try {
+                                
+                                    for (IResource oneResource : resources) {
+                                        if (oneResource.getType() == IResource.FILE) {
+                                            final CodenvyProject codenvyProject = new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null);
+                                            final InputStream fileInputStream = projectService.getFile(codenvyProject, metaProject.workspaceId, oneResource.getProjectRelativePath().toString());
+                                            
+                                            EclipseProjectHelper.updateIFile(fileInputStream, (IFile) oneResource, monitor);
+                                        }
+                                        
+                                        monitor.worked(1);
+                                    }
+                                    
+                                } finally {
+                                    monitor.done();
+                                }
+                            }
+                        });
                     }
                 }
 
+            } catch (InvocationTargetException | InterruptedException e) {
+                throw new RuntimeException(e);
+                
             } finally {
                 bundleContext.ungetService(serviceReference);
             }
