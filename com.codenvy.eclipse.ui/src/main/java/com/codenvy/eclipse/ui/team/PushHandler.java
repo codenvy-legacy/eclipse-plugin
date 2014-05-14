@@ -64,7 +64,7 @@ public class PushHandler extends AbstractResourceHandler {
                         final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, metaProject.url, new CodenvyToken(metaProject.codenvyToken));
                         final IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
                         
-                        progressService.run(false, false, new IRunnableWithProgress() {
+                        progressService.run(true, false, new IRunnableWithProgress() {
                             @Override
                             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                                 monitor.beginTask("Update resources", resources.size());
