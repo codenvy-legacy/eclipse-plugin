@@ -68,12 +68,10 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public CodenvyProject newProject(CodenvyProject project, String workspaceId) {
+    public CodenvyProject newProject(CodenvyProject project) {
         checkNotNull(project);
-        checkNotNull(workspaceId);
-        checkArgument(!workspaceId.trim().isEmpty());
 
-        return getWebTarget().path(workspaceId)
+        return getWebTarget().path(project.workspaceId)
                              .queryParam("name", project.name)
                              .request()
                              .accept(APPLICATION_JSON)
@@ -81,12 +79,10 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public ZipInputStream exportResources(CodenvyProject project, String workspaceId, String resourcePath) {
+    public ZipInputStream exportResources(CodenvyProject project, String resourcePath) {
         checkNotNull(project);
-        checkNotNull(workspaceId);
-        checkArgument(!workspaceId.trim().isEmpty());
 
-        final InputStream stream = getWebTarget().path(workspaceId)
+        final InputStream stream = getWebTarget().path(project.workspaceId)
                                                  .path("export")
                                                  .path(project.name)
                                                  .path(resourcePath == null ? "" : resourcePath)
@@ -97,15 +93,13 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public void updateFile(CodenvyProject project, String workspaceId, String filePath, InputStream fileInputStream) {
+    public void updateFile(CodenvyProject project, String filePath, InputStream fileInputStream) {
         checkNotNull(project);
-        checkNotNull(workspaceId);
-        checkArgument(!workspaceId.trim().isEmpty());
         checkNotNull(filePath);
         checkArgument(!filePath.trim().isEmpty());
         checkNotNull(fileInputStream);
 
-        getWebTarget().path(workspaceId)
+        getWebTarget().path(project.workspaceId)
                       .path("file")
                       .path(project.name)
                       .path(filePath)
@@ -114,14 +108,12 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public InputStream getFile(CodenvyProject project, String workspaceId, String filePath) {
+    public InputStream getFile(CodenvyProject project, String filePath) {
         checkNotNull(project);
-        checkNotNull(workspaceId);
-        checkArgument(!workspaceId.trim().isEmpty());
         checkNotNull(filePath);
         checkArgument(!filePath.trim().isEmpty());
 
-        return getWebTarget().path(workspaceId)
+        return getWebTarget().path(project.workspaceId)
                              .path("file")
                              .path(project.name)
                              .path(filePath)
@@ -130,13 +122,11 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public boolean isResourceInProject(CodenvyProject project, String workspaceId, IResource resource) {
+    public boolean isResourceInProject(CodenvyProject project, IResource resource) {
         checkNotNull(project);
-        checkNotNull(workspaceId);
-        checkArgument(!workspaceId.trim().isEmpty());
         checkNotNull(resource);
 
-        final Response response = getWebTarget().path(workspaceId)
+        final Response response = getWebTarget().path(project.workspaceId)
                                                 .path("file")
                                                 .path(project.name)
                                                 .path(resource.getProjectRelativePath().toString())

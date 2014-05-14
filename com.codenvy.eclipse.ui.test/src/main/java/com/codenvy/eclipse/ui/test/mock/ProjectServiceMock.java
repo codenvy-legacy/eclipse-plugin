@@ -77,27 +77,27 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public CodenvyProject newProject(CodenvyProject project, String workspaceId) {
+    public CodenvyProject newProject(CodenvyProject project) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ZipInputStream exportResources(CodenvyProject project, String workspaceId, String resourcePath) {
+    public ZipInputStream exportResources(CodenvyProject project, String resourcePath) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateFile(CodenvyProject project, String workspaceId, String filePath, InputStream fileInputStream) {
+    public void updateFile(CodenvyProject project, String filePath, InputStream fileInputStream) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isResourceInProject(CodenvyProject project, String workspaceId, IResource resource) {
+    public boolean isResourceInProject(CodenvyProject project, IResource resource) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public InputStream getFile(CodenvyProject project, String workspaceId, String filePath) {
+    public InputStream getFile(CodenvyProject project, String filePath) {
         throw new UnsupportedOperationException();
     }
 }

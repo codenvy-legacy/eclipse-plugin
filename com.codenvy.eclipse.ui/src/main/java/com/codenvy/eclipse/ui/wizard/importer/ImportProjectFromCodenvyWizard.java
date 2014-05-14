@@ -138,7 +138,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                             final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
 
                             for (CodenvyProject oneProject : projectsToImport) {
-                                final ZipInputStream zipInputStream = projectService.exportResources(oneProject, oneProject.workspaceId, null);
+                                final ZipInputStream zipInputStream = projectService.exportResources(oneProject, null);
                                 final IProject newProject = EclipseProjectHelper.createIProjectFromZipStream(zipInputStream, new CodenvyMetaProject(url, oneProject.name, oneProject.workspaceId, token.value), monitor);
                                 importedProjects.add(newProject);
 

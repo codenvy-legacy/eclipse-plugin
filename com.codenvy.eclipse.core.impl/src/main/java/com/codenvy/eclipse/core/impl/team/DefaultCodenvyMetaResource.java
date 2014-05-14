@@ -49,7 +49,7 @@ public class DefaultCodenvyMetaResource implements CodenvyMetaResource {
                                                                                   .withWorkspaceId(metaProject.workspaceId)
                                                                                   .build();
                 
-                this.tracked = projectService.isResourceInProject(codenvyProject, metaProject.workspaceId, resource);
+                this.tracked = projectService.isResourceInProject(codenvyProject, resource);
             }
             else {
                 this.tracked = false;

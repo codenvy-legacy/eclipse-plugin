@@ -127,8 +127,7 @@ public final class EclipseProjectHelper {
 
                     try {
 
-                        projectService.updateFile(codenvyProject, codenvyProject.workspaceId, file.getProjectRelativePath().toString(),
-                                                  file.getContents());
+                        projectService.updateFile(codenvyProject, file.getProjectRelativePath().toString(), file.getContents());
 
                         subMonitor.worked(1);
 
@@ -183,14 +182,14 @@ public final class EclipseProjectHelper {
 
             switch (resource.getType()) {
                 case IResource.FILE: {
-                    final InputStream stream = projectService.getFile(codenvyProject, codenvyProject.workspaceId, resource.getProjectRelativePath().toString());
+                    final InputStream stream = projectService.getFile(codenvyProject, resource.getProjectRelativePath().toString());
                     ((IFile) resource).setContents(stream, true, true, monitor);
                 }
                     break;
 
                 case IResource.FOLDER:
                 case IResource.PROJECT: {
-                    final ZipInputStream stream = projectService.exportResources(codenvyProject, codenvyProject.workspaceId, resource.getProjectRelativePath().toString());
+                    final ZipInputStream stream = projectService.exportResources(codenvyProject, resource.getProjectRelativePath().toString());
                     createOrUpdateResourcesFromZip(stream, (IContainer)resource, subMonitor);
                 }
                     break;

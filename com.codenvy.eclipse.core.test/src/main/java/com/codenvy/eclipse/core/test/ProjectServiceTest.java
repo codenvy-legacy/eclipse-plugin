@@ -65,10 +65,11 @@ public class ProjectServiceTest extends RestApiBaseTest {
         projectPrj1 = new CodenvyProject.Builder().withProjectTypeId("maven")
                                                   .withName("prj1")
                                                   .withDescription("description")
+                                                  .withWorkspaceId(defaultWorkspace.id)
                                                   .withWorkspaceName(defaultWorkspace.name)
                                                   .build();
 
-        Assert.assertNotNull(projectService.newProject(projectPrj1, defaultWorkspace.id));
+        Assert.assertNotNull(projectService.newProject(projectPrj1));
     }
 
     @Test(expected = NullPointerException.class)
@@ -87,7 +88,7 @@ public class ProjectServiceTest extends RestApiBaseTest {
 
     @Test
     public void testExportResources() {
-        final ZipInputStream zipInputStream = projectService.exportResources(projectPrj1, defaultWorkspace.id, null);
+        final ZipInputStream zipInputStream = projectService.exportResources(projectPrj1, null);
 
         Assert.assertNotNull(zipInputStream);
     }

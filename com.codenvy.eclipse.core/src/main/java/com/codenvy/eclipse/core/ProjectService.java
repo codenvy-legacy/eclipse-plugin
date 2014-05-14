@@ -44,57 +44,49 @@ public interface ProjectService extends RestServiceWithAuth {
      * Creates a project in the given workspace.
      * 
      * @param project the project to create.
-     * @param workspaceId the workspace id.
      * @return the new project, never {@code null}.
-     * @throws NullPointerException if project or workspaceId parameter is {@code null}.
-     * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
+     * @throws NullPointerException if project parameter is {@code null}.
      */
-    CodenvyProject newProject(CodenvyProject project, String workspaceId);
+    CodenvyProject newProject(CodenvyProject project);
 
     /**
      * Exports a resource in the given project.
      * 
      * @param project the project.
-     * @param workspaceId the workspace id.
      * @param resourcePath the path of the resource to export, must be a folder.
      * @return the resource {@link ZipInputStream} or {@code null} if the resource is not found.
-     * @throws NullPointerException if project, workspaceId parameter is {@code null}.
-     * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
+     * @throws NullPointerException if project parameter is {@code null}.
      */
-    ZipInputStream exportResources(CodenvyProject project, String workspaceId, String resourcePath);
+    ZipInputStream exportResources(CodenvyProject project, String resourcePath);
 
     /**
      * Updates a resource in the given project.
      * 
      * @param project the project.
-     * @param workspaceId the workspace id.
      * @param filePath the path to the file to update.
      * @param fileInputStream the file {@link InputStream}.
-     * @throws NullPointerException if project, workspaceId, filePath or fileInputStream parameter is {@code null}.
-     * @throws IllegalArgumentException if workspaceId or filePath parameter is an empty {@linkplain String}.
+     * @throws NullPointerException if project, filePath or fileInputStream parameter is {@code null}.
+     * @throws IllegalArgumentException if filePath parameter is an empty {@linkplain String}.
      */
-    void updateFile(CodenvyProject project, String workspaceId, String filePath, InputStream fileInputStream);
+    void updateFile(CodenvyProject project, String filePath, InputStream fileInputStream);
 
     /**
      * Gets file content in the given project.
      * 
      * @param project the project.
-     * @param workspaceId the workspace id.
      * @param filePath the file path.
      * @return the file {@link InputStream} or {@code null} if not found.
      */
-    InputStream getFile(CodenvyProject project, String workspaceId, String filePath);
+    InputStream getFile(CodenvyProject project, String filePath);
 
     /**
      * Returns if the given resource exists in the given codenvy project.
      * 
      * @param project the Codenvy project.
-     * @param workspaceId the workspace id.
      * @param resource the resource to update.
      * @return {@code true} if the given resource exists in the codenvy project, {@code false} otherwise.
-     * @throws NullPointerException if project, workspaceId or resource parameter is {@code null}.
-     * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
+     * @throws NullPointerException if project or resource parameter is {@code null}.
      */
     // TODO workaround to check if a resource exists
-    boolean isResourceInProject(CodenvyProject project, String workspaceId, IResource resource);
+    boolean isResourceInProject(CodenvyProject project, IResource resource);
 }
