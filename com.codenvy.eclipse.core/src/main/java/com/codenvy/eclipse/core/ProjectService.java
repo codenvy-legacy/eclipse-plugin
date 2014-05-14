@@ -18,6 +18,7 @@ package com.codenvy.eclipse.core;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
@@ -84,4 +85,15 @@ public interface ProjectService extends RestServiceWithAuth {
      */
     // TODO workaround to check if a resource exists
     boolean isResourceInProject(CodenvyProject project, String workspaceId, IResource resource);
+
+    /**
+     * Updates the given file with the contents of the corresponding file in the given codenvy project.
+     * 
+     * @param project the Codenvy project.
+     * @param workspaceId the workspace id.
+     * @param file the file to update.
+     * @throws NullPointerException if project, workspaceId or file parameter is {@code null}.
+     * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
+     */
+    void updateEclipseFile(CodenvyProject project, String workspaceId, IFile file);
 }

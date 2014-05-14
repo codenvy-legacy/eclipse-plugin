@@ -16,18 +16,59 @@
  */
 package com.codenvy.eclipse.ui.team;
 
-import org.eclipse.core.commands.AbstractHandler;
+import java.util.List;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.team.core.RepositoryProvider;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
+
+import com.codenvy.eclipse.core.ProjectService;
+import com.codenvy.eclipse.core.RestServiceFactory;
+import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.team.CodenvyMetaProject;
+import com.codenvy.eclipse.core.team.CodenvyProvider;
 
 /**
- * Handler updating resource from Codenvy.
+ * Handler updating resources from Codenvy.
  * 
  * @author Kevin Pollet
  */
-public class UpdateHandler extends AbstractHandler {
+public class UpdateHandler extends AbstractResourceHandler {
     @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
+    public Object execute(List<IResource> resources, ExecutionEvent event) throws ExecutionException {
+        if (!resources.isEmpty()) {
+            final IProject project = resources.get(0).getProject();
+            final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(project);
+            final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
+            final BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
+            final ServiceReference<RestServiceFactory> serviceReference = bundleContext.getServiceReference(RestServiceFactory.class);
+
+            try {
+
+                if (serviceReference != null) {
+                    final RestServiceFactory restServiceFactory = bundleContext.getService(serviceReference);
+                    final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, metaProject.url, new CodenvyToken(metaProject.codenvyToken));
+
+                    for (IResource oneResource : resources) {
+                        if (oneResource.getType() == IResource.FILE) {
+                            final CodenvyProject codenvyProject = new CodenvyProject(null, null, null, null, null, metaProject.projectName, null, null, null, null, null);
+                            projectService.updateEclipseFile(codenvyProject, metaProject.workspaceId, (IFile)oneResource);
+                        }
+                    }
+                }
+
+            } finally {
+                bundleContext.ungetService(serviceReference);
+            }
+        }
+
         return null;
     }
 }

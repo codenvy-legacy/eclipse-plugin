@@ -221,4 +221,28 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
 
         return response.getStatus() != Status.NOT_FOUND.getStatusCode();
     }
+
+    @Override
+    public void updateEclipseFile(CodenvyProject project, String workspaceId, IFile file) {
+        checkNotNull(project);
+        checkNotNull(workspaceId);
+        checkArgument(!workspaceId.trim().isEmpty());
+        checkNotNull(file);
+
+        final InputStream stream = getWebTarget().path(workspaceId)
+                                                 .path("file")
+                                                 .path(project.name)
+                                                 .path(file.getProjectRelativePath().toString())
+                                                 .request()
+                                                 .get(InputStream.class);
+
+
+        try {
+
+            file.setContents(stream, true, true, new NullProgressMonitor());
+
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

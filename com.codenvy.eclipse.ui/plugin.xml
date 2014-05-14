@@ -114,13 +114,13 @@
                   <with
                         variable="activeMenuSelection">
                      <reference
-                           definitionId="com.codenvy.eclipse.ui.team.IResourceContributions">
+                           definitionId="com.codenvy.eclipse.ui.team.IFileContributions">
                      </reference>
                   </with>
                   <with
                         variable="activeMenuEditorInput">
                      <reference
-                           definitionId="com.codenvy.eclipse.ui.team.IResourceContributions">
+                           definitionId="com.codenvy.eclipse.ui.team.IFileContributions">
                      </reference>
                   </with>
                </or>
@@ -137,6 +137,21 @@
                operator="and">
             <adapt
                   type="org.eclipse.core.resources.IResource">
+               <test
+                     args="org.eclipse.team.core.repository"
+                     property="org.eclipse.core.resources.projectPersistentProperty"
+                     value="com.codenvy.eclipse.core.team.codenvyprovider">
+               </test>
+            </adapt>
+         </iterate>
+      </definition>
+      <definition
+            id="com.codenvy.eclipse.ui.team.IFileContributions">
+         <iterate
+               ifEmpty="false"
+               operator="and">
+            <adapt
+                  type="org.eclipse.core.resources.IFile">
                <test
                      args="org.eclipse.team.core.repository"
                      property="org.eclipse.core.resources.projectPersistentProperty"

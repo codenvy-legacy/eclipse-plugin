@@ -19,6 +19,7 @@ package com.codenvy.eclipse.ui.test.mock;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
@@ -71,6 +72,11 @@ public class ProjectServiceMock implements ProjectService {
 
     @Override
     public boolean isResourceInProject(CodenvyProject project, String workspaceId, IResource resource) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateEclipseFile(CodenvyProject project, String workspaceId, IFile file) {
         throw new UnsupportedOperationException();
     }
 }

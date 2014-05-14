@@ -16,21 +16,13 @@
  */
 package com.codenvy.eclipse.ui.team;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.team.core.RepositoryProvider;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.ide.ResourceUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -43,34 +35,13 @@ import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 
 /**
- * Handler pushing resource data to Codenvy.
+ * Handler pushing resources to Codenvy.
  * 
  * @author Kevin Pollet
  */
-public class PushHandler extends AbstractHandler {
+public class PushHandler extends AbstractResourceHandler {
     @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-        final ISelection selection = HandlerUtil.getCurrentSelection(event);
-        List<IResource> resources = new ArrayList<>();
-
-        if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
-            final IStructuredSelection structuredSelection = (IStructuredSelection)selection;
-            
-            for (Object oneObject : structuredSelection.toArray()) {
-                final IResource oneResource = ResourceUtil.getResource(oneObject);
-                if (oneResource != null) {
-                    resources.add(oneResource);
-                }
-            }
-        }
-        else {
-            final IEditorInput editorInput = HandlerUtil.getActiveEditorInput(event);
-            final IResource resource = ResourceUtil.getResource(editorInput);
-            if (resource != null) {
-                resources = Collections.singletonList(resource);
-            }
-        }
-
+    public Object execute(List<IResource> resources, ExecutionEvent event) throws ExecutionException {
         if (!resources.isEmpty()) {
             final IProject project = resources.get(0).getProject();
             final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(project);
@@ -93,8 +64,8 @@ public class PushHandler extends AbstractHandler {
             } finally {
                 bundleContext.ungetService(serviceReference);
             }
-
         }
+
         return null;
     }
 }
