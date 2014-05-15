@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import com.codenvy.eclipse.core.EclipseProjectHelper;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -60,6 +61,8 @@ public class CodenvyMetaProject {
     }
 
     public static CodenvyMetaProject get(IProject project) {
+        EclipseProjectHelper.checkCodenvyProjectLayout(project);
+
         CodenvyMetaProject providerMetaData = repositoryProviderCache.get(project);
         if (providerMetaData == null) {
             final IFile providerMetaDataFile = project.getFolder(".codenvy").getFile("team");
@@ -72,7 +75,7 @@ public class CodenvyMetaProject {
                 } catch (CoreException | IOException e) {
                     throw new RuntimeException(e);
                 }
-                
+
                 final CodenvyMetaProject currentProviderMetaData = repositoryProviderCache.putIfAbsent(project, providerMetaData);
                 if (currentProviderMetaData != null) {
                     providerMetaData = currentProviderMetaData;

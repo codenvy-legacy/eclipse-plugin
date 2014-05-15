@@ -28,6 +28,7 @@ import java.util.zip.ZipInputStream;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -49,6 +50,8 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
  * @author Kevin Pollet
  */
 public final class EclipseProjectHelper {
+    private static final String CODENVY_PROJECT_LAYOUT_MARKER_ID = "com.codenvy.eclipse.core.codenvyProjectLayoutMarker";
+
     /**
      * Creates an {@link IProject} in the current Eclipse workspace.
      * 
@@ -86,7 +89,7 @@ public final class EclipseProjectHelper {
                     throw new RuntimeException(e);
                 }
             }
-            
+
             subMonitor.worked(1);
 
         } catch (CoreException | IOException e) {
@@ -183,13 +186,15 @@ public final class EclipseProjectHelper {
             switch (resource.getType()) {
                 case IResource.FILE: {
                     final InputStream stream = projectService.getFile(codenvyProject, resource.getProjectRelativePath().toString());
-                    ((IFile) resource).setContents(stream, true, true, monitor);
+                    ((IFile)resource).setContents(stream, true, true, monitor);
                 }
                     break;
 
                 case IResource.FOLDER:
                 case IResource.PROJECT: {
-                    final ZipInputStream stream = projectService.exportResources(codenvyProject, resource.getProjectRelativePath().toString());
+                    final ZipInputStream stream =
+                                                  projectService.exportResources(codenvyProject, resource.getProjectRelativePath()
+                                                                                                         .toString());
                     createOrUpdateResourcesFromZip(stream, (IContainer)resource, subMonitor);
                 }
                     break;
@@ -205,12 +210,47 @@ public final class EclipseProjectHelper {
         }
     }
 
+    /**
+     * Checks that the codenvy {@link IProject} layout is valid.
+     * 
+     * @param project the codenvy project.
+     */
+    public static void checkCodenvyProjectLayout(IProject project) {
+        final IFolder codenvyFolder = project.getFolder(".codenvy");
+        final IFile codenvyProjectFile = codenvyFolder.getFile("project");
+        final IFile codenvyTeamFile = codenvyFolder.getFile("team");
+
+        try {
+            project.deleteMarkers(CODENVY_PROJECT_LAYOUT_MARKER_ID, true, IResource.DEPTH_INFINITE);
+
+            if (!codenvyFolder.exists()) {
+                final IMarker marker = project.createMarker(CODENVY_PROJECT_LAYOUT_MARKER_ID);
+                marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+                marker.setAttribute(IMarker.MESSAGE, ".codenvy folder is missing");
+            }
+
+            if (!codenvyProjectFile.exists()) {
+                final IMarker marker = codenvyFolder.createMarker(CODENVY_PROJECT_LAYOUT_MARKER_ID);
+                marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+                marker.setAttribute(IMarker.MESSAGE, "project file is missing");
+            }
+
+            if (!codenvyTeamFile.exists()) {
+                final IMarker marker = codenvyFolder.createMarker(CODENVY_PROJECT_LAYOUT_MARKER_ID);
+                marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+                marker.setAttribute(IMarker.MESSAGE, "team file is missing");
+            }
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static void createOrUpdateResourcesFromZip(ZipInputStream stream, IContainer container, IProgressMonitor monitor) {
         final SubMonitor subMonitor = SubMonitor.convert(monitor);
         subMonitor.setTaskName("Create resources");
-    
+
         try (ZipInputStream zipInputStream = stream) {
-            
+
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
                 subMonitor.setWorkRemaining(1000);
@@ -234,7 +274,7 @@ public final class EclipseProjectHelper {
 
                     final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                     if (file.exists()) {
-                        file.setContents(byteArrayInputStream, true,  true, subMonitor);
+                        file.setContents(byteArrayInputStream, true, true, subMonitor);
                     } else {
                         file.create(byteArrayInputStream, true, subMonitor);
                     }
@@ -242,16 +282,15 @@ public final class EclipseProjectHelper {
 
                 subMonitor.worked(1);
             }
-        
+
         } catch (CoreException | IOException e) {
             throw new RuntimeException(e);
-            
+
         } finally {
             subMonitor.done();
         }
     }
-    
-    
+
     /**
      * Disable instantiation.
      */

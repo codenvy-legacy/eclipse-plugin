@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
@@ -84,11 +83,10 @@ public class CodenvyNature implements IProjectNature {
 
     @Override
     public void configure() throws CoreException {
-        final IFolder codenvyDesciptorFolder = codenvyProject.getFolder(".codenvy");
-        final IFile codenvyDesciptorFile = codenvyDesciptorFolder.getFile("project");
-
+        EclipseProjectHelper.checkCodenvyProjectLayout(codenvyProject);
+        
+        final IFile codenvyDesciptorFile = codenvyProject.getFolder(".codenvy").getFile("project");
         if (codenvyDesciptorFile.exists()) {
-
             final Job job = new Job("Configure project") {
                 @Override
                 protected IStatus run(IProgressMonitor monitor) {
@@ -149,7 +147,6 @@ public class CodenvyNature implements IProjectNature {
 
             job.schedule();
         }
-
     }
 
     @Override
@@ -222,7 +219,7 @@ public class CodenvyNature implements IProjectNature {
             @JsonCreator
             public Property(@JsonProperty("name") String name, @JsonProperty("value") List<String> value) {
                 this.name = name;
-                this.value = value.isEmpty() ? null : value.get(0);  
+                this.value = value.isEmpty() ? null : value.get(0);
             }
         }
 
@@ -234,15 +231,15 @@ public class CodenvyNature implements IProjectNature {
             @JsonCreator
             static ProjectType forValue(String value) {
                 ProjectType projectType;
-                
+
                 try {
-                
+
                     projectType = Enum.valueOf(ProjectType.class, value);
-                    
+
                 } catch (NullPointerException | IllegalArgumentException e) {
                     projectType = UNKNOWN;
                 }
-                
+
                 return projectType;
             }
         }
