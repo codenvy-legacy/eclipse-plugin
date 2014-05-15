@@ -15,8 +15,18 @@
          point="org.eclipse.team.core.repository">
       <repository
             class="com.codenvy.eclipse.core.team.CodenvyProvider"
-            id="com.codenvy.eclipse.core.team.codenvyprovider">
+            id="com.codenvy.eclipse.core.team.codenvyProvider">
       </repository>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="com.codenvy.eclipse.core.team.CodenvyMetaResourcePropertyTester"
+            id="com.codenvy.eclipse.core.team.codenvyMetaResourcePropertyTester"
+            namespace="com.codenvy.eclipse.core.team.codenvyMetaResource"
+            properties="tracked"
+            type="com.codenvy.eclipse.core.team.CodenvyMetaResource">
+      </propertyTester>
    </extension>
 
 </plugin>

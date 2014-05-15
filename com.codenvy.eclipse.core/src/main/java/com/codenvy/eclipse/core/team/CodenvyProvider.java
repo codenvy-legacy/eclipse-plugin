@@ -26,7 +26,7 @@ import org.eclipse.team.core.RepositoryProvider;
  * @author Kevin Pollet
  */
 public class CodenvyProvider extends RepositoryProvider {
-    public static final String      PROVIDER_ID = "com.codenvy.eclipse.core.team.codenvyprovider";
+    public static final String      PROVIDER_ID = "com.codenvy.eclipse.core.team.codenvyProvider";
 
     private CodenvyMetaProject metaProject;
 
