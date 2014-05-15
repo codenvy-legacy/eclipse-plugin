@@ -40,4 +40,8 @@ Import-Package: com.codenvy.eclipse.core;version="1.0.0.qualifier",
  org.eclipse.ui.plugin,
  org.eclipse.ui.progress,
  org.eclipse.ui.services,
+ org.eclipse.equinox.security.storage,
  org.osgi.framework;version="1.7.0"
+Require-Bundle: org.eclipse.equinox.security,
+ com.codenvy.eclipse.core.impl
+

@@ -28,12 +28,15 @@ import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -43,10 +46,13 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.AuthenticationService;
+import com.codenvy.eclipse.core.CodenvySecureStorageService;
 import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.utils.StringHelper;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
@@ -55,13 +61,15 @@ import com.google.common.base.Optional;
  * Authentication wizard page. In this wizard page the user authenticates with the Codenvy platform by it's URL, Username and Password.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
     private static final String          CODENVY_URL = "https://codenvy.com";
 
     private Combo                        urls;
-    private Text                         username;
+    private Combo                        usernames;
     private Text                         password;
+    private Button                       storeUserCredentials;
     private final ImportWizardSharedData importWizardSharedData;
 
     /**
@@ -96,13 +104,23 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
         urls.add(CODENVY_URL);
+        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        final ServiceReference<CodenvySecureStorageService> codenvySecureStorageServiceRef =
+                                                                                             context.getServiceReference(CodenvySecureStorageService.class);
+        if (codenvySecureStorageServiceRef != null) {
+            final CodenvySecureStorageService codenvySecureStorageService =
+                                                                            context.getService(codenvySecureStorageServiceRef);
+            for (final String url : codenvySecureStorageService.getURLs()) {
+                urls.add(url);
+            }
+        }
         urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         final Label usernameLabel = new Label(wizardContainer, SWT.NONE);
         usernameLabel.setText("Username:");
 
-        username = new Text(wizardContainer, SWT.SINGLE | SWT.BORDER);
-        username.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        usernames = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER);
+        usernames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         final Label passwordLabel = new Label(wizardContainer, SWT.NONE);
         passwordLabel.setText("Password:");
@@ -110,11 +128,24 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         password = new Text(wizardContainer, SWT.SINGLE | SWT.BORDER | SWT.PASSWORD);
         password.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
+        storeUserCredentials = new Button(wizardContainer, SWT.CHECK | SWT.BORDER);
+        storeUserCredentials.setText("Store these user credentials in Eclipse secure storage.");
+        storeUserCredentials.setSelection(true);
+        storeUserCredentials.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+
         final PageCompleteListener pageCompleteListener = new PageCompleteListener();
         urls.addKeyListener(pageCompleteListener);
         urls.addSelectionListener(pageCompleteListener);
-        username.addKeyListener(pageCompleteListener);
+        usernames.addKeyListener(pageCompleteListener);
+        usernames.addSelectionListener(pageCompleteListener);
         password.addKeyListener(pageCompleteListener);
+        storeUserCredentials.addKeyListener(pageCompleteListener);
+
+        final AutofillFieldsListener autofillFieldsListener = new AutofillFieldsListener();
+        urls.addKeyListener(autofillFieldsListener);
+        urls.addSelectionListener(autofillFieldsListener);
+        usernames.addKeyListener(autofillFieldsListener);
+        usernames.addSelectionListener(autofillFieldsListener);
 
         setControl(wizardContainer);
     }
@@ -129,28 +160,43 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
             final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
 
             if (restServiceFactoryRef != null) {
+                // TODO Stéphane Daviet - 2014/05/12: Throw an exception either.
                 final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
 
                 if (restServiceFactory != null) {
 
                     try {
 
-                        final AuthenticationService authenticationService = restServiceFactory.newRestService(AuthenticationService.class, urls.getText());
-                        final CodenvyToken token = authenticationService.login(username.getText(), password.getText());
+                        final AuthenticationService authenticationService =
+                                                                            restServiceFactory.newRestService(AuthenticationService.class,
+                                                                                                              urls.getText());
+                        final CodenvyToken token = authenticationService.login(usernames.getText(), password.getText());
 
                         importWizardSharedData.setCodenvyToken(Optional.fromNullable(token));
                         importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
                         importWizardSharedData.setProjects(new ArrayList<CodenvyProject>());
 
+                        if (storeUserCredentials.getSelection()) {
+                            final ServiceReference<CodenvySecureStorageService> codenvySecureStorageServiceRef =
+                                                                                                                 context.getServiceReference(CodenvySecureStorageService.class);
+                            if (codenvySecureStorageServiceRef != null) {
+                                final CodenvySecureStorageService codenvySecureStorageService =
+                                                                                                context.getService(codenvySecureStorageServiceRef);
+                                codenvySecureStorageService.storeCredentials(urls.getText(), new CodenvyCredentials(usernames.getText(),
+                                                                                                                    password.getText()),
+                                                                             token);
+                            }
+                        }
+
                         setErrorMessage(null);
 
-                    } catch (AuthenticationException e) {
+                    } catch (final AuthenticationException e) {
                         event.doit = false;
-                        setErrorMessage("Authentication failed: wrong Username and/or Password");
+                        setErrorMessage("Authentication failed: wrong Username and/or Password.");
 
-                    } catch (ProcessingException e) {
+                    } catch (final ProcessingException e) {
                         event.doit = false;
-                        setErrorMessage("Authentication failed: wrong URL");
+                        setErrorMessage("Authentication failed: wrong URL.");
 
                     } finally {
                         context.ungetService(restServiceFactoryRef);
@@ -160,15 +206,48 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
     }
 
+    private boolean isBlankFields() {
+        final boolean isUrlsBlank = StringHelper.isNullOrEmpty(urls.getText());
+        final boolean isUsernameBlank = StringHelper.isNullOrEmpty(usernames.getText());
+        final boolean isPasswordBlank = StringHelper.isNullOrEmpty(password.getText());
+
+        return isUrlsBlank || isUsernameBlank || isPasswordBlank;
+    }
+
+    private CodenvySecureStorageService getCodenvySecureStorageService() {
+        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        final ServiceReference<CodenvySecureStorageService> codenvySecureStorageServiceRef =
+                                                                                             context.getServiceReference(CodenvySecureStorageService.class);
+        if (codenvySecureStorageServiceRef == null) {
+            return null;
+        }
+        return context.getService(codenvySecureStorageServiceRef);
+    }
+
     private class PageCompleteListener implements KeyListener, SelectionListener {
         @Override
         public void widgetSelected(SelectionEvent e) {
-            setPageComplete(!isBlankField());
+            setPageComplete(!isBlankFields());
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            setPageComplete(!isBlankField());
+            setPageComplete(!isBlankFields());
+        }
+
+        @Override
+        public void widgetDefaultSelected(SelectionEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+        }
+    }
+
+    private class AutofillFieldsListener implements KeyListener, SelectionListener, FocusListener {
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            autoFill();
         }
 
         @Override
@@ -179,27 +258,51 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         public void keyPressed(KeyEvent e) {
         }
 
-        /**
-         * Tests if one of urls, username, password field is blank.
-         * 
-         * @return {@code true} if one of urls, username, password field is blank, {@code false} otherwise.
-         */
-        private boolean isBlankField() {
-            final boolean isUrlsBlank = isNullOrEmptyString(urls.getText());
-            final boolean isUsernameBlank = isNullOrEmptyString(username.getText());
-            final boolean isPasswordBlank = isNullOrEmptyString(password.getText());
-
-            return isUrlsBlank || isUsernameBlank || isPasswordBlank;
+        @Override
+        public void keyReleased(KeyEvent e) {
+            autoFill();
         }
 
-        /**
-         * Tests that the given string is {@code null} or empty. A string containing only whitespace is assumed to be empty.
-         * 
-         * @param string the sting to test.
-         * @return {@code true} if the given string is {@code null} or empty, {@code false} otherwise.
-         */
-        private boolean isNullOrEmptyString(String string) {
-            return string == null || string.trim().isEmpty();
+        @Override
+        public void focusGained(FocusEvent e) {
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            autoFill();
+        }
+
+        private void autoFill() {
+            autoFillUsernames();
+            autoFillPassword();
+
+            setPageComplete(!isBlankFields());
+        }
+
+        private void autoFillUsernames() {
+            if (!StringHelper.isNullOrEmpty(urls.getText())) {
+                String currentUsername = usernames.getText();
+
+                for (int i = usernames.getItemCount() - 1; i >= 0; i--) {
+                    usernames.remove(i);
+                }
+
+                for (final String username : getCodenvySecureStorageService().getUsernamesForURL(urls.getText())) {
+                    if (currentUsername.equals(username)) {
+                        continue;
+                    }
+                    usernames.add(username);
+                }
+            }
+        }
+
+        private void autoFillPassword() {
+            if (!StringHelper.isNullOrEmpty(usernames.getText())) {
+                final String storedPassword = getCodenvySecureStorageService().getPassword(urls.getText(), usernames.getText());
+                if (storedPassword != null && !storedPassword.isEmpty()) {
+                    password.setText(storedPassword);
+                }
+            }
         }
     }
 }
