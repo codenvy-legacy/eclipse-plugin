@@ -24,7 +24,7 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
     @Override
     public void storeCredentials(String url, CodenvyCredentials credentials, CodenvyToken token) {
         try {
-            final ISecurePreferences node = getNode(url, credentials.username);
+            final ISecurePreferences node = getNode(url, credentials.username, true);
             node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
             node.put(CODENVY_PASSWORD_TOKEN_NAME, token.value, true);
         } catch (StorageException e) {
@@ -35,7 +35,10 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
     @Override
     public String getPassword(String url, String username) {
         try {
-            final ISecurePreferences node = getNode(url, username);
+            final ISecurePreferences node = getNode(url, username, false);
+            if (node == null) {
+                return null;
+            }
             return node.get(CODENVY_PASSWORD_KEY_NAME, null);
         } catch (StorageException e) {
             throw new SecureStorageRuntimException(e);
@@ -45,7 +48,10 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
     @Override
     public String getToken(String url, String username) {
         try {
-            final ISecurePreferences node = getNode(url, username);
+            final ISecurePreferences node = getNode(url, username, false);
+            if (node == null) {
+                return null;
+            }
             return node.get(CODENVY_PASSWORD_TOKEN_NAME, null);
         } catch (StorageException e) {
             throw new SecureStorageRuntimException(e);
@@ -54,7 +60,7 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
 
     @Override
     public void deleteCredentials(String url, String username) {
-        getNode(url, username).removeNode();
+        getNode(url, username, true).removeNode();
     }
 
     @Override
@@ -83,10 +89,13 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
         return root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME).node(EncodingUtils.encodeSlashes(url)).childrenNames();
     }
 
-    static ISecurePreferences getNode(String url, String username) {
+    static ISecurePreferences getNode(String url, String username, boolean createIfNotExist) {
         final ISecurePreferences root = SecurePreferencesFactory.getDefault();
         if (root == null) {
             // TODO Stéphane Daviet - 2014/05/12: Throw an exception either.
+        }
+        if (!createIfNotExist && !root.nodeExists(calcNodeName(url, username))) {
+            return null;
         }
         return root.node(calcNodeName(url, username));
     }
