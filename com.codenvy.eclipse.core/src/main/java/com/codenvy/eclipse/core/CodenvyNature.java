@@ -46,7 +46,6 @@ import com.codenvy.eclipse.core.CodenvyNature.CodenvyProjectDescriptor.ProjectTy
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Enums;
 import com.google.common.collect.ObjectArrays;
 
 /**
@@ -234,7 +233,17 @@ public class CodenvyNature implements IProjectNature {
 
             @JsonCreator
             static ProjectType forValue(String value) {
-                return Enums.getIfPresent(ProjectType.class, value.toUpperCase()).or(UNKNOWN);
+                ProjectType projectType;
+                
+                try {
+                
+                    projectType = Enum.valueOf(ProjectType.class, value);
+                    
+                } catch (NullPointerException | IllegalArgumentException e) {
+                    projectType = UNKNOWN;
+                }
+                
+                return projectType;
             }
         }
     }
