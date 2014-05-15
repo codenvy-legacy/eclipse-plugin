@@ -21,11 +21,13 @@ import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.ws.rs.ProcessingException;
 
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -54,8 +56,10 @@ import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
+import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
+import com.google.common.collect.ObjectArrays;
 
 /**
  * Authentication wizard page. In this wizard page the user authenticates with the Codenvy platform by it's URL, Username and Password.
@@ -104,30 +108,13 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
         urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        urls.add(CODENVY_URL);
-        urls.select(0);
 
-        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-        final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
-                                                                                      context.getServiceReference(SecureStorageService.class);
-
-        
-        if (codenvySecureStorageServiceRef != null) {
-            
-            try {
-
-                final SecureStorageService codenvySecureStorageService = context.getService(codenvySecureStorageServiceRef);
-                if (codenvySecureStorageService != null) {
-                    for (String url : codenvySecureStorageService.getURLs()) {
-                        urls.add(url);
-                    }
-                }
-
-            } finally {
-                context.ungetService(codenvySecureStorageServiceRef);
-            }
-            
+        for (String url : CodenvyPreferencesInitializer.parseString(CodenvyUIPlugin.getDefault()
+                                                                                   .getPreferenceStore()
+                                                                                   .getString(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME))) {
+            urls.add(url);
         }
+        urls.select(0);
 
         final Label usernameLabel = new Label(wizardContainer, SWT.NONE);
         usernameLabel.setText("Username:");
@@ -188,6 +175,19 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         importWizardSharedData.setCodenvyToken(Optional.fromNullable(token));
                         importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
                         importWizardSharedData.setProjects(new ArrayList<CodenvyProject>());
+
+                        // We add the new location to preferences
+                        IPreferenceStore codenvyPreferenceStore = CodenvyUIPlugin.getDefault()
+                                                                                 .getPreferenceStore();
+                        String[] locations =
+                                             CodenvyPreferencesInitializer.parseString(codenvyPreferenceStore
+                                                                                                             .getString(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME));
+                        if (!Arrays.asList(locations).contains(urls.getText())) {
+                            codenvyPreferenceStore.setValue(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME,
+                                                            CodenvyPreferencesInitializer.createList(ObjectArrays.concat(urls.getText(),
+                                                                                                                         locations
+                                                                                                                 )));
+                        }
 
                         if (storeUserCredentials.getSelection()) {
                             final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =

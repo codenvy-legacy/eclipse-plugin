@@ -211,4 +211,18 @@
             </or></enabledWhen>
       </handler>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.codenvy.eclipse.ui.preferences.CodenvyPreferencesPage"
+            id="com.codenvy.eclipse.ui.preferences"
+            name="Codenvy">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer">
+      </initializer>
+   </extension>
 </plugin>
