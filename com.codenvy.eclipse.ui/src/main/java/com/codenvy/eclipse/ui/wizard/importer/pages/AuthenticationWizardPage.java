@@ -204,15 +204,23 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
     }
 
+    private boolean isBlankFields() {
+        final boolean isUrlsBlank = StringHelper.isNullOrEmpty(urls.getText());
+        final boolean isUsernameBlank = StringHelper.isNullOrEmpty(usernames.getText());
+        final boolean isPasswordBlank = StringHelper.isNullOrEmpty(password.getText());
+
+        return isUrlsBlank || isUsernameBlank || isPasswordBlank;
+    }
+
     private class PageCompleteListener implements KeyListener, SelectionListener {
         @Override
         public void widgetSelected(SelectionEvent e) {
-            setPageComplete(!isBlankField());
+            setPageComplete(!isBlankFields());
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            setPageComplete(!isBlankField());
+            setPageComplete(!isBlankFields());
         }
 
         @Override
@@ -221,19 +229,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         @Override
         public void keyPressed(KeyEvent e) {
-        }
-
-        /**
-         * Tests if one of urls, username, password field is blank.
-         * 
-         * @return {@code true} if one of urls, username, password field is blank, {@code false} otherwise.
-         */
-        private boolean isBlankField() {
-            final boolean isUrlsBlank = StringHelper.isNullOrEmpty(urls.getText());
-            final boolean isUsernameBlank = StringHelper.isNullOrEmpty(usernames.getText());
-            final boolean isPasswordBlank = StringHelper.isNullOrEmpty(password.getText());
-
-            return isUrlsBlank || isUsernameBlank || isPasswordBlank;
         }
     }
 
@@ -246,29 +241,26 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
             if (codenvySecureStorageServiceRef != null) {
                 final CodenvySecureStorageService codenvySecureStorageService =
                                                                                 context.getService(codenvySecureStorageServiceRef);
-                if (StringHelper.isNullOrEmpty(urls.getText())) {
-                    return;
-                }
-
-                String currentUsername = usernames.getText();
-                usernames.removeAll();
-                usernames.setText(currentUsername);
-                for (final String username : codenvySecureStorageService.getUsernamesForURL(urls.getText())) {
-                    if (currentUsername.equals(username)) {
-                        continue;
+                if (!StringHelper.isNullOrEmpty(urls.getText())) {
+                    String currentUsername = usernames.getText();
+                    usernames.removeAll();
+                    usernames.setText(currentUsername);
+                    for (final String username : codenvySecureStorageService.getUsernamesForURL(urls.getText())) {
+                        if (currentUsername.equals(username)) {
+                            continue;
+                        }
+                        usernames.add(username);
                     }
-                    usernames.add(username);
+
+                    if (!StringHelper.isNullOrEmpty(usernames.getText())) {
+                        final String storedPassword = codenvySecureStorageService.getPassword(urls.getText(), usernames.getText());
+                        if (storedPassword != null && !storedPassword.isEmpty()) {
+                            password.setText(storedPassword);
+                        }
+                    }
                 }
 
-                if (StringHelper.isNullOrEmpty(usernames.getText())) {
-                    return;
-                }
-
-                final String storedPassword = codenvySecureStorageService.getPassword(urls.getText(), usernames.getText());
-                if (storedPassword == null || storedPassword.isEmpty()) {
-                    return;
-                }
-                password.setText(storedPassword);
+                setPageComplete(!isBlankFields());
             }
         }
 
