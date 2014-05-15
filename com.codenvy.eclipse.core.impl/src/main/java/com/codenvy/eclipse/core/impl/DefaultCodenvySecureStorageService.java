@@ -26,7 +26,9 @@ public class DefaultCodenvySecureStorageService implements CodenvySecureStorageS
         try {
             final ISecurePreferences node = getNode(url, credentials.username, true);
             node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
-            node.put(CODENVY_PASSWORD_TOKEN_NAME, token.value, true);
+            if (token != null) {
+                node.put(CODENVY_PASSWORD_TOKEN_NAME, token.value, true);
+            }
         } catch (StorageException e) {
             throw new SecureStorageRuntimException(e);
         }
