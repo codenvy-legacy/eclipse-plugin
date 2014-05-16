@@ -7,9 +7,16 @@
 .settings/
 
 # IntelliJ
+.idea/
 *.ipr
 *.iws
 *.iml
 
 # Maven
 target/
+
+# SWTBot
+screenshots/
+
+# Codenvy SDK
+org.exoplatform.logreader.logpath_IS_UNDEFINED/
