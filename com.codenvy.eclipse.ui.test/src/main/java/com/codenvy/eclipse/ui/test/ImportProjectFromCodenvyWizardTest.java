@@ -90,10 +90,10 @@ public class ImportProjectFromCodenvyWizardTest {
         Assert.assertEquals("https://codenvy.com", bot.comboBox(0).items()[0]);
         Assert.assertFalse(bot.button("Next >").isEnabled());
 
-        bot.text(0).typeText("codenvy@codenvy.com");
+        bot.comboBox(1).typeText("codenvy@codenvy.com");
         Assert.assertFalse(bot.button("Next >").isEnabled());
 
-        bot.text(1).typeText("secret");
+        bot.text(0).typeText("secret");
         Assert.assertTrue(bot.button("Next >").isEnabled());
 
         bot.button("Next >").click();

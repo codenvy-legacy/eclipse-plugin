@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core;
+package com.codenvy.eclipse.core.utils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,6 +40,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.team.core.RepositoryProvider;
 
+import com.codenvy.eclipse.core.CodenvyNature;
+import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;

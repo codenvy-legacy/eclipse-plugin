@@ -46,7 +46,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.AuthenticationService;
-import com.codenvy.eclipse.core.CodenvySecureStorageService;
+import com.codenvy.eclipse.core.SecureStorageService;
 import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
@@ -105,10 +105,10 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
         urls.add(CODENVY_URL);
         final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-        final ServiceReference<CodenvySecureStorageService> codenvySecureStorageServiceRef =
-                                                                                             context.getServiceReference(CodenvySecureStorageService.class);
+        final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
+                                                                                             context.getServiceReference(SecureStorageService.class);
         if (codenvySecureStorageServiceRef != null) {
-            final CodenvySecureStorageService codenvySecureStorageService =
+            final SecureStorageService codenvySecureStorageService =
                                                                             context.getService(codenvySecureStorageServiceRef);
             for (final String url : codenvySecureStorageService.getURLs()) {
                 urls.add(url);
@@ -177,10 +177,10 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         importWizardSharedData.setProjects(new ArrayList<CodenvyProject>());
 
                         if (storeUserCredentials.getSelection()) {
-                            final ServiceReference<CodenvySecureStorageService> codenvySecureStorageServiceRef =
-                                                                                                                 context.getServiceReference(CodenvySecureStorageService.class);
+                            final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
+                                                                                                                 context.getServiceReference(SecureStorageService.class);
                             if (codenvySecureStorageServiceRef != null) {
-                                final CodenvySecureStorageService codenvySecureStorageService =
+                                final SecureStorageService codenvySecureStorageService =
                                                                                                 context.getService(codenvySecureStorageServiceRef);
                                 codenvySecureStorageService.storeCredentials(urls.getText(), new CodenvyCredentials(usernames.getText(),
                                                                                                                     password.getText()),
@@ -214,10 +214,10 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         return isUrlsBlank || isUsernameBlank || isPasswordBlank;
     }
 
-    private CodenvySecureStorageService getCodenvySecureStorageService() {
+    private SecureStorageService getCodenvySecureStorageService() {
         final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-        final ServiceReference<CodenvySecureStorageService> codenvySecureStorageServiceRef =
-                                                                                             context.getServiceReference(CodenvySecureStorageService.class);
+        final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
+                                                                                             context.getServiceReference(SecureStorageService.class);
         if (codenvySecureStorageServiceRef == null) {
             return null;
         }

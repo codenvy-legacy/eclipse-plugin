@@ -28,9 +28,9 @@
 	</scr:component>
 	<scr:component>
 		<implementation
-			class="com.codenvy.eclipse.core.impl.DefaultCodenvySecureStorageService" />
+			class="com.codenvy.eclipse.core.impl.DefaultSecureStorageService" />
 		<service>
-			<provide interface="com.codenvy.eclipse.core.CodenvySecureStorageService" />
+			<provide interface="com.codenvy.eclipse.core.SecureStorageService" />
 		</service>
 	</scr:component>
 </root:components>
