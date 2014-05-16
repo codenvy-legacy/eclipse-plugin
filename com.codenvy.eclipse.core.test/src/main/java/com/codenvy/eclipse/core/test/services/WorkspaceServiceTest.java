@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.test;
+package com.codenvy.eclipse.core.test.services;
 
 import java.util.List;
 
@@ -34,11 +34,14 @@ import com.codenvy.eclipse.core.services.UserService;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
- * Test the workspace service.
+ * {@link WorkspaceService} test.
  * 
  * @author Kevin Pollet
  */
 public class WorkspaceServiceTest extends RestApiBaseTest {
+    private static final String     SDK_TOKEN_VALUE    = "123123";
+    private static final String     SDK_WORKSPACE_NAME = "default";
+
     private static WorkspaceService workspaceService;
     private static UserService      userService;
 
@@ -51,10 +54,12 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
         final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
         Assert.assertNotNull(restServiceFactory);
 
-        workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, REST_API_URL, new CodenvyToken("dummy"));
+        workspaceService =
+                           restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, REST_API_URL,
+                                                                     new CodenvyToken(SDK_TOKEN_VALUE));
         Assert.assertNotNull(workspaceService);
 
-        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, new CodenvyToken("dummy"));
+        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, new CodenvyToken(SDK_TOKEN_VALUE));
         Assert.assertNotNull(userService);
     }
 
@@ -74,13 +79,28 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
         workspaceService.getWorkspaceByName(null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetWorkspaceByNameWithEmptyName() {
+        workspaceService.getWorkspaceByName("");
+    }
+
     @Test
     public void testGetWorkspaceByName() {
-        final WorkspaceRef workspaceRef = workspaceService.getWorkspaceByName("default");
+        final WorkspaceRef workspaceRef = workspaceService.getWorkspaceByName(SDK_WORKSPACE_NAME);
 
         Assert.assertNotNull(workspaceRef);
         Assert.assertNotNull(workspaceRef.id);
         Assert.assertNotNull(workspaceRef.name);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testFindWorkspacesByAccountWithNullAccountId() {
+        workspaceService.findWorkspacesByAccount(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFindWorkspacesByAccountWithEmptyAccountId() {
+        workspaceService.findWorkspacesByAccount("");
     }
 
     @Test
@@ -94,5 +114,10 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
         Assert.assertTrue(workspaces.size() > 0);
         Assert.assertNotNull(workspaces.get(0).id);
         Assert.assertNotNull(workspaces.get(0).name);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testNewWorkspaceWithNullWorkspaceRef() {
+        workspaceService.newWorkspace(null);
     }
 }

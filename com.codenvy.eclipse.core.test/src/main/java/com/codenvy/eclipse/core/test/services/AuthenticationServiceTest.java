@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.test;
+package com.codenvy.eclipse.core.test.services;
 
 
 import org.junit.Assert;
@@ -29,11 +29,15 @@ import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 
 /**
- * Test the authentication service.
+ * {@link AuthenticationService} test.
  * 
  * @author Kevin Pollet
  */
 public class AuthenticationServiceTest extends RestApiBaseTest {
+    private static final String          USERNAME  = "codenvy@codenvy.com";
+    private static final String          PASSWORD  = "password";
+    private static final CodenvyToken    SDK_TOKEN = new CodenvyToken("123123");
+
     private static AuthenticationService authenticationService;
 
     @BeforeClass
@@ -51,24 +55,29 @@ public class AuthenticationServiceTest extends RestApiBaseTest {
 
     @Test(expected = NullPointerException.class)
     public void testLoginWithNullUsername() {
-        authenticationService.login(null, "codenvy");
+        authenticationService.login(null, PASSWORD);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoginWithEmptyUsername() {
+        authenticationService.login("", PASSWORD);
     }
 
     @Test(expected = NullPointerException.class)
     public void testLoginWithNullPassword() {
-        authenticationService.login("codenvy@codenvy.com", null);
+        authenticationService.login(USERNAME, null);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testLoginWithNullUsernameAndPassword() {
-        authenticationService.login(null, null);
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoginWithEmptyPassword() {
+        authenticationService.login(USERNAME, "");
     }
 
     @Test
     public void testLogin() {
-        final CodenvyToken token = authenticationService.login("codenvy@codenvy.com", "codenvy");
+        final CodenvyToken token = authenticationService.login(USERNAME, PASSWORD);
 
         Assert.assertNotNull(token);
-        Assert.assertNotNull(token.value);
+        Assert.assertEquals(SDK_TOKEN, token);
     }
 }

@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.test;
+package com.codenvy.eclipse.core.test.services;
 
 import java.io.IOException;
 import java.util.Properties;

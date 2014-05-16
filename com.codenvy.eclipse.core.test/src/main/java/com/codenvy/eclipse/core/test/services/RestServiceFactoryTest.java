@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.test;
+package com.codenvy.eclipse.core.test.services;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -29,11 +29,14 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
- * Tests the REST factory.
+ * {@link RestServiceFactory} test.
  * 
  * @author Kevin Pollet
  */
 public class RestServiceFactoryTest {
+    private static final String       CODENVY_URL     = "http://dummy.com";
+    private static final String       SDK_TOKEN_VALUE = "123123";
+
     private static RestServiceFactory restServiceFactory;
 
     @BeforeClass
@@ -53,7 +56,9 @@ public class RestServiceFactoryTest {
 
     @Test
     public void testNewRestService() {
-        final AuthenticationService authenticationService = restServiceFactory.newRestService(AuthenticationService.class, "http://dummy.com");
+        final AuthenticationService authenticationService =
+                                                            restServiceFactory.newRestService(AuthenticationService.class,
+                                                                                              CODENVY_URL);
 
         Assert.assertNotNull(authenticationService);
     }
@@ -65,7 +70,9 @@ public class RestServiceFactoryTest {
 
     @Test
     public void testNewRestServiceWithAuth() {
-        final WorkspaceService workspaceService =restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, "http://dummy.com", new CodenvyToken("dummyToken"));
+        final WorkspaceService workspaceService =
+                                                  restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, CODENVY_URL,
+                                                                                            new CodenvyToken(SDK_TOKEN_VALUE));
 
         Assert.assertNotNull(workspaceService);
     }

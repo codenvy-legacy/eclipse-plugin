@@ -31,6 +31,7 @@ public interface AuthenticationService extends RestService {
      * @param password the user password.
      * @return the authentication token.
      * @throws NullPointerException if username or password parameter is {@code null}.
+     * @throws IllegalArgumentException if username or password parameter is an empty {@link String}.
      */
     CodenvyToken login(String username, String password);
 }

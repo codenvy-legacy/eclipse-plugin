@@ -16,6 +16,7 @@
  */
 package com.codenvy.eclipse.core.impl;
 
+import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.client.Entity.json;
@@ -29,8 +30,6 @@ import java.util.zip.ZipInputStream;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.eclipse.core.resources.IResource;
 
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
@@ -58,7 +57,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     @Override
     public List<CodenvyProject> getWorkspaceProjects(String workspaceId) {
         checkNotNull(workspaceId);
-        checkArgument(!workspaceId.trim().isEmpty());
+        checkArgument(!isNullOrEmpty(workspaceId));
 
         return getWebTarget().path(workspaceId)
                              .request()
@@ -96,7 +95,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     public void updateFile(CodenvyProject project, String filePath, InputStream fileInputStream) {
         checkNotNull(project);
         checkNotNull(filePath);
-        checkArgument(!filePath.trim().isEmpty());
+        checkArgument(!isNullOrEmpty(filePath));
         checkNotNull(fileInputStream);
 
         getWebTarget().path(project.workspaceId)
@@ -111,7 +110,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     public InputStream getFile(CodenvyProject project, String filePath) {
         checkNotNull(project);
         checkNotNull(filePath);
-        checkArgument(!filePath.trim().isEmpty());
+        checkArgument(!isNullOrEmpty(filePath));
 
         return getWebTarget().path(project.workspaceId)
                              .path("file")
@@ -122,14 +121,15 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public boolean isResourceInProject(CodenvyProject project, IResource resource) {
+    public boolean isResourceInProject(CodenvyProject project, String resourcePath) {
         checkNotNull(project);
-        checkNotNull(resource);
+        checkNotNull(resourcePath);
+        checkArgument(!isNullOrEmpty(resourcePath));
 
         final Response response = getWebTarget().path(project.workspaceId)
                                                 .path("file")
                                                 .path(project.name)
-                                                .path(resource.getProjectRelativePath().toString())
+                                                .path(resourcePath)
                                                 .request()
                                                 .head();
 

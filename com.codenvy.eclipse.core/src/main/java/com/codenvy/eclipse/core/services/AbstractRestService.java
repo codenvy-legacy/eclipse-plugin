@@ -16,6 +16,7 @@
  */
 package com.codenvy.eclipse.core.services;
 
+import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -45,7 +46,7 @@ public abstract class AbstractRestService {
      */
     public AbstractRestService(String url, String rootPath) {
         checkNotNull(url);
-        checkArgument(!url.trim().isEmpty());
+        checkArgument(!isNullOrEmpty(url));
         checkNotNull(rootPath);
 
         this.url = url;

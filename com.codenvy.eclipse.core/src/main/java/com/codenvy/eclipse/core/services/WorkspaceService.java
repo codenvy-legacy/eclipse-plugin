@@ -40,7 +40,7 @@ public interface WorkspaceService extends RestServiceWithAuth {
      * @param name the workspace name.
      * @return the Codenvy workspace or {@code null} if none.
      * @throws NullPointerException if name parameter is {@code null}.
-     * @throws IllegalArgumentException if name parameter is an empty {@linkplain String}.
+     * @throws IllegalArgumentException if name parameter is an empty {@link String}.
      */
     WorkspaceRef getWorkspaceByName(String name);
 
@@ -50,7 +50,7 @@ public interface WorkspaceService extends RestServiceWithAuth {
      * @param accountId the account id.
      * @return the Codenvy workspace list never {@code null}.
      * @throws NullPointerException if accountId parameter is {@code null}.
-     * @throws IllegalArgumentException if accountId parameter is an empty {@linkplain String}.
+     * @throws IllegalArgumentException if accountId parameter is an empty {@link String}.
      */
     List<WorkspaceRef> findWorkspacesByAccount(String accountId);
 
@@ -59,6 +59,7 @@ public interface WorkspaceService extends RestServiceWithAuth {
      * 
      * @param workspaceRef the workspace to create.
      * @return the created workspace.
+     * @throws NullPointerException if {@link WorkspaceRef} parameter is {@code null}.
      */
     WorkspaceRef newWorkspace(WorkspaceRef workspaceRef);
 }

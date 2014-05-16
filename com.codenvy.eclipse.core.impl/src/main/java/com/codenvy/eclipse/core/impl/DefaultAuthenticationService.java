@@ -16,6 +16,8 @@
  */
 package com.codenvy.eclipse.core.impl;
 
+import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.Response.Status.OK;
@@ -24,8 +26,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
+import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AbstractRestService;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 
@@ -49,7 +51,9 @@ public class DefaultAuthenticationService extends AbstractRestService implements
     @Override
     public CodenvyToken login(String username, String password) {
         checkNotNull(username);
+        checkArgument(!isNullOrEmpty(username));
         checkNotNull(password);
+        checkArgument(!isNullOrEmpty(password));
 
         final Response response = getWebTarget().path("login")
                                                 .request(MediaType.APPLICATION_JSON)

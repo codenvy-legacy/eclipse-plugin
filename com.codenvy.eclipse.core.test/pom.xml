@@ -160,8 +160,16 @@
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
-					<parallel>both</parallel>
+					<parallel>classes</parallel>
 					<dependencies>
+						<dependency>
+							<artifactId>org.eclipse.equinox.ds</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
+						<dependency>
+							<artifactId>org.eclipse.equinox.security.ui</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
 						<dependency>
 							<artifactId>org.eclipse.equinox.ds</artifactId>
 							<type>p2-installable-unit</type>

@@ -84,6 +84,8 @@ public class DefaultWorkspaceService extends AbstractRestServiceWithAuth impleme
 
     @Override
     public WorkspaceRef newWorkspace(WorkspaceRef workspaceRef) {
+        checkNotNull(workspaceRef);
+
         return getWebTarget().request()
                              .post(json(workspaceRef), WorkspaceRef.class);
 

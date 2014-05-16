@@ -20,8 +20,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
-import org.eclipse.core.resources.IResource;
-
 import com.codenvy.eclipse.core.model.CodenvyProject;
 
 /**
@@ -83,10 +81,11 @@ public interface ProjectService extends RestServiceWithAuth {
      * Returns if the given resource exists in the given codenvy project.
      * 
      * @param project the Codenvy project.
-     * @param resource the resource to update.
+     * @param resource the resource path.
      * @return {@code true} if the given resource exists in the codenvy project, {@code false} otherwise.
-     * @throws NullPointerException if project or resource parameter is {@code null}.
+     * @throws NullPointerException if project or resourcePath parameter is {@code null}.
+     * @throws IllegalArgumentException if resourcePath parameter is an empty {@code String}.
      */
     // TODO workaround to check if a resource exists
-    boolean isResourceInProject(CodenvyProject project, IResource resource);
+    boolean isResourceInProject(CodenvyProject project, String resourcePath);
 }

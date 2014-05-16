@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
-import org.eclipse.core.resources.IResource;
-
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.ProjectService;
@@ -92,7 +90,7 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public boolean isResourceInProject(CodenvyProject project, IResource resource) {
+    public boolean isResourceInProject(CodenvyProject project, String resourcePath) {
         throw new UnsupportedOperationException();
     }
 

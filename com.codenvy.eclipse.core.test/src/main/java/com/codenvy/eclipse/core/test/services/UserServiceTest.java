@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.test;
+package com.codenvy.eclipse.core.test.services;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -29,12 +29,14 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.UserService;
 
 /**
- * Test the user service.
+ * {@link UserService} test.
  * 
  * @author Kevin Pollet
  */
 public class UserServiceTest extends RestApiBaseTest {
-    private static UserService userService;
+    private static final String SDK_TOKEN_VALUE = "123123";
+
+    private static UserService  userService;
 
     @BeforeClass
     public static void initialize() {
@@ -45,7 +47,7 @@ public class UserServiceTest extends RestApiBaseTest {
         final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
         Assert.assertNotNull(restServiceFactory);
 
-        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, new CodenvyToken("dummy"));
+        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, new CodenvyToken(SDK_TOKEN_VALUE));
         Assert.assertNotNull(userService);
     }
 

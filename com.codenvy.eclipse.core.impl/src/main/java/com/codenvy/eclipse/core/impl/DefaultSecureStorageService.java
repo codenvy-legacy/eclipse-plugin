@@ -135,6 +135,9 @@ public class DefaultSecureStorageService implements SecureStorageService {
 
     @Override
     public List<String> getUsernamesForURL(String url) {
+        checkNotNull(url);
+        checkArgument(!isNullOrEmpty(url));
+
         final ISecurePreferences root = SecurePreferencesFactory.getDefault();
         checkNotNull(root);
 
