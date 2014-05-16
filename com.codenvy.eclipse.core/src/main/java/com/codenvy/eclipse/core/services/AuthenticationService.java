@@ -14,12 +14,23 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core;
+package com.codenvy.eclipse.core.services;
+
+import com.codenvy.eclipse.core.model.CodenvyToken;
 
 /**
- * Marker interface used for type checking in {@linkplain RestServiceFactory}.
+ * Codenvy authentication service contract.
  * 
  * @author Kevin Pollet
  */
-public interface RestService {
+public interface AuthenticationService extends RestService {
+    /**
+     * Authenticates the user on the Codenvy platform.
+     * 
+     * @param username the user username.
+     * @param password the user password.
+     * @return the authentication token.
+     * @throws NullPointerException if username or password parameter is {@code null}.
+     */
+    CodenvyToken login(String username, String password);
 }

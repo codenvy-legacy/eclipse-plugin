@@ -16,9 +16,9 @@
  */
 package com.codenvy.eclipse.ui.test.mock;
 
-import com.codenvy.eclipse.core.UserService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyUser;
+import com.codenvy.eclipse.core.services.UserService;
 
 /**
  * The Codenvy user client service mock.

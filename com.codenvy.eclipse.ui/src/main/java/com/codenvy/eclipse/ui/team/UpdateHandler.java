@@ -32,10 +32,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.ProjectService;
-import com.codenvy.eclipse.core.RestServiceFactory;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.services.ProjectService;
+import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 import com.codenvy.eclipse.core.utils.EclipseProjectHelper;

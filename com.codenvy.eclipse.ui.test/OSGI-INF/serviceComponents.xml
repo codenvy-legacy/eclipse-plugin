@@ -18,6 +18,6 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0">
 	<implementation class="com.codenvy.eclipse.ui.test.mock.RestServiceFactoryMock" />		   
 	<service>
-		<provide interface="com.codenvy.eclipse.core.RestServiceFactory" />
+		<provide interface="com.codenvy.eclipse.core.services.RestServiceFactory" />
 	</service>		   
 </scr:component>

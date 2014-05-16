@@ -25,11 +25,11 @@ import java.util.List;
 
 import javax.ws.rs.core.GenericType;
 
-import com.codenvy.eclipse.core.AbstractRestServiceWithAuth;
-import com.codenvy.eclipse.core.WorkspaceService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
+import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
+import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
  * The Codenvy workspace client service.

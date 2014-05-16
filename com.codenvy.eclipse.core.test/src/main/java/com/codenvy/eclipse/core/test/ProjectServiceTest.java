@@ -26,12 +26,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.ProjectService;
-import com.codenvy.eclipse.core.RestServiceFactory;
-import com.codenvy.eclipse.core.WorkspaceService;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
+import com.codenvy.eclipse.core.services.ProjectService;
+import com.codenvy.eclipse.core.services.RestServiceFactory;
+import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
  * Test the project service.

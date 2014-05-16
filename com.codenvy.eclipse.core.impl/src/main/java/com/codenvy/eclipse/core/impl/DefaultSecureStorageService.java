@@ -30,9 +30,9 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 
-import com.codenvy.eclipse.core.SecureStorageService;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.services.SecureStorageService;
 
 /**
  * Convenient OSGI service that provides all the operations related to secure storage for Codenvy credentials. This is the default

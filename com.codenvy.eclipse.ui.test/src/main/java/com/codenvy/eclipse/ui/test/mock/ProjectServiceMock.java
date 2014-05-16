@@ -23,9 +23,9 @@ import java.util.zip.ZipInputStream;
 
 import org.eclipse.core.resources.IResource;
 
-import com.codenvy.eclipse.core.ProjectService;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.services.ProjectService;
 
 /**
  * The Codenvy project client service mock.

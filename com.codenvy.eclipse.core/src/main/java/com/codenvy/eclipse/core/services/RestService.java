@@ -14,12 +14,12 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core;
+package com.codenvy.eclipse.core.services;
 
 /**
  * Marker interface used for type checking in {@linkplain RestServiceFactory}.
  * 
  * @author Kevin Pollet
  */
-public interface RestServiceWithAuth {
+public interface RestService {
 }

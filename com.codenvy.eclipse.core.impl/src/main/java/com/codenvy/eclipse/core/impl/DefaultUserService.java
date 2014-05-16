@@ -18,10 +18,10 @@ package com.codenvy.eclipse.core.impl;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import com.codenvy.eclipse.core.AbstractRestServiceWithAuth;
-import com.codenvy.eclipse.core.UserService;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyUser;
+import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
+import com.codenvy.eclipse.core.services.UserService;
 
 /**
  * The Codenvy user client service.

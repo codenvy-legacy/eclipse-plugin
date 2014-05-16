@@ -23,11 +23,11 @@ import static javax.ws.rs.core.Response.Status.OK;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.codenvy.eclipse.core.AbstractRestService;
-import com.codenvy.eclipse.core.AuthenticationService;
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
+import com.codenvy.eclipse.core.services.AbstractRestService;
+import com.codenvy.eclipse.core.services.AuthenticationService;
 
 /**
  * The Codenvy authentication client service.

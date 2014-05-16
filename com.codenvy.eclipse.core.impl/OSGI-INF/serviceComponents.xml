@@ -23,14 +23,14 @@
 		<implementation
 			class="com.codenvy.eclipse.core.impl.DefaultRestServiceFactory" />
 		<service>
-			<provide interface="com.codenvy.eclipse.core.RestServiceFactory" />
+			<provide interface="com.codenvy.eclipse.core.services.RestServiceFactory" />
 		</service>
 	</scr:component>
 	<scr:component>
 		<implementation
 			class="com.codenvy.eclipse.core.impl.DefaultSecureStorageService" />
 		<service>
-			<provide interface="com.codenvy.eclipse.core.SecureStorageService" />
+			<provide interface="com.codenvy.eclipse.core.services.SecureStorageService" />
 		</service>
 	</scr:component>
 </root:components>

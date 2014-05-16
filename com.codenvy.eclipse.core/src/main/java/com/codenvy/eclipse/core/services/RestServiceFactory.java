@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core;
+package com.codenvy.eclipse.core.services;
 
 import com.codenvy.eclipse.core.model.CodenvyToken;
 
