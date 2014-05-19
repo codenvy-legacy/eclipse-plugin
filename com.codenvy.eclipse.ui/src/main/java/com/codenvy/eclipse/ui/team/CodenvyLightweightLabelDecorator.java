@@ -16,6 +16,10 @@
  */
 package com.codenvy.eclipse.ui.team;
 
+import static org.eclipse.core.resources.IResource.PROJECT;
+import static org.eclipse.core.resources.IResource.ROOT;
+import static org.eclipse.team.core.RepositoryProvider.getProvider;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IDecoration;
@@ -26,6 +30,7 @@ import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.ide.ResourceUtil;
 
 import com.codenvy.eclipse.core.team.CodenvyMetaResource;
+import com.codenvy.eclipse.core.team.CodenvyProvider;
 
 /**
  * The Codenvy label decorator.
@@ -62,11 +67,17 @@ public class CodenvyLightweightLabelDecorator implements ILightweightLabelDecora
     @Override
     public void decorate(Object element, IDecoration decoration) {
         final IResource resource = ResourceUtil.getResource(element);
-        if (resource != null && resource.getType() != IResource.ROOT) {
-
-            final CodenvyMetaResource metaResource = (CodenvyMetaResource)ResourceUtil.getAdapter(resource, CodenvyMetaResource.class, true);
-            if (metaResource != null && metaResource.isTracked()) {
-                decoration.addOverlay(trackedImageDescriptor);
+        if (resource != null && resource.getType() != ROOT) {
+            final CodenvyProvider provider = (CodenvyProvider)getProvider(resource.getProject(), CodenvyProvider.PROVIDER_ID);
+            if (provider != null) {
+                if (resource.getType() == PROJECT) {
+                    decoration.addOverlay(trackedImageDescriptor);
+                } else {
+                    final CodenvyMetaResource metaResource = (CodenvyMetaResource)ResourceUtil.getAdapter(resource, CodenvyMetaResource.class, true);
+                    if (metaResource != null && metaResource.isTracked()) {
+                        decoration.addOverlay(trackedImageDescriptor);
+                    }
+                }
             }
         }
     }

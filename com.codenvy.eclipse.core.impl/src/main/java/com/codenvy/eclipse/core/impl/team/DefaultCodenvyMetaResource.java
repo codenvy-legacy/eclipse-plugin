@@ -16,6 +16,9 @@
  */
 package com.codenvy.eclipse.core.impl.team;
 
+import static org.eclipse.core.resources.IResource.PROJECT;
+import static org.eclipse.core.resources.IResource.ROOT;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
@@ -34,29 +37,33 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
  */
 public class DefaultCodenvyMetaResource implements CodenvyMetaResource {
     private final IResource resource;
-    private final boolean   tracked;
+    private boolean         tracked;
 
     public DefaultCodenvyMetaResource(IResource resource) {
         this.resource = resource;
+        this.tracked = false;
 
-        final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(resource.getProject(), CodenvyProvider.PROVIDER_ID);
-        if (codenvyProvider != null) {
-            final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
+        if (resource.getType() != ROOT) {
+            final CodenvyProvider codenvyProvider =
+                                                    (CodenvyProvider)RepositoryProvider.getProvider(resource.getProject(),
+                                                                                                    CodenvyProvider.PROVIDER_ID);
 
-            if (metaProject != null) {
-                final ProjectService projectService = new DefaultProjectService(metaProject.url, new CodenvyToken(metaProject.codenvyToken));
-                final CodenvyProject codenvyProject = new CodenvyProject.Builder().withName(metaProject.projectName)
-                                                                                  .withWorkspaceId(metaProject.workspaceId)
-                                                                                  .build();
+            if (codenvyProvider != null) {
+                final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
 
-                this.tracked = projectService.isResourceInProject(codenvyProject, resource.getProjectRelativePath().toString());
+                if (metaProject != null) {
+                    final ProjectService projectService =
+                                                          new DefaultProjectService(metaProject.url,
+                                                                                    new CodenvyToken(metaProject.codenvyToken));
+                    final CodenvyProject codenvyProject = new CodenvyProject.Builder().withName(metaProject.projectName)
+                                                                                      .withWorkspaceId(metaProject.workspaceId)
+                                                                                      .build();
+
+                    this.tracked =
+                                   resource.getType() == PROJECT ? true
+                                       : projectService.isResourceInProject(codenvyProject, resource.getProjectRelativePath().toString());
+                }
             }
-            else {
-                this.tracked = false;
-            }
-        }
-        else {
-            this.tracked = false;
         }
     }
 
