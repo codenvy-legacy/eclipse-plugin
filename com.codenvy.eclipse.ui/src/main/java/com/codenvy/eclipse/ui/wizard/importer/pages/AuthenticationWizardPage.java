@@ -16,6 +16,7 @@
  */
 package com.codenvy.eclipse.ui.wizard.importer.pages;
 
+import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
 import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -52,7 +53,6 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
-import com.codenvy.eclipse.core.utils.StringHelper;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
@@ -103,18 +103,31 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         hostLabel.setText("URL:");
 
         urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
+        urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         urls.add(CODENVY_URL);
+        urls.select(0);
+
         final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
         final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
-                                                                                             context.getServiceReference(SecureStorageService.class);
+                                                                                      context.getServiceReference(SecureStorageService.class);
+
+        
         if (codenvySecureStorageServiceRef != null) {
-            final SecureStorageService codenvySecureStorageService =
-                                                                            context.getService(codenvySecureStorageServiceRef);
-            for (final String url : codenvySecureStorageService.getURLs()) {
-                urls.add(url);
+            
+            try {
+
+                final SecureStorageService codenvySecureStorageService = context.getService(codenvySecureStorageServiceRef);
+                if (codenvySecureStorageService != null) {
+                    for (String url : codenvySecureStorageService.getURLs()) {
+                        urls.add(url);
+                    }
+                }
+
+            } finally {
+                context.ungetService(codenvySecureStorageServiceRef);
             }
+            
         }
-        urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         final Label usernameLabel = new Label(wizardContainer, SWT.NONE);
         usernameLabel.setText("Username:");
@@ -178,10 +191,10 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
                         if (storeUserCredentials.getSelection()) {
                             final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
-                                                                                                                 context.getServiceReference(SecureStorageService.class);
+                                                                                                          context.getServiceReference(SecureStorageService.class);
                             if (codenvySecureStorageServiceRef != null) {
                                 final SecureStorageService codenvySecureStorageService =
-                                                                                                context.getService(codenvySecureStorageServiceRef);
+                                                                                         context.getService(codenvySecureStorageServiceRef);
                                 codenvySecureStorageService.storeCredentials(urls.getText(), new CodenvyCredentials(usernames.getText(),
                                                                                                                     password.getText()),
                                                                              token);
@@ -190,11 +203,11 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
                         setErrorMessage(null);
 
-                    } catch (final AuthenticationException e) {
+                    } catch (AuthenticationException e) {
                         event.doit = false;
                         setErrorMessage("Authentication failed: wrong Username and/or Password.");
 
-                    } catch (final ProcessingException e) {
+                    } catch (ProcessingException e) {
                         event.doit = false;
                         setErrorMessage("Authentication failed: wrong URL.");
 
@@ -207,9 +220,9 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
     }
 
     private boolean isBlankFields() {
-        final boolean isUrlsBlank = StringHelper.isNullOrEmpty(urls.getText());
-        final boolean isUsernameBlank = StringHelper.isNullOrEmpty(usernames.getText());
-        final boolean isPasswordBlank = StringHelper.isNullOrEmpty(password.getText());
+        final boolean isUrlsBlank = isNullOrEmpty(urls.getText());
+        final boolean isUsernameBlank = isNullOrEmpty(usernames.getText());
+        final boolean isPasswordBlank = isNullOrEmpty(password.getText());
 
         return isUrlsBlank || isUsernameBlank || isPasswordBlank;
     }
@@ -217,7 +230,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
     private SecureStorageService getCodenvySecureStorageService() {
         final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
         final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
-                                                                                             context.getServiceReference(SecureStorageService.class);
+                                                                                      context.getServiceReference(SecureStorageService.class);
         if (codenvySecureStorageServiceRef == null) {
             return null;
         }
@@ -280,7 +293,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
 
         private void autoFillUsernames() {
-            if (!StringHelper.isNullOrEmpty(urls.getText())) {
+            if (!isNullOrEmpty(urls.getText())) {
                 String currentUsername = usernames.getText();
 
                 for (int i = usernames.getItemCount() - 1; i >= 0; i--) {
@@ -297,7 +310,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
 
         private void autoFillPassword() {
-            if (!StringHelper.isNullOrEmpty(usernames.getText())) {
+            if (!isNullOrEmpty(usernames.getText())) {
                 final String storedPassword = getCodenvySecureStorageService().getPassword(urls.getText(), usernames.getText());
                 if (storedPassword != null && !storedPassword.isEmpty()) {
                     password.setText(storedPassword);
