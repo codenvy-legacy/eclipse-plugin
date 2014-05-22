@@ -238,6 +238,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                 }
                 usernames.add(username);
             }
+            usernames.setText(currentUsername);
         }
     }
 
