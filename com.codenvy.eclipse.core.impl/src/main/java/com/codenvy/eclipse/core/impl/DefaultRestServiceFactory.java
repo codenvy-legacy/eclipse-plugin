@@ -29,6 +29,7 @@ import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.RestServiceWithAuth;
+import com.codenvy.eclipse.core.services.RunnerService;
 import com.codenvy.eclipse.core.services.UserService;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
@@ -49,6 +50,7 @@ public class DefaultRestServiceFactory implements RestServiceFactory {
         this.restServiceWithAuthBindings.put(WorkspaceService.class, DefaultWorkspaceService.class);
         this.restServiceWithAuthBindings.put(UserService.class, DefaultUserService.class);
         this.restServiceWithAuthBindings.put(ProjectService.class, DefaultProjectService.class);
+        this.restServiceWithAuthBindings.put(RunnerService.class, DefaultRunnerService.class);
     }
 
     @Override
