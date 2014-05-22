@@ -22,16 +22,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 import javax.ws.rs.ProcessingException;
 
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
-import org.eclipse.jface.fieldassist.ComboContentAdapter;
-import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -62,6 +57,7 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;
+import com.codenvy.eclipse.ui.widgets.ComboAutoCompleteField;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
 import com.google.common.collect.ObjectArrays;
@@ -75,9 +71,9 @@ import com.google.common.collect.ObjectArrays;
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
     private static final String          CODENVY_URL = "https://codenvy.com";
 
-    private ContentProposalAdapter       urlProposalAdapter;
+    private ComboAutoCompleteField       urlProposals;
     private Combo                        urls;
-    private ContentProposalAdapter       usernameProposalAdapter;
+    private ComboAutoCompleteField       usernameProposals;
     private Combo                        usernames;
     private Text                         password;
     private Button                       storeUserCredentials;
@@ -115,10 +111,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
         urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        urlProposalAdapter = new ContentProposalAdapter(urls, new ComboContentAdapter(), getUrlProposalsProvider(), null, null);
-        urlProposalAdapter.setPropagateKeys(true);
-        urlProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
-
+        urlProposals = new ComboAutoCompleteField(urls);
         for (String url : CodenvyPreferencesInitializer.parseString(CodenvyUIPlugin.getDefault()
                                                                                    .getPreferenceStore()
                                                                                    .getString(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME))) {
@@ -131,11 +124,8 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         usernames = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER);
         usernames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        usernameProposalAdapter =
-                                  new ContentProposalAdapter(usernames, new ComboContentAdapter(), getUsernameProposalsProvider(), null,
-                                                             null);
-        usernameProposalAdapter.setPropagateKeys(true);
-        usernameProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+        usernameProposals =
+                            new ComboAutoCompleteField(usernames);
         autoFillUsernames();
 
         final Label passwordLabel = new Label(wizardContainer, SWT.NONE);
@@ -166,127 +156,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         setControl(wizardContainer);
     }
 
-    private String[] getUrls() {
-        return urls.getItems();
-    }
-
-    private IContentProposalProvider getUrlProposalsProvider() {
-        return new IContentProposalProvider() {
-            @Override
-            public IContentProposal[] getProposals(String contents, int position) {
-                String[] items = getUrls();
-                if (contents.length() == 0 || items.length == 0)
-                    return new IContentProposal[0];
-                Pattern matcher = Pattern.compile(Pattern.quote(contents) + ".*");
-                ArrayList<String> matches = new ArrayList<String>();
-                for (int i = 0; i < items.length; i++) {
-                    if (matcher.matcher(items[i]).find()) {
-                        matches.add(items[i]);
-                    }
-                }
-
-                // We don't want to autoactivate if the only proposal exactly matches
-                // what is in the combo. This prevents the popup from
-                // opening when the user is merely scrolling through the combo values or
-                // has accepted a combo value.
-                if (matches.size() == 1 && matches.get(0).equals(urls.getText()))
-                    return new IContentProposal[0];
-
-                if (matches.isEmpty())
-                    return new IContentProposal[0];
-
-                // Make the proposals
-                IContentProposal[] proposals = new IContentProposal[matches.size()];
-                for (int i = 0; i < matches.size(); i++) {
-                    final String proposal = matches.get(i);
-                    proposals[i] = new IContentProposal() {
-
-                        @Override
-                        public String getContent() {
-                            return proposal;
-                        }
-
-                        @Override
-                        public int getCursorPosition() {
-                            return proposal.length();
-                        }
-
-                        @Override
-                        public String getDescription() {
-                            return null;
-                        }
-
-                        @Override
-                        public String getLabel() {
-                            return null;
-                        }
-                    };
-                }
-                return proposals;
-            }
-        };
-    }
-
-    private String[] getUsernames() {
-        return usernames.getItems();
-    }
-
-    private IContentProposalProvider getUsernameProposalsProvider() {
-        return new IContentProposalProvider() {
-            @Override
-            public IContentProposal[] getProposals(String contents, int position) {
-                String[] items = getUsernames();
-                if (contents.length() == 0 || items.length == 0)
-                    return new IContentProposal[0];
-                Pattern matcher = Pattern.compile(Pattern.quote(contents) + ".*");
-                ArrayList<String> matches = new ArrayList<String>();
-                for (int i = 0; i < items.length; i++) {
-                    if (matcher.matcher(items[i]).find()) {
-                        matches.add(items[i]);
-                    }
-                }
-
-                // We don't want to autoactivate if the only proposal exactly matches
-                // what is in the combo. This prevents the popup from
-                // opening when the user is merely scrolling through the combo values or
-                // has accepted a combo value.
-                if (matches.size() == 1 && matches.get(0).equals(urls.getText()))
-                    return new IContentProposal[0];
-
-                if (matches.isEmpty())
-                    return new IContentProposal[0];
-
-                // Make the proposals
-                IContentProposal[] proposals = new IContentProposal[matches.size()];
-                for (int i = 0; i < matches.size(); i++) {
-                    final String proposal = matches.get(i);
-                    proposals[i] = new IContentProposal() {
-
-                        @Override
-                        public String getContent() {
-                            return proposal;
-                        }
-
-                        @Override
-                        public int getCursorPosition() {
-                            return proposal.length();
-                        }
-
-                        @Override
-                        public String getDescription() {
-                            return null;
-                        }
-
-                        @Override
-                        public String getLabel() {
-                            return null;
-                        }
-                    };
-                }
-                return proposals;
-            }
-        };
-    }
 
     @Override
     public void handlePageChanging(PageChangingEvent event) {
@@ -456,5 +325,4 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
             autoFill();
         }
     }
-
 }
