@@ -16,7 +16,6 @@
  */
 package com.codenvy.eclipse.ui.team;
 
-import static org.eclipse.core.resources.IResource.PROJECT;
 import static org.eclipse.core.resources.IResource.ROOT;
 import static org.eclipse.team.core.RepositoryProvider.getProvider;
 
@@ -70,13 +69,9 @@ public class CodenvyLightweightLabelDecorator implements ILightweightLabelDecora
         if (resource != null && resource.getType() != ROOT) {
             final CodenvyProvider provider = (CodenvyProvider)getProvider(resource.getProject(), CodenvyProvider.PROVIDER_ID);
             if (provider != null) {
-                if (resource.getType() == PROJECT) {
+                final CodenvyMetaResource metaResource = (CodenvyMetaResource)ResourceUtil.getAdapter(resource, CodenvyMetaResource.class, true);
+                if (metaResource != null && metaResource.isTracked()) {
                     decoration.addOverlay(trackedImageDescriptor);
-                } else {
-                    final CodenvyMetaResource metaResource = (CodenvyMetaResource)ResourceUtil.getAdapter(resource, CodenvyMetaResource.class, true);
-                    if (metaResource != null && metaResource.isTracked()) {
-                        decoration.addOverlay(trackedImageDescriptor);
-                    }
                 }
             }
         }

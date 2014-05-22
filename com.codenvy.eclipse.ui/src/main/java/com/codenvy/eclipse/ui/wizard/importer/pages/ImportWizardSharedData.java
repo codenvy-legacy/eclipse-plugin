@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.eclipse.ui.IWorkingSet;
 
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.google.common.base.Optional;
 
 /**

@@ -69,10 +69,10 @@ import com.google.common.collect.ObjectArrays;
  * @author Stéphane Daviet
  */
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
-    private static final String          CODENVY_URL = "https://codenvy.com";
-
+    @SuppressWarnings("unused")
     private ComboAutoCompleteField       urlProposals;
     private Combo                        urls;
+    @SuppressWarnings("unused")
     private ComboAutoCompleteField       usernameProposals;
     private Combo                        usernames;
     private Text                         password;

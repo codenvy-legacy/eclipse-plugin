@@ -39,5 +39,24 @@
             type="org.eclipse.core.resources.problemmarker">
       </super>
    </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            id="com.codenvy.eclipse.core.launcher.launchConfigurationType"
+            name="Codenvy"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchDelegates">
+      <launchDelegate
+            delegate="com.codenvy.eclipse.core.launcher.RunOnCodenvyDelegate"
+            delegateDescription="Run on Codenvy"
+            id="com.codenvy.eclipse.core.launcher.runLaunchCodenvyProject"
+            modes="run"
+            name="Run on Codenvy Launcher"
+            type="com.codenvy.eclipse.core.launcher.launchConfigurationType">
+      </launchDelegate>
+   </extension>
 
 </plugin>

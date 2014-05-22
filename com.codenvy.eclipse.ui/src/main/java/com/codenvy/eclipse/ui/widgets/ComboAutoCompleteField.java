@@ -19,7 +19,6 @@ package com.codenvy.eclipse.ui.widgets;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.fieldassist.ComboContentAdapter;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;

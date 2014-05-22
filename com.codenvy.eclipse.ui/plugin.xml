@@ -225,4 +225,57 @@
             class="com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="com.codenvy.eclipse.ui.launcher.LaunchConfigurationTabGroup"
+            id="com.codenvy.eclipse.ui.launcher.launchConfigurationTabGroup"
+            type="com.codenvy.eclipse.core.launcher.launchConfigurationType">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="com.codenvy.eclipse.core.launcher.launchConfigurationType"
+            icon="images/LaunchLogo.png"
+            id="com.codenvy.eclipse.ui.launcher.launchConfigurationTypeImage">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="com.codenvy.eclipse.ui.launcher.RunOnCodenvyShortcut"
+            description="Runs an application on Codenvy"
+            icon="images/RunOnCodenvy.png"
+            id="com.codenvy.eclipse.ui.launcher.runOnCodenvy"
+            label="Run on Codenvy"
+            modes="run"
+            path="codenvy">
+         <contextualLaunch>
+            <enablement>
+               <or>
+                  <with
+                        variable="activeMenuSelection">
+                     <reference
+                           definitionId="com.codenvy.eclipse.ui.team.resourceContributions">
+                     </reference>
+                  </with>
+                  <with
+                        variable="activeMenuEditorInput">
+                     <reference
+                           definitionId="com.codenvy.eclipse.ui.team.resourceContributions">
+                     </reference>
+                  </with>
+               </or></enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.consoleLineTrackers">
+      <consoleLineTracker
+            class="com.codenvy.eclipse.ui.launcher.RunOnCodenvyConsoleLineTracker"
+            id="com.codenvy.eclipse.ui.launcher.runOnCodenvyConsoleLineTracker"
+            processType="com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess">
+      </consoleLineTracker>
+   </extension>
 </plugin>

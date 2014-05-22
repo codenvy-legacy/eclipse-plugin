@@ -41,7 +41,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.m2e.core.MavenPlugin;
 
-import com.codenvy.eclipse.core.CodenvyNature.CodenvyProjectDescriptor.ProjectType;
 import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

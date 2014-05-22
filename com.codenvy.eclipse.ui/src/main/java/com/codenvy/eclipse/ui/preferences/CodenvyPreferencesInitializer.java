@@ -16,11 +16,8 @@
  */
 package com.codenvy.eclipse.ui.preferences;
 
-import java.lang.reflect.Array;
-
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferenceStore;
 
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.google.common.base.Joiner;
