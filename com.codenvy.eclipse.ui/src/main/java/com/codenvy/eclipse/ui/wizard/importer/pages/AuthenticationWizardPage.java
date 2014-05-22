@@ -31,10 +31,10 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -148,10 +148,8 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         storeUserCredentials.addKeyListener(pageCompleteListener);
 
         final AutofillFieldsListener autofillFieldsListener = new AutofillFieldsListener();
-        urls.addKeyListener(autofillFieldsListener);
-        urls.addSelectionListener(autofillFieldsListener);
-        usernames.addKeyListener(autofillFieldsListener);
-        usernames.addSelectionListener(autofillFieldsListener);
+        urls.addModifyListener(autofillFieldsListener);
+        usernames.addModifyListener(autofillFieldsListener);
 
         setControl(wizardContainer);
     }
@@ -226,13 +224,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
     }
 
-    private void autoFill() {
-        autoFillUsernames();
-        autoFillPassword();
-
-        setPageComplete(!isBlankFields());
-    }
-
     private void autoFillUsernames() {
         if (!isNullOrEmpty(urls.getText())) {
             String currentUsername = usernames.getText();
@@ -297,32 +288,16 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
     }
 
-    private class AutofillFieldsListener implements KeyListener, SelectionListener, FocusListener {
+    private class AutofillFieldsListener implements ModifyListener {
         @Override
-        public void widgetSelected(SelectionEvent e) {
-            autoFill();
-        }
-
-        @Override
-        public void widgetDefaultSelected(SelectionEvent e) {
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            autoFill();
-        }
-
-        @Override
-        public void focusGained(FocusEvent e) {
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-            autoFill();
+        public void modifyText(ModifyEvent e) {
+            if (e.widget == urls) {
+                autoFillUsernames();
+            }
+            if (e.widget == urls || e.widget == usernames) {
+                autoFillPassword();
+            }
+            setPageComplete(!isBlankFields());
         }
     }
 }
