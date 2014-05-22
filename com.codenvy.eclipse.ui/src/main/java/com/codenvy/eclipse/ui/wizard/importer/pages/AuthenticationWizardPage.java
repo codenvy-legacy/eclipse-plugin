@@ -136,6 +136,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                                                              null);
         usernameProposalAdapter.setPropagateKeys(true);
         usernameProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+        autoFillUsernames();
 
         final Label passwordLabel = new Label(wizardContainer, SWT.NONE);
         passwordLabel.setText("Password:");
@@ -356,6 +357,39 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
     }
 
+    private void autoFill() {
+        autoFillUsernames();
+        autoFillPassword();
+
+        setPageComplete(!isBlankFields());
+    }
+
+    private void autoFillUsernames() {
+        if (!isNullOrEmpty(urls.getText())) {
+            String currentUsername = usernames.getText();
+
+            for (int i = usernames.getItemCount() - 1; i >= 0; i--) {
+                usernames.remove(i);
+            }
+
+            for (final String username : getCodenvySecureStorageService().getUsernamesForURL(urls.getText())) {
+                if (currentUsername.equals(username)) {
+                    continue;
+                }
+                usernames.add(username);
+            }
+        }
+    }
+
+    private void autoFillPassword() {
+        if (!isNullOrEmpty(usernames.getText())) {
+            final String storedPassword = getCodenvySecureStorageService().getPassword(urls.getText(), usernames.getText());
+            if (storedPassword != null && !storedPassword.isEmpty()) {
+                password.setText(storedPassword);
+            }
+        }
+    }
+
     private boolean isBlankFields() {
         final boolean isUrlsBlank = isNullOrEmpty(urls.getText());
         final boolean isUsernameBlank = isNullOrEmpty(usernames.getText());
@@ -421,38 +455,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         public void focusLost(FocusEvent e) {
             autoFill();
         }
-
-        private void autoFill() {
-            autoFillUsernames();
-            autoFillPassword();
-
-            setPageComplete(!isBlankFields());
-        }
-
-        private void autoFillUsernames() {
-            if (!isNullOrEmpty(urls.getText())) {
-                String currentUsername = usernames.getText();
-
-                for (int i = usernames.getItemCount() - 1; i >= 0; i--) {
-                    usernames.remove(i);
-                }
-
-                for (final String username : getCodenvySecureStorageService().getUsernamesForURL(urls.getText())) {
-                    if (currentUsername.equals(username)) {
-                        continue;
-                    }
-                    usernames.add(username);
-                }
-            }
-        }
-
-        private void autoFillPassword() {
-            if (!isNullOrEmpty(usernames.getText())) {
-                final String storedPassword = getCodenvySecureStorageService().getPassword(urls.getText(), usernames.getText());
-                if (storedPassword != null && !storedPassword.isEmpty()) {
-                    password.setText(storedPassword);
-                }
-            }
-        }
     }
+
 }
