@@ -16,12 +16,12 @@
  */
 package com.codenvy.eclipse.core.services;
 
-import com.codenvy.eclipse.core.model.CodenvyToken;
 
 /**
  * The service REST factory contract.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public interface RestServiceFactory {
     /**
@@ -39,9 +39,9 @@ public interface RestServiceFactory {
      * 
      * @param clazz the REST service type.
      * @param url the REST service url.
-     * @param token the authentication token.
+     * @param username the username.
      * @return the new REST service instance never {@code null}.
      * @throws NullPointerException if clazz parameter is {@code null}.
      */
-    <T extends RestServiceWithAuth, S extends T> T newRestServiceWithAuth(Class<T> clazz, String url, CodenvyToken token);
+    <T extends RestServiceWithAuth, S extends T> T newRestServiceWithAuth(Class<T> clazz, String url, String username);
 }

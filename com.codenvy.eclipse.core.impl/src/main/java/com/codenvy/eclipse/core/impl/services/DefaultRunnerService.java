@@ -26,7 +26,6 @@ import javax.ws.rs.core.Response;
 import com.codenvy.eclipse.core.exceptions.APIException;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyRunnerStatus;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.services.RunnerService;
 
@@ -40,12 +39,12 @@ public class DefaultRunnerService extends AbstractRestServiceWithAuth implements
      * Constructs an instance of {@linkplain DefaultRunnerService}.
      * 
      * @param url the Codenvy platform url.
-     * @param codenvyToken the Codenvy authentication token.
-     * @throws NullPointerException if url or codenvyToken is {@code null}.
-     * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
+     * @param username the username.
+     * @throws NullPointerException if url or username is {@code null}.
+     * @throws IllegalArgumentException if url or username are empty {@linkplain String}.
      */
-    public DefaultRunnerService(String url, CodenvyToken codenvyToken) {
-        super(url, "api/runner", codenvyToken);
+    public DefaultRunnerService(String url, String username) {
+        super(url, username, "api/runner");
     }
 
     @Override

@@ -35,6 +35,7 @@ import com.codenvy.eclipse.core.services.AuthenticationService;
  * The Codenvy authentication client service.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class DefaultAuthenticationService extends AbstractRestService implements AuthenticationService {
     /**

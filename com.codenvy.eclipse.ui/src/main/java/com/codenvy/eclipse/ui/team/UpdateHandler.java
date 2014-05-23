@@ -33,7 +33,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -59,20 +58,24 @@ public class UpdateHandler extends AbstractResourceHandler {
 
                 if (serviceReference != null) {
                     final RestServiceFactory restServiceFactory = bundleContext.getService(serviceReference);
-                    
+
                     if (restServiceFactory != null) {
                         final IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-                        final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, metaProject.url, new CodenvyToken(metaProject.codenvyToken));                        
-                        
+                        final ProjectService projectService =
+                                                              restServiceFactory.newRestServiceWithAuth(ProjectService.class,
+                                                                                                        metaProject.url,
+                                                                                                        metaProject.username);
+
                         progressService.run(true, false, new IRunnableWithProgress() {
                             @Override
                             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                                 monitor.beginTask("Update resources", resources.size());
-                                
+
                                 try {
-                                
+
                                     for (IResource oneResource : resources) {
-                                        final CodenvyProject codenvyProject = new CodenvyProject.Builder().withName(metaProject.projectName)
+                                        final CodenvyProject codenvyProject =
+                                                                              new CodenvyProject.Builder().withName(metaProject.projectName)
                                                                                                           .withWorkspaceId(metaProject.workspaceId)
                                                                                                           .build();
 
@@ -80,7 +83,7 @@ public class UpdateHandler extends AbstractResourceHandler {
 
                                         monitor.worked(1);
                                     }
-                                    
+
                                 } finally {
                                     monitor.done();
                                 }
@@ -91,7 +94,7 @@ public class UpdateHandler extends AbstractResourceHandler {
 
             } catch (InvocationTargetException | InterruptedException e) {
                 throw new RuntimeException(e);
-                
+
             } finally {
                 bundleContext.ungetService(serviceReference);
             }

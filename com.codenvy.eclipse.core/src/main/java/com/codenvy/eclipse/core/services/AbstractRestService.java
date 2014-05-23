@@ -30,6 +30,7 @@ import javax.ws.rs.core.UriBuilder;
  * Abstract rest service implementation.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  * @see RestServiceFactory
  */
 public abstract class AbstractRestService {
@@ -50,7 +51,6 @@ public abstract class AbstractRestService {
         checkNotNull(rootPath);
 
         this.url = url;
-
         final URI uri = UriBuilder.fromUri(url).path(rootPath).build();
         this.webTarget = ClientBuilder.newClient().target(uri);
     }

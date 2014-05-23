@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.zip.ZipInputStream;
 
 import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.ProjectService;
 
 /**
@@ -37,7 +36,7 @@ public class ProjectServiceMock implements ProjectService {
 
     private final List<CodenvyProject> projects;
 
-    public ProjectServiceMock(String url, CodenvyToken codenvyToken) {
+    public ProjectServiceMock(String url, String username) {
         this.projects = new ArrayList<>();
 
         final CodenvyProject prj1 = new CodenvyProject.Builder().withName(MOCK_PROJECT_NAME)

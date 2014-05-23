@@ -34,7 +34,6 @@ import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.RunnerService;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -58,7 +57,8 @@ public final class RunOnCodenvyDelegate implements ILaunchConfigurationDelegate 
 
             final IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
             if (project == null) {
-                throw new CoreException(new Status(IStatus.ERROR, CodenvyPlugin.PLUGIN_ID, "No project named " + projectName + " in the workspace"));
+                throw new CoreException(new Status(IStatus.ERROR, CodenvyPlugin.PLUGIN_ID, "No project named " + projectName
+                                                                                           + " in the workspace"));
             }
 
 
@@ -74,7 +74,8 @@ public final class RunOnCodenvyDelegate implements ILaunchConfigurationDelegate 
 
                     final RestServiceFactory service = bundleContext.getService(serviceRef);
                     if (service != null) {
-                        final RunnerService runnerService = service.newRestServiceWithAuth(RunnerService.class, metaProject.url, new CodenvyToken(metaProject.codenvyToken));
+                        final RunnerService runnerService = service.newRestServiceWithAuth(RunnerService.class, metaProject.url,
+                                                                                           metaProject.username);
                         new CodenvyRunnerProcess(launch, runnerService, codenvyProject);
                         return;
                     }

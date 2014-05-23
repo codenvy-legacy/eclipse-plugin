@@ -16,6 +16,8 @@
  */
 package com.codenvy.eclipse.core.model;
 
+import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -36,12 +38,15 @@ public class CodenvyCredentials {
      * @param username the user username.
      * @param password the user password.
      * @throws NullPointerException if username or password parameter is {@code null}.
+     * @throws IllegalArgumentException if username or password are empty {@linkplain String}.
      */
     @JsonCreator
     public CodenvyCredentials(@JsonProperty("username") String username, @JsonProperty("password") String password) {
         checkNotNull(username);
+        checkArgument(!isNullOrEmpty(username));
         checkNotNull(password);
-        
+        checkArgument(!isNullOrEmpty(password));
+
         this.username = username;
         this.password = password;
     }

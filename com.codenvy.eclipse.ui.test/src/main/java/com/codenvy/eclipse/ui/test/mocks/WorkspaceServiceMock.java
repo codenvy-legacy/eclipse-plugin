@@ -21,7 +21,6 @@ import static com.codenvy.eclipse.ui.test.mocks.AccountServiceMock.MOCK_ACCOUNT_
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 import com.codenvy.eclipse.core.services.WorkspaceService;
@@ -37,7 +36,7 @@ public class WorkspaceServiceMock implements WorkspaceService {
 
     private final List<WorkspaceRef> workspaces;
 
-    public WorkspaceServiceMock(String url, CodenvyToken codenvyToken) {
+    public WorkspaceServiceMock(String url, String username) {
         this.workspaces = new ArrayList<>();
         this.workspaces.add(new WorkspaceRef(MOCK_WORKSPACE_ID, MOCK_WORKSPACE_NAME, "codenvy-organization"));
         this.workspaces.add(new WorkspaceRef("ws2-id", "ws2", "codenvy-organization"));

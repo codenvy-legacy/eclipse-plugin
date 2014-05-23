@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.ws.rs.core.GenericType;
 
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
@@ -35,18 +34,19 @@ import com.codenvy.eclipse.core.services.WorkspaceService;
  * The Codenvy workspace client service.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class DefaultWorkspaceService extends AbstractRestServiceWithAuth implements WorkspaceService {
     /**
      * Constructs an instance of {@linkplain DefaultWorkspaceService}.
      * 
      * @param url the Codenvy platform url.
-     * @param codenvyToken the Codenvy authentication token.
-     * @throws NullPointerException if url or codenvyToken parameter is {@code null}.
+     * @param username the username.
+     * @throws NullPointerException if url or username parameter is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
-    public DefaultWorkspaceService(String url, CodenvyToken codenvyToken) {
-        super(url, "api/workspace", codenvyToken);
+    public DefaultWorkspaceService(String url, String username) {
+        super(url, username, "api/workspace");
     }
 
     @Override

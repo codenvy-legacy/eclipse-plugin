@@ -23,7 +23,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.WorkspaceService;
@@ -32,6 +31,7 @@ import com.codenvy.eclipse.core.services.WorkspaceService;
  * {@link RestServiceFactory} test.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class RestServiceFactoryTest {
     private static final String       CODENVY_URL     = "http://dummy.com";
@@ -72,7 +72,7 @@ public class RestServiceFactoryTest {
     public void testNewRestServiceWithAuth() {
         final WorkspaceService workspaceService =
                                                   restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, CODENVY_URL,
-                                                                                            new CodenvyToken(SDK_TOKEN_VALUE));
+                                                                                            "dummy");
 
         Assert.assertNotNull(workspaceService);
     }

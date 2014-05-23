@@ -23,17 +23,22 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyUser;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
+import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.core.services.UserService;
 
 /**
  * {@link UserService} test.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class UserServiceTest extends RestApiBaseTest {
+    private static final String DUMMY_USERNAME  = "dummyUsername";
+    private static final String DUMMY_PASSWORD  = "dummyPassword";
     private static final String SDK_TOKEN_VALUE = "123123";
 
     private static UserService  userService;
@@ -47,8 +52,17 @@ public class UserServiceTest extends RestApiBaseTest {
         final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
         Assert.assertNotNull(restServiceFactory);
 
-        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, new CodenvyToken(SDK_TOKEN_VALUE));
+        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, DUMMY_USERNAME);
         Assert.assertNotNull(userService);
+
+        final ServiceReference<SecureStorageService> secureStorageServiceRef = context.getServiceReference(SecureStorageService.class);
+        Assert.assertNotNull(secureStorageServiceRef);
+
+        final SecureStorageService secureStorageService = context.getService(secureStorageServiceRef);
+        Assert.assertNotNull(secureStorageService);
+
+        secureStorageService.storeCredentials(REST_API_URL, new CodenvyCredentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+                                              new CodenvyToken(SDK_TOKEN_VALUE));
     }
 
     @Test

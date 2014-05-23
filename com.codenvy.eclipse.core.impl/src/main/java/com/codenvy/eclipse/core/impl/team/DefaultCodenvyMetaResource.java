@@ -24,7 +24,6 @@ import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.eclipse.core.impl.services.DefaultProjectService;
 import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyMetaResource;
@@ -34,6 +33,7 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
  * The default Codenvy resource mapping class implementation.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class DefaultCodenvyMetaResource implements CodenvyMetaResource {
     private final IResource resource;
@@ -53,8 +53,7 @@ public class DefaultCodenvyMetaResource implements CodenvyMetaResource {
 
                 if (metaProject != null) {
                     final ProjectService projectService =
-                                                          new DefaultProjectService(metaProject.url,
-                                                                                    new CodenvyToken(metaProject.codenvyToken));
+                                                          new DefaultProjectService(metaProject.url, metaProject.username);
                     final CodenvyProject codenvyProject = new CodenvyProject.Builder().withName(metaProject.projectName)
                                                                                       .withWorkspaceId(metaProject.workspaceId)
                                                                                       .build();
@@ -67,10 +66,12 @@ public class DefaultCodenvyMetaResource implements CodenvyMetaResource {
         }
     }
 
+    @Override
     public IResource getResource() {
         return resource;
     }
 
+    @Override
     public boolean isTracked() {
         return tracked;
     }

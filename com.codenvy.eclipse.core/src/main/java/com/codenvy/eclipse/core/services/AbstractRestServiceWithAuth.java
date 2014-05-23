@@ -16,9 +16,15 @@
  */
 package com.codenvy.eclipse.core.services;
 
+import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.ws.rs.client.WebTarget;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.model.CodenvyToken;
 
@@ -26,37 +32,61 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
  * Abstract rest service with authentication implementation.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  * @see RestServiceFactory
  */
 public class AbstractRestServiceWithAuth extends AbstractRestService {
     private static final String TOKEN_PARAMETER_NAME = "token";
 
-    private final CodenvyToken  codenvyToken;
+    private final String        username;
 
     /**
      * Constructs an instance of {@linkplain AbstractRestServiceWithAuth}.
      * 
      * @param url the Codenvy platform url.
+     * @param username the username.
      * @param rootPath the rest service root path
-     * @param codenvyToken the Codenvy authentication token.
      * @throws NullPointerException if url, rootPath or codenvyToken parameter is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
-    public AbstractRestServiceWithAuth(String url, String rootPath,
-                                       CodenvyToken codenvyToken) {
+    public AbstractRestServiceWithAuth(String url, String username, String rootPath) {
         super(url, rootPath);
 
-        checkNotNull(codenvyToken);
-
-        this.codenvyToken = codenvyToken;
+        checkNotNull(username);
+        checkArgument(!isNullOrEmpty(username));
+        this.username = username;
     }
 
+    /**
+     * Get the Codenvy token from the SecureStorage through {@link SecureStorageService#getToken(String, String)} based on {@link #getUrl()}
+     * and {@link #getUsername()} for parameters.
+     * 
+     * @return the Codenvy token or {@code null} is none is stored for URL and username.
+     */
     public CodenvyToken getCodenvyToken() {
-        return codenvyToken;
+        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+
+        final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
+                                                                                      context.getServiceReference(SecureStorageService.class);
+        if (codenvySecureStorageServiceRef != null) {
+            final SecureStorageService codenvySecureStorageService =
+                                                                     context.getService(codenvySecureStorageServiceRef);
+            return codenvySecureStorageService.getToken(getUrl(), getUsername());
+        }
+        return null;
     }
 
     @Override
     public WebTarget getWebTarget() {
-        return super.getWebTarget().queryParam(TOKEN_PARAMETER_NAME, codenvyToken.value);
+        return super.getWebTarget().queryParam(TOKEN_PARAMETER_NAME, getCodenvyToken().value);
+    }
+
+    /**
+     * Get the username used to authenticate.
+     * 
+     * @return the username.
+     */
+    public String getUsername() {
+        return username;
     }
 }
