@@ -22,12 +22,13 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 
 /**
- * The Codenvy authentication client service mock.
+ * {@link AuthenticationService} mock.
  * 
  * @author Kevin Pollet
  */
 public class AuthenticationServiceMock implements AuthenticationService {
     public static final String MOCK_PASSWORD = "secret";
+    public static final String MOCK_TOKEN    = "codenvy-token";
 
     public AuthenticationServiceMock(String url) {
     }
@@ -35,7 +36,7 @@ public class AuthenticationServiceMock implements AuthenticationService {
     @Override
     public CodenvyToken login(String username, String password) {
         if (MOCK_USERNAME.equals(username) && MOCK_PASSWORD.equals(password)) {
-            return new CodenvyToken("codenvy-token");
+            return new CodenvyToken(MOCK_TOKEN);
         }
         return null;
     }

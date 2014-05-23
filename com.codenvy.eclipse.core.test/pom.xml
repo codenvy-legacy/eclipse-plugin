@@ -171,10 +171,6 @@
 							<type>p2-installable-unit</type>
 						</dependency>
 						<dependency>
-							<artifactId>org.eclipse.equinox.ds</artifactId>
-							<type>p2-installable-unit</type>
-						</dependency>
-						<dependency>
 							<artifactId>com.codenvy.eclipse.core</artifactId>
 							<type>p2-installable-unit</type>
 						</dependency>

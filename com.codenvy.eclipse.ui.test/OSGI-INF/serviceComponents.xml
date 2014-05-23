@@ -15,9 +15,22 @@
   is strictly forbidden unless prior written permission is obtained
   from Codenvy S.A..
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0">
-	<implementation class="com.codenvy.eclipse.ui.test.mock.RestServiceFactoryMock" />		   
-	<service>
-		<provide interface="com.codenvy.eclipse.core.services.RestServiceFactory" />
-	</service>		   
-</scr:component>
+<root:components xmlns:root="uri://root"
+    xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.osgi.org/xmlns/scr/v1.2.0 http://www.osgi.org/xmlns/scr/v1.2.0/scr.xsd">
+	<scr:component>
+		<implementation
+			class="com.codenvy.eclipse.ui.test.mock.RestServiceFactoryMock" />
+		<service>
+			<provide interface="com.codenvy.eclipse.core.services.RestServiceFactory" />
+		</service>
+	</scr:component>
+	<scr:component>
+		<implementation
+			class="com.codenvy.eclipse.ui.test.mock.SecureStorageServiceMock" />
+		<service>
+			<provide interface="com.codenvy.eclipse.core.services.SecureStorageService" />
+		</service>
+	</scr:component>
+</root:components>
