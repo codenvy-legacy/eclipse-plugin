@@ -31,6 +31,11 @@
 	<name>Codenvy Eclipse Plugin :: UI Test</name>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -66,7 +71,8 @@
 			<id>MacOS</id>
 			<activation>
 				<os>
-					<name>Mac OS X</name>
+					<name>mac os x</name>
+					<family>mac</family>
 				</os>
 			</activation>
 			<build>

@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.test;
+package com.codenvy.eclipse.ui.test.exporter;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
@@ -23,12 +23,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * The export project wizard test.
+ * Export wizard tests.
  * 
  * @author Kevin Pollet
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
-public class ExportProjectToCodenvyWizardTest {
+public class ExportWizardTest {
     @Test
     public void testThatExportProjectToCodenvyWizardIsInExportProjectDialog() {
         final SWTWorkbenchBot bot = new SWTWorkbenchBot();

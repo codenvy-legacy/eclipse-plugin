@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.core.resources.IResource"
+            class="com.codenvy.eclipse.ui.test.mocks.CodenvyAdapterFactoryMock">
+         <adapter
+               type="com.codenvy.eclipse.core.team.CodenvyMetaResource">
+         </adapter>
+      </factory>
+   </extension>
+</plugin>
