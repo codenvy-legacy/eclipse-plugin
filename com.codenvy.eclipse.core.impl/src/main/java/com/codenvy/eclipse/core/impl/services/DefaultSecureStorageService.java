@@ -128,6 +128,32 @@ public class DefaultSecureStorageService implements SecureStorageService {
     }
 
     @Override
+    public void deletePassword(String url, String username) {
+        checkNotNull(url);
+        checkArgument(!isNullOrEmpty(url));
+        checkNotNull(username);
+        checkArgument(!isNullOrEmpty(username));
+
+        final ISecurePreferences node = getNode(url, username, true);
+        if (node != null) {
+            node.remove(CODENVY_PASSWORD_KEY_NAME);
+        }
+    }
+
+    @Override
+    public void deleteToken(String url, String username) {
+        checkNotNull(url);
+        checkArgument(!isNullOrEmpty(url));
+        checkNotNull(username);
+        checkArgument(!isNullOrEmpty(username));
+
+        final ISecurePreferences node = getNode(url, username, true);
+        if (node != null) {
+            node.remove(CODENVY_TOKEN_KEY_NAME);
+        }
+    }
+
+    @Override
     public List<String> getURLs() {
         final ISecurePreferences root = SecurePreferencesFactory.getDefault();
         checkNotNull(root);

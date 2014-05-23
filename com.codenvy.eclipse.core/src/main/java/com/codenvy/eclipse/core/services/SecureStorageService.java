@@ -72,6 +72,26 @@ public interface SecureStorageService {
     void deleteCredentials(String url, String username);
 
     /**
+     * Deletes the password corresponding to the given codenvy url and username.
+     * 
+     * @param url the Codenvy URL.
+     * @param username the Codenvy username.
+     * @throws NullPointerException if url or username parameter is {@code null}.
+     * @throws IllegalArgumentException if url or username is an empty {@code String}.
+     */
+    void deletePassword(String url, String username);
+
+    /**
+     * Deletes the token corresponding to the given codenvy url and username.
+     * 
+     * @param url the Codenvy URL.
+     * @param username the Codenvy username.
+     * @throws NullPointerException if url or username parameter is {@code null}.
+     * @throws IllegalArgumentException if url or username is an empty {@code String}.
+     */
+    void deleteToken(String url, String username);
+
+    /**
      * Returns all URL stored in the Eclipse secure storage.
      * 
      * @return the URLs never {@code null}.
