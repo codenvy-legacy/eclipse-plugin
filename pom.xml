@@ -43,7 +43,7 @@
 	</modules>
 	
 	<properties>
-		<assembly-sdk.version>3.0.0-M16-SNAPSHOT</assembly-sdk.version>
+		<assembly-sdk.version>3.0.0-M17-SNAPSHOT</assembly-sdk.version>
 		<com.codenvy.eclipse.lib.version>1.0.0-SNAPSHOT</com.codenvy.eclipse.lib.version>
 		<junit.version>4.10</junit.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
