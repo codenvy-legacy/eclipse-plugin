@@ -14,9 +14,9 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.test.mock;
+package com.codenvy.eclipse.ui.test.mocks;
 
-import static com.codenvy.eclipse.ui.test.mock.UserServiceMock.MOCK_USER_ID;
+import static com.codenvy.eclipse.ui.test.mocks.UserServiceMock.MOCK_USER_ID;
 
 import java.util.ArrayList;
 import java.util.List;

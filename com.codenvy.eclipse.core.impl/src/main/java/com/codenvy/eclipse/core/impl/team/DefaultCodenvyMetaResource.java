@@ -22,7 +22,7 @@ import static org.eclipse.core.resources.IResource.ROOT;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
-import com.codenvy.eclipse.core.impl.DefaultProjectService;
+import com.codenvy.eclipse.core.impl.services.DefaultProjectService;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.ProjectService;

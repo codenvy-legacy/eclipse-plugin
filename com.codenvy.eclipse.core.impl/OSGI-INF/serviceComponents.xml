@@ -21,14 +21,14 @@
 	xsi:schemaLocation="http://www.osgi.org/xmlns/scr/v1.2.0 http://www.osgi.org/xmlns/scr/v1.2.0/scr.xsd">
 	<scr:component>
 		<implementation
-			class="com.codenvy.eclipse.core.impl.DefaultRestServiceFactory" />
+			class="com.codenvy.eclipse.core.impl.services.DefaultRestServiceFactory" />
 		<service>
 			<provide interface="com.codenvy.eclipse.core.services.RestServiceFactory" />
 		</service>
 	</scr:component>
 	<scr:component>
 		<implementation
-			class="com.codenvy.eclipse.core.impl.DefaultSecureStorageService" />
+			class="com.codenvy.eclipse.core.impl.services.DefaultSecureStorageService" />
 		<service>
 			<provide interface="com.codenvy.eclipse.core.services.SecureStorageService" />
 		</service>

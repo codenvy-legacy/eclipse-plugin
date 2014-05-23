@@ -16,10 +16,10 @@
  */
 package com.codenvy.eclipse.ui.test;
 
-import static com.codenvy.eclipse.ui.test.mock.ProjectServiceMock.MOCK_PROJECT_DESCRIPTION;
-import static com.codenvy.eclipse.ui.test.mock.ProjectServiceMock.MOCK_PROJECT_NAME;
-import static com.codenvy.eclipse.ui.test.mock.ProjectServiceMock.MOCK_PROJECT_TYPE_NAME;
-import static com.codenvy.eclipse.ui.test.mock.WorkspaceServiceMock.MOCK_WORKSPACE_NAME;
+import static com.codenvy.eclipse.ui.test.mocks.ProjectServiceMock.MOCK_PROJECT_DESCRIPTION;
+import static com.codenvy.eclipse.ui.test.mocks.ProjectServiceMock.MOCK_PROJECT_NAME;
+import static com.codenvy.eclipse.ui.test.mocks.ProjectServiceMock.MOCK_PROJECT_TYPE_NAME;
+import static com.codenvy.eclipse.ui.test.mocks.WorkspaceServiceMock.MOCK_WORKSPACE_NAME;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.tableHasRows;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;

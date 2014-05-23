@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.test.mock;
+package com.codenvy.eclipse.core.impl.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,26 +29,28 @@ import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.RestServiceWithAuth;
+import com.codenvy.eclipse.core.services.RunnerService;
 import com.codenvy.eclipse.core.services.UserService;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
- * The {@linkplain RestServiceFactory} mock implementation.
+ * The default {@linkplain RestServiceFactory} implementation.
  * 
  * @author Kevin Pollet
  */
-public class RestServiceFactoryMock implements RestServiceFactory {
+public class DefaultRestServiceFactory implements RestServiceFactory {
     private final Map<Class< ? extends RestService>, Class< ? >>         restServiceBindings;
     private final Map<Class< ? extends RestServiceWithAuth>, Class< ? >> restServiceWithAuthBindings;
 
-    public RestServiceFactoryMock() {
+    public DefaultRestServiceFactory() {
         this.restServiceBindings = new HashMap<>();
-        this.restServiceBindings.put(AuthenticationService.class, AuthenticationServiceMock.class);
+        this.restServiceBindings.put(AuthenticationService.class, DefaultAuthenticationService.class);
 
         this.restServiceWithAuthBindings = new HashMap<>();
-        this.restServiceWithAuthBindings.put(WorkspaceService.class, WorkspaceServiceMock.class);
-        this.restServiceWithAuthBindings.put(UserService.class, UserServiceMock.class);
-        this.restServiceWithAuthBindings.put(ProjectService.class, ProjectServiceMock.class);
+        this.restServiceWithAuthBindings.put(WorkspaceService.class, DefaultWorkspaceService.class);
+        this.restServiceWithAuthBindings.put(UserService.class, DefaultUserService.class);
+        this.restServiceWithAuthBindings.put(ProjectService.class, DefaultProjectService.class);
+        this.restServiceWithAuthBindings.put(RunnerService.class, DefaultRunnerService.class);
     }
 
     @Override

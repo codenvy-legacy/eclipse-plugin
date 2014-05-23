@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.impl;
+package com.codenvy.eclipse.core.impl.services;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 

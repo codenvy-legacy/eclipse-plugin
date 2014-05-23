@@ -14,9 +14,9 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.test.mock;
+package com.codenvy.eclipse.ui.test.mocks;
 
-import static com.codenvy.eclipse.ui.test.mock.UserServiceMock.MOCK_USERNAME;
+import static com.codenvy.eclipse.ui.test.mocks.UserServiceMock.MOCK_USERNAME;
 
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AuthenticationService;
