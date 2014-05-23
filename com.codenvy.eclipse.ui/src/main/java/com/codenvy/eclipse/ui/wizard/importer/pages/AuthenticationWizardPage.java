@@ -31,10 +31,10 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -57,6 +57,7 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;
+import com.codenvy.eclipse.ui.widgets.ComboAutoCompleteField;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.base.Optional;
 import com.google.common.collect.ObjectArrays;
@@ -70,7 +71,9 @@ import com.google.common.collect.ObjectArrays;
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
     private static final String          CODENVY_URL = "https://codenvy.com";
 
+    private ComboAutoCompleteField       urlProposals;
     private Combo                        urls;
+    private ComboAutoCompleteField       usernameProposals;
     private Combo                        usernames;
     private Text                         password;
     private Button                       storeUserCredentials;
@@ -108,7 +111,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         urls = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER | SWT.FOCUSED);
         urls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
+        urlProposals = new ComboAutoCompleteField(urls);
         for (String url : CodenvyPreferencesInitializer.parseString(CodenvyUIPlugin.getDefault()
                                                                                    .getPreferenceStore()
                                                                                    .getString(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME))) {
@@ -121,6 +124,9 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
         usernames = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER);
         usernames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        usernameProposals =
+                            new ComboAutoCompleteField(usernames);
+        autoFillUsernames();
 
         final Label passwordLabel = new Label(wizardContainer, SWT.NONE);
         passwordLabel.setText("Password:");
@@ -142,13 +148,12 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         storeUserCredentials.addKeyListener(pageCompleteListener);
 
         final AutofillFieldsListener autofillFieldsListener = new AutofillFieldsListener();
-        urls.addKeyListener(autofillFieldsListener);
-        urls.addSelectionListener(autofillFieldsListener);
-        usernames.addKeyListener(autofillFieldsListener);
-        usernames.addSelectionListener(autofillFieldsListener);
+        urls.addModifyListener(autofillFieldsListener);
+        usernames.addModifyListener(autofillFieldsListener);
 
         setControl(wizardContainer);
     }
+
 
     @Override
     public void handlePageChanging(PageChangingEvent event) {
@@ -219,6 +224,32 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
     }
 
+    private void autoFillUsernames() {
+        if (!isNullOrEmpty(urls.getText())) {
+            String currentUsername = usernames.getText();
+
+            for (int i = usernames.getItemCount() - 1; i >= 0; i--) {
+                usernames.remove(i);
+            }
+
+            for (final String username : getCodenvySecureStorageService().getUsernamesForURL(urls.getText())) {
+                if (currentUsername.equals(username)) {
+                    continue;
+                }
+                usernames.add(username);
+            }
+        }
+    }
+
+    private void autoFillPassword() {
+        if (!isNullOrEmpty(usernames.getText())) {
+            final String storedPassword = getCodenvySecureStorageService().getPassword(urls.getText(), usernames.getText());
+            if (storedPassword != null && !storedPassword.isEmpty()) {
+                password.setText(storedPassword);
+            }
+        }
+    }
+
     private boolean isBlankFields() {
         final boolean isUrlsBlank = isNullOrEmpty(urls.getText());
         final boolean isUsernameBlank = isNullOrEmpty(usernames.getText());
@@ -257,65 +288,16 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         }
     }
 
-    private class AutofillFieldsListener implements KeyListener, SelectionListener, FocusListener {
+    private class AutofillFieldsListener implements ModifyListener {
         @Override
-        public void widgetSelected(SelectionEvent e) {
-            autoFill();
-        }
-
-        @Override
-        public void widgetDefaultSelected(SelectionEvent e) {
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            autoFill();
-        }
-
-        @Override
-        public void focusGained(FocusEvent e) {
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-            autoFill();
-        }
-
-        private void autoFill() {
-            autoFillUsernames();
-            autoFillPassword();
-
+        public void modifyText(ModifyEvent e) {
+            if (e.widget == urls) {
+                autoFillUsernames();
+            }
+            if (e.widget == urls || e.widget == usernames) {
+                autoFillPassword();
+            }
             setPageComplete(!isBlankFields());
-        }
-
-        private void autoFillUsernames() {
-            if (!isNullOrEmpty(urls.getText())) {
-                String currentUsername = usernames.getText();
-
-                for (int i = usernames.getItemCount() - 1; i >= 0; i--) {
-                    usernames.remove(i);
-                }
-
-                for (final String username : getCodenvySecureStorageService().getUsernamesForURL(urls.getText())) {
-                    if (currentUsername.equals(username)) {
-                        continue;
-                    }
-                    usernames.add(username);
-                }
-            }
-        }
-
-        private void autoFillPassword() {
-            if (!isNullOrEmpty(usernames.getText())) {
-                final String storedPassword = getCodenvySecureStorageService().getPassword(urls.getText(), usernames.getText());
-                if (storedPassword != null && !storedPassword.isEmpty()) {
-                    password.setText(storedPassword);
-                }
-            }
         }
     }
 }
