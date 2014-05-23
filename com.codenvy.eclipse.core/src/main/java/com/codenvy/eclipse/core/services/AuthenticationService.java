@@ -16,22 +16,22 @@
  */
 package com.codenvy.eclipse.core.services;
 
+import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 
 /**
  * Codenvy authentication service contract.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public interface AuthenticationService extends RestService {
     /**
      * Authenticates the user on the Codenvy platform.
      * 
-     * @param username the user username.
-     * @param password the user password.
+     * @param credentials the Codenvy credentials.
      * @return the authentication token.
-     * @throws NullPointerException if username or password parameter is {@code null}.
-     * @throws IllegalArgumentException if username or password parameter is an empty {@link String}.
+     * @throws NullPointerException if credentials parameter is {@code null}.
      */
-    CodenvyToken login(String username, String password);
+    CodenvyToken login(CodenvyCredentials credentials);
 }

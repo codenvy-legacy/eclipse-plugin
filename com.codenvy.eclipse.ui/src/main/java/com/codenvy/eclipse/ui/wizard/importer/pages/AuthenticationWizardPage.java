@@ -175,7 +175,9 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         final AuthenticationService authenticationService =
                                                                             restServiceFactory.newRestService(AuthenticationService.class,
                                                                                                               urls.getText());
-                        final CodenvyToken token = authenticationService.login(usernames.getText(), password.getText());
+                        final CodenvyToken token =
+                                                   authenticationService.login(new CodenvyCredentials(usernames.getText(),
+                                                                                                      password.getText()));
                         importWizardSharedData.setUsername(Optional.fromNullable(usernames.getText()));
                         importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
                         importWizardSharedData.setProjects(new ArrayList<CodenvyProject>());

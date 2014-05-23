@@ -18,6 +18,7 @@ package com.codenvy.eclipse.ui.test.mocks;
 
 import static com.codenvy.eclipse.ui.test.mocks.UserServiceMock.MOCK_USERNAME;
 
+import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 
@@ -34,9 +35,9 @@ public class AuthenticationServiceMock implements AuthenticationService {
     }
 
     @Override
-    public CodenvyToken login(String username, String password) {
-        if (MOCK_USERNAME.equals(username) && MOCK_PASSWORD.equals(password)) {
-            return new CodenvyToken(MOCK_TOKEN);
+    public CodenvyToken login(CodenvyCredentials credentials) {
+        if (MOCK_USERNAME.equals(credentials.username) && MOCK_PASSWORD.equals(credentials.password)) {
+            return new CodenvyToken("codenvy-token");
         }
         return null;
     }

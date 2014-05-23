@@ -24,6 +24,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
@@ -54,28 +55,13 @@ public class AuthenticationServiceTest extends RestApiBaseTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testLoginWithNullUsername() {
-        authenticationService.login(null, PASSWORD);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testLoginWithEmptyUsername() {
-        authenticationService.login("", PASSWORD);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testLoginWithNullPassword() {
-        authenticationService.login(USERNAME, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testLoginWithEmptyPassword() {
-        authenticationService.login(USERNAME, "");
+    public void testLoginWithNullCredentials() {
+        authenticationService.login(null);
     }
 
     @Test
     public void testLogin() {
-        final CodenvyToken token = authenticationService.login(USERNAME, PASSWORD);
+        final CodenvyToken token = authenticationService.login(new CodenvyCredentials(USERNAME, PASSWORD));
 
         Assert.assertNotNull(token);
         Assert.assertEquals(SDK_TOKEN, token);
