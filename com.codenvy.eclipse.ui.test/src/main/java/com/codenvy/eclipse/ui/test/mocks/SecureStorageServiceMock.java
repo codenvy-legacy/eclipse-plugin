@@ -56,4 +56,9 @@ public class SecureStorageServiceMock implements SecureStorageService {
     public List<String> getUsernamesForURL(String url) {
         return new ArrayList<>();
     }
+
+    @Override
+    public CodenvyCredentials getCredentials(String url, String username) {
+        return null;
+    }
 }

@@ -104,6 +104,17 @@ public class DefaultSecureStorageService implements SecureStorageService {
     }
 
     @Override
+    public CodenvyCredentials getCredentials(String url, String username) {
+        checkNotNull(url);
+        checkArgument(!isNullOrEmpty(url));
+        checkNotNull(username);
+        checkArgument(!isNullOrEmpty(username));
+
+        String password = getPassword(url, username);
+        return password == null ? null : new CodenvyCredentials(username, password);
+    }
+
+    @Override
     public void deleteCredentials(String url, String username) {
         checkNotNull(url);
         checkArgument(!isNullOrEmpty(url));
