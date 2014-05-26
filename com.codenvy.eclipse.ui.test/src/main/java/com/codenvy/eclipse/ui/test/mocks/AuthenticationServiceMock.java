@@ -41,4 +41,9 @@ public class AuthenticationServiceMock implements AuthenticationService {
         }
         return null;
     }
+
+    @Override
+    public CodenvyToken login(CodenvyCredentials credentials, boolean storeCredentials) {
+        return login(credentials);
+    }
 }

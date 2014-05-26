@@ -17,6 +17,10 @@
 package com.codenvy.eclipse.core.test.services;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,6 +32,7 @@ import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
+import com.codenvy.eclipse.core.services.SecureStorageService;
 
 /**
  * {@link AuthenticationService} test.
@@ -40,6 +45,7 @@ public class AuthenticationServiceTest extends RestApiBaseTest {
     private static final CodenvyToken    SDK_TOKEN = new CodenvyToken("123123");
 
     private static AuthenticationService authenticationService;
+    private static SecureStorageService  secureStorageService;
 
     @BeforeClass
     public static void initialize() {
@@ -52,6 +58,12 @@ public class AuthenticationServiceTest extends RestApiBaseTest {
 
         authenticationService = restServiceFactory.newRestService(AuthenticationService.class, REST_API_URL);
         Assert.assertNotNull(authenticationService);
+
+        final ServiceReference<SecureStorageService> secureStorageServiceRef = context.getServiceReference(SecureStorageService.class);
+        Assert.assertNotNull(secureStorageServiceRef);
+
+        secureStorageService = context.getService(secureStorageServiceRef);
+        Assert.assertNotNull(secureStorageService);
     }
 
     @Test(expected = NullPointerException.class)
@@ -59,11 +71,51 @@ public class AuthenticationServiceTest extends RestApiBaseTest {
         authenticationService.login(null);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testLoginWithNullCredentialsStoreOrNot() {
+        authenticationService.login(null, true);
+    }
+
     @Test
-    public void testLogin() {
+    public void testLoginDefault() {
         final CodenvyToken token = authenticationService.login(new CodenvyCredentials(USERNAME, PASSWORD));
 
         Assert.assertNotNull(token);
         Assert.assertEquals(SDK_TOKEN, token);
+    }
+
+    @Test
+    public void testLoginStoreCredentials() {
+        secureStorageService.deleteCredentials(REST_API_URL, USERNAME);
+
+        final CodenvyToken tokenPostAuthentication = authenticationService.login(new CodenvyCredentials(USERNAME, PASSWORD), true);
+
+        Assert.assertNotNull(tokenPostAuthentication);
+        Assert.assertEquals(SDK_TOKEN, tokenPostAuthentication);
+
+        CodenvyToken token = secureStorageService.getToken(REST_API_URL, USERNAME);
+        assertNotNull(token);
+        assertEquals(tokenPostAuthentication, token);
+
+        String password = secureStorageService.getPassword(REST_API_URL, USERNAME);
+        assertNotNull(password);
+        assertEquals(PASSWORD, password);
+    }
+
+    @Test
+    public void testLoginDonNotStoreCredentials() {
+        secureStorageService.deleteCredentials(REST_API_URL, USERNAME);
+
+        final CodenvyToken tokenPostAuthentication = authenticationService.login(new CodenvyCredentials(USERNAME, PASSWORD), false);
+
+        Assert.assertNotNull(tokenPostAuthentication);
+        Assert.assertEquals(SDK_TOKEN, tokenPostAuthentication);
+
+        CodenvyToken token = secureStorageService.getToken(REST_API_URL, USERNAME);
+        assertNull(token);
+
+        String password = secureStorageService.getPassword(REST_API_URL, USERNAME);
+        assertNull(password);
+
     }
 }
