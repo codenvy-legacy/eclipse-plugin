@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestService;
@@ -33,7 +34,7 @@ import com.codenvy.eclipse.core.services.UserService;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
- * The {@linkplain RestServiceFactory} mock implementation.
+ * {@link RestServiceFactory} mock.
  * 
  * @author Kevin Pollet
  */
@@ -48,6 +49,7 @@ public class RestServiceFactoryMock implements RestServiceFactory {
         this.restServiceWithAuthBindings = new HashMap<>();
         this.restServiceWithAuthBindings.put(WorkspaceService.class, WorkspaceServiceMock.class);
         this.restServiceWithAuthBindings.put(UserService.class, UserServiceMock.class);
+        this.restServiceWithAuthBindings.put(AccountService.class, AccountServiceMock.class);
         this.restServiceWithAuthBindings.put(ProjectService.class, ProjectServiceMock.class);
     }
 

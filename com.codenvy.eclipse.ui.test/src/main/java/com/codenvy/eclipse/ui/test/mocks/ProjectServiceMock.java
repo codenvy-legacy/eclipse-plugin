@@ -26,7 +26,7 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.ProjectService;
 
 /**
- * The Codenvy project client service mock.
+ * {@link ProjectService} mock.
  * 
  * @author Kevin Pollet
  */

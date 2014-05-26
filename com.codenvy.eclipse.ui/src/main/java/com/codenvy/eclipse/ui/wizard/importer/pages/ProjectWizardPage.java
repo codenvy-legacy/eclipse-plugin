@@ -66,13 +66,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.model.CodenvyAccount;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.CodenvyUser;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
+import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
-import com.codenvy.eclipse.core.services.UserService;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
@@ -295,10 +295,17 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
                                 final String url = importWizardSharedData.getUrl().get();
                                 final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
-                                final UserService userService = restServiceFactory.newRestServiceWithAuth(UserService.class, url, token);
+                                final AccountService accountService = restServiceFactory.newRestServiceWithAuth(AccountService.class, url, token);
                                 final WorkspaceService workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, url, token);
-                                final CodenvyUser currentUser = userService.getCurrentUser();
-                                final List<WorkspaceRef> workspaces = workspaceService.findWorkspacesByAccount(currentUser.id);
+                                final List<CodenvyAccount> currentUserAccounts = accountService.getCurrentUserAccounts();
+
+                                final List<WorkspaceRef> workspaces = new ArrayList<>();
+                                if (currentUserAccounts != null) {
+                                    for (CodenvyAccount oneAccount : currentUserAccounts) {
+                                        final List<WorkspaceRef> oneAccountWorkspaces = workspaceService.findWorkspacesByAccount(oneAccount.id);
+                                        workspaces.addAll(oneAccountWorkspaces);
+                                    }
+                                }
 
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override

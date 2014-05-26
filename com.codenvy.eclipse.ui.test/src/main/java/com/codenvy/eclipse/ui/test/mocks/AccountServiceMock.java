@@ -16,24 +16,27 @@
  */
 package com.codenvy.eclipse.ui.test.mocks;
 
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
+import com.codenvy.eclipse.core.model.CodenvyAccount;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.CodenvyUser;
-import com.codenvy.eclipse.core.services.UserService;
+import com.codenvy.eclipse.core.services.AccountService;
 
 /**
- * {@link UserService} mock.
+ * {@link AccountService} mock.
  * 
  * @author Kevin Pollet
  */
-public class UserServiceMock implements UserService {
-    public static final String MOCK_USER_ID  = "user-codenvy-id";
-    public static final String MOCK_USERNAME = "codenvy@codenvy.com";
+public class AccountServiceMock implements AccountService {
+    public static final String MOCK_ACCOUNT_ID = "account-codenvy-id";
 
-    public UserServiceMock(String url, CodenvyToken codenvyToken) {
+    public AccountServiceMock(String url, CodenvyToken codenvyToken) {
     }
 
     @Override
-    public CodenvyUser getCurrentUser() {
-        return new CodenvyUser(MOCK_USER_ID, "<none>", "codenvy@codenvy.com");
+    public List<CodenvyAccount> getCurrentUserAccounts() {
+        return asList(new CodenvyAccount(MOCK_ACCOUNT_ID));
     }
 }

@@ -16,7 +16,7 @@
  */
 package com.codenvy.eclipse.ui.test.mocks;
 
-import static com.codenvy.eclipse.ui.test.mocks.UserServiceMock.MOCK_USER_ID;
+import static com.codenvy.eclipse.ui.test.mocks.AccountServiceMock.MOCK_ACCOUNT_ID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
- * The Codenvy workspace client service mock.
+ * {@link WorkspaceService} mock.
  * 
  * @author Kevin Pollet
  */
@@ -57,7 +57,7 @@ public class WorkspaceServiceMock implements WorkspaceService {
 
     @Override
     public List<WorkspaceRef> findWorkspacesByAccount(String accountId) {
-        if (MOCK_USER_ID.equals(accountId)) {
+        if (MOCK_ACCOUNT_ID.equals(accountId)) {
             return workspaces;
         }
         return new ArrayList<>();
