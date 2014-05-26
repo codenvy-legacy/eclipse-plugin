@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestService;
@@ -49,6 +50,7 @@ public class DefaultRestServiceFactory implements RestServiceFactory {
         this.restServiceWithAuthBindings = new HashMap<>();
         this.restServiceWithAuthBindings.put(WorkspaceService.class, DefaultWorkspaceService.class);
         this.restServiceWithAuthBindings.put(UserService.class, DefaultUserService.class);
+        this.restServiceWithAuthBindings.put(AccountService.class, DefaultAccountService.class);
         this.restServiceWithAuthBindings.put(ProjectService.class, DefaultProjectService.class);
         this.restServiceWithAuthBindings.put(RunnerService.class, DefaultRunnerService.class);
     }

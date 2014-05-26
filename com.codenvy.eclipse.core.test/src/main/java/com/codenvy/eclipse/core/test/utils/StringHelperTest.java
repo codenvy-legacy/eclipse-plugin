@@ -54,4 +54,30 @@ public class StringHelperTest {
 
         Assert.assertFalse(result);
     }
+
+    @Test(expected = NullPointerException.class)
+    public void testIsEmptyWithNull() {
+        StringHelper.isEmpty(null);
+    }
+
+    @Test
+    public void testIsEmptyWithEmptyString() {
+        final boolean result = StringHelper.isEmpty("");
+
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testIsEmptyWithEmptyStringWithWhiteSpaces() {
+        final boolean result = StringHelper.isEmpty("   ");
+
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testIsEmpty() {
+        final boolean result = StringHelper.isEmpty("not empty");
+
+        Assert.assertFalse(result);
+    }
 }

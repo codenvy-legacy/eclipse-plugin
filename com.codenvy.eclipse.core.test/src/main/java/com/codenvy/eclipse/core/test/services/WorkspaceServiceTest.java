@@ -20,17 +20,18 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.model.CodenvyAccount;
 import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.CodenvyUser;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
+import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
-import com.codenvy.eclipse.core.services.UserService;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
@@ -43,7 +44,7 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
     private static final String     SDK_WORKSPACE_NAME = "default";
 
     private static WorkspaceService workspaceService;
-    private static UserService      userService;
+    private static AccountService   accountService;
 
     @BeforeClass
     public static void initialize() {
@@ -59,8 +60,8 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
                                                                      new CodenvyToken(SDK_TOKEN_VALUE));
         Assert.assertNotNull(workspaceService);
 
-        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, new CodenvyToken(SDK_TOKEN_VALUE));
-        Assert.assertNotNull(userService);
+        accountService = restServiceFactory.newRestServiceWithAuth(AccountService.class, REST_API_URL, new CodenvyToken(SDK_TOKEN_VALUE));
+        Assert.assertNotNull(accountService);
     }
 
     @Test
@@ -104,11 +105,13 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
     }
 
     @Test
+    @Ignore("The account API is not availbale in the sdk")
     public void testFindWorkspacesByAccount() {
-        final CodenvyUser currentUser = userService.getCurrentUser();
-        Assert.assertNotNull(currentUser);
+        final List<CodenvyAccount> currentUserAccounts = accountService.getCurrentUserAccounts();
+        Assert.assertNotNull(currentUserAccounts);
+        Assert.assertFalse(currentUserAccounts.isEmpty());
 
-        final List<WorkspaceRef> workspaces = workspaceService.findWorkspacesByAccount(currentUser.id);
+        final List<WorkspaceRef> workspaces = workspaceService.findWorkspacesByAccount(currentUserAccounts.get(0).id);
 
         Assert.assertNotNull(workspaces);
         Assert.assertTrue(workspaces.size() > 0);

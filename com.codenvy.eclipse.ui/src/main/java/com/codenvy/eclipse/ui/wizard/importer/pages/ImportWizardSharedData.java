@@ -35,7 +35,7 @@ import com.google.common.base.Optional;
 public final class ImportWizardSharedData {
     private Optional<String>       url;
     private Optional<CodenvyToken> codenvyToken;
-    private List<CodenvyProject>          projects;
+    private List<CodenvyProject>   projects;
     private Optional<IWorkingSet>  workingSet;
 
     /**
