@@ -36,14 +36,12 @@ public abstract class RestApiBaseTest {
     public static void loadRestApiUrl() {
         final Properties codenvySdkProperties = new Properties();
         try {
-
             codenvySdkProperties.load(RestApiBaseTest.class.getResourceAsStream("/codenvy-sdk.properties"));
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        REST_API_URL = codenvySdkProperties.getProperty(REST_API_URL_PROPERTY_NAME);
+        REST_API_URL = System.getProperty(REST_API_URL_PROPERTY_NAME, codenvySdkProperties.getProperty(REST_API_URL_PROPERTY_NAME));
         Assert.assertNotNull(REST_API_URL);
     }
 }

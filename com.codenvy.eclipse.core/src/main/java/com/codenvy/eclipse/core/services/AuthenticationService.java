@@ -29,8 +29,8 @@ public interface AuthenticationService extends RestService {
     /**
      * Authenticates the user on the Codenvy platform. Default behavior: will automatically store credentials in Eclipse secure storage.
      * 
-     * @param credentials the Codenvy credentials.
-     * @return the authentication token.
+     * @param credentials the {@link CodenvyCredentials}.
+     * @return the authentication {@link CodenvyToken}.
      * @throws NullPointerException if credentials parameter is {@code null}.
      */
     CodenvyToken login(CodenvyCredentials credentials);
@@ -38,9 +38,9 @@ public interface AuthenticationService extends RestService {
     /**
      * Authenticates the user on the Codenvy platform, given the choice to store credentials in Eclipse secure storage.
      * 
-     * @param credentials the Codenvy credentials.
+     * @param credentials the {@link CodenvyCredentials}.
      * @param storeCredentials if {@code true} store credentials in Eclipse secure storage.
-     * @return the authentication token.
+     * @return the authentication {@link CodenvyToken}.
      * @throws NullPointerException if credentials parameter is {@code null}.
      */
     CodenvyToken login(CodenvyCredentials credentials, boolean storeCredentials);

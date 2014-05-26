@@ -26,6 +26,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.TokenRenewalFilter;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 
 /**
@@ -55,13 +56,15 @@ public class AbstractRestServiceWithAuth extends AbstractRestService {
         checkNotNull(username);
         checkArgument(!isNullOrEmpty(username));
         this.username = username;
+
+        super.getWebTarget().register(new TokenRenewalFilter(getUrl(), getUsername()));
     }
 
     /**
-     * Get the Codenvy token from the SecureStorage through {@link SecureStorageService#getToken(String, String)} based on {@link #getUrl()}
-     * and {@link #getUsername()} for parameters.
+     * Get the {@link CodenvyToken} from the secure storage through {@link SecureStorageService#getToken(String, String)} based on
+     * {@link #getUrl()} and {@link #getUsername()} for parameters.
      * 
-     * @return the Codenvy token or {@code null} is none is stored for URL and username.
+     * @return the {@link CodenvyToken} or {@code null} is none is stored for URL and username.
      */
     public CodenvyToken getCodenvyToken() {
         final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
@@ -71,7 +74,9 @@ public class AbstractRestServiceWithAuth extends AbstractRestService {
         if (codenvySecureStorageServiceRef != null) {
             final SecureStorageService codenvySecureStorageService =
                                                                      context.getService(codenvySecureStorageServiceRef);
-            return codenvySecureStorageService.getToken(getUrl(), getUsername());
+            if (codenvySecureStorageService != null) {
+                return codenvySecureStorageService.getToken(getUrl(), getUsername());
+            }
         }
         return null;
     }

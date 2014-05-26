@@ -76,9 +76,15 @@ public class DefaultAuthenticationService extends AbstractRestService implements
             final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
                                                                                           context.getServiceReference(SecureStorageService.class);
             if (codenvySecureStorageServiceRef != null) {
-                final SecureStorageService codenvySecureStorageService =
-                                                                         context.getService(codenvySecureStorageServiceRef);
-                codenvySecureStorageService.storeCredentials(getUrl(), credentials, token);
+                try {
+                    final SecureStorageService codenvySecureStorageService =
+                                                                             context.getService(codenvySecureStorageServiceRef);
+                    if (codenvySecureStorageService != null) {
+                        codenvySecureStorageService.storeCredentials(getUrl(), credentials, token);
+                    }
+                } finally {
+                    context.ungetService(codenvySecureStorageServiceRef);
+                }
             }
         }
 
