@@ -17,56 +17,56 @@
 package com.codenvy.eclipse.core.services;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
+import com.codenvy.eclipse.core.model.CodenvyBuilderStatus;
 import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyRunnerStatus;
 
 /**
- * Codenvy runner service contract.
+ * Codenvy builder service contract.
  * 
  * @author Kevin Pollet
  */
 // TODO is CodenvyProject parameter always needed?
-public interface RunnerService extends RestServiceWithAuth {
+public interface BuilderService extends RestServiceWithAuth {
     /**
-     * Runs the given project with a codenvy runner.
+     * Builds the given {@link CodenvyProject} on codenvy.
      * 
-     * @param project the project to run.
-     * @return the {@link CodenvyRunnerStatus}.
+     * @param project the project to build.
+     * @return the {@link CodenvyBuilderStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    CodenvyRunnerStatus run(CodenvyProject project) throws APIException;
+    CodenvyBuilderStatus build(CodenvyProject project) throws APIException;
 
     /**
-     * Stops the project runner with the given process id.
+     * Gets the status of the builder with the given task id.
      * 
      * @param project the project.
-     * @param processId the runner process id.
-     * @return the {@link CodenvyRunnerStatus}.
+     * @param taskId the builder task id.
+     * @return the {@link CodenvyBuilderStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    CodenvyRunnerStatus stop(CodenvyProject project, long processId) throws APIException;
+    CodenvyBuilderStatus status(CodenvyProject project, long taskId) throws APIException;
 
     /**
-     * Gets the project runner status with the given process id.
+     * Gets the logs of the builder with the given task id.
      * 
      * @param project the project.
-     * @param processId the runner process id.
-     * @return the {@link CodenvyRunnerStatus}.
+     * @param taskId the builder task id.
+     * @return the builder logs.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    CodenvyRunnerStatus status(CodenvyProject project, long processId) throws APIException;
+    String logs(CodenvyProject project, long taskId) throws APIException;
 
     /**
-     * Gets the project runner logs with the given process id.
+     * Cancels the builder with the given task id.
      * 
      * @param project the project.
-     * @param processId the runner process id.
-     * @return the runner logs.
+     * @param taskId the builder task id.
+     * @return the {@link CodenvyBuilderStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    String logs(CodenvyProject project, long processId) throws APIException;
+    CodenvyBuilderStatus cancel(CodenvyProject project, long taskId) throws APIException;
 }

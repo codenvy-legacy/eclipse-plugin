@@ -43,7 +43,7 @@ import org.eclipse.debug.core.model.IStreamsProxy;
 import com.codenvy.eclipse.core.exceptions.APIException;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyRunnerStatus;
-import com.codenvy.eclipse.core.model.CodenvyRunnerStatus.Link;
+import com.codenvy.eclipse.core.model.Link;
 import com.codenvy.eclipse.core.services.RunnerService;
 
 /**

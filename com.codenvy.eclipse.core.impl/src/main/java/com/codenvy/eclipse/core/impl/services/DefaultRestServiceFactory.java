@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.AuthenticationService;
+import com.codenvy.eclipse.core.services.BuilderService;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
@@ -53,6 +54,7 @@ public class DefaultRestServiceFactory implements RestServiceFactory {
         this.restServiceWithAuthBindings.put(AccountService.class, DefaultAccountService.class);
         this.restServiceWithAuthBindings.put(ProjectService.class, DefaultProjectService.class);
         this.restServiceWithAuthBindings.put(RunnerService.class, DefaultRunnerService.class);
+        this.restServiceWithAuthBindings.put(BuilderService.class, DefaultBuilderService.class);
     }
 
     @Override

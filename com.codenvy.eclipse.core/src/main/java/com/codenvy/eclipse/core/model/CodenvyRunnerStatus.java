@@ -16,7 +16,7 @@
  */
 package com.codenvy.eclipse.core.model;
 
-import static com.codenvy.eclipse.core.model.CodenvyRunnerStatus.Link.WEB_LINK_REL_ATTRIBUTE_VALUE;
+import static com.codenvy.eclipse.core.model.Link.WEB_LINK_REL_ATTRIBUTE_VALUE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 
 /**
  * The codenvy runner object model.
@@ -55,7 +56,7 @@ public class CodenvyRunnerStatus {
         this.processId = processId;
         this.startTime = startTime;
         this.status = status;
-        this.links = links == null ? new ArrayList<Link>() : links;
+        this.links = ImmutableList.copyOf(links == null ? new ArrayList<Link>() : links);
     }
 
     /**
@@ -83,35 +84,5 @@ public class CodenvyRunnerStatus {
         RUNNING,
         CANCELLED,
         STOPPED
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Link {
-        public static final String WEB_LINK_REL_ATTRIBUTE_VALUE = "web url";
-
-        public final String        href;
-        public final String        rel;
-        public final String        produces;
-        public final String        consumes;
-        public final String        method;
-
-        @JsonCreator
-        public Link(@JsonProperty("href") String href,
-                    @JsonProperty("rel") String rel,
-                    @JsonProperty("produces") String produces,
-                    @JsonProperty("consumes") String consumes,
-                    @JsonProperty("method") String method) {
-
-            this.href = href;
-            this.rel = rel;
-            this.produces = produces;
-            this.consumes = consumes;
-            this.method = method;
-        }
-
-        @Override
-        public String toString() {
-            return "Link [href=" + href + ", rel=" + rel + ", produces=" + produces + ", consumes=" + consumes + ", method=" + method + "]";
-        }
     }
 }
