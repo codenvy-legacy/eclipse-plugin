@@ -29,6 +29,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.TokenRenewalFilter;
+import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
@@ -97,6 +98,8 @@ public class TokenRenewalFilterTest extends RestApiBaseTest {
 
     @Test
     public void testFilter() throws IOException {
+        authenticationService.login(new CodenvyCredentials(DUMMY_USERNAME, DUMMY_PASSWORD));
+
         secureStorageService.deleteToken(REST_API_URL, DUMMY_USERNAME);
 
         new TokenRenewalFilter(REST_API_URL, DUMMY_USERNAME).filter(null);

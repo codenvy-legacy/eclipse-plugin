@@ -160,6 +160,8 @@
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
+					<threadCount>1</threadCount>
+    				<perCoreThreadCount>false</perCoreThreadCount>
 					<parallel>classes</parallel>
 					<dependencies>
 						<dependency>

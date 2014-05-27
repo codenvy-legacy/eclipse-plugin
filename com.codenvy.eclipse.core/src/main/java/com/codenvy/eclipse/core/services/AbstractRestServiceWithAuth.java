@@ -72,10 +72,14 @@ public class AbstractRestServiceWithAuth extends AbstractRestService {
         final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
                                                                                       context.getServiceReference(SecureStorageService.class);
         if (codenvySecureStorageServiceRef != null) {
-            final SecureStorageService codenvySecureStorageService =
-                                                                     context.getService(codenvySecureStorageServiceRef);
-            if (codenvySecureStorageService != null) {
-                return codenvySecureStorageService.getToken(getUrl(), getUsername());
+            try {
+                final SecureStorageService codenvySecureStorageService =
+                                                                         context.getService(codenvySecureStorageServiceRef);
+                if (codenvySecureStorageService != null) {
+                    return codenvySecureStorageService.getToken(getUrl(), getUsername());
+                }
+            } finally {
+                context.ungetService(codenvySecureStorageServiceRef);
             }
         }
         return null;
@@ -83,7 +87,11 @@ public class AbstractRestServiceWithAuth extends AbstractRestService {
 
     @Override
     public WebTarget getWebTarget() {
-        return super.getWebTarget().queryParam(TOKEN_PARAMETER_NAME, getCodenvyToken().value);
+        CodenvyToken token = getCodenvyToken();
+        if (token == null) {
+            throw new RuntimeException("Token not found in secure storage.");
+        }
+        return super.getWebTarget().queryParam(TOKEN_PARAMETER_NAME, token.value);
     }
 
     /**
