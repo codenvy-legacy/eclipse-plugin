@@ -32,7 +32,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.core.services.TokenProvider;
 
 /**

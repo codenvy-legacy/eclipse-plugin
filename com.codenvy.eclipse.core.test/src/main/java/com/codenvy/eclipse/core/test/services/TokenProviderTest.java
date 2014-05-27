@@ -46,7 +46,6 @@ public class TokenProviderTest extends RestApiBaseTest {
     private static final String          DUMMY_URL      = "http://www.dummy.com";
     private static final String          DUMMY_USERNAME = "dummyUsername";
     private static final String          DUMMY_PASSWORD = "dummyPassword";
-    private static final CodenvyToken    SDK_TOKEN      = new CodenvyToken("123123");
 
     @BeforeClass
     public static void initialize() {

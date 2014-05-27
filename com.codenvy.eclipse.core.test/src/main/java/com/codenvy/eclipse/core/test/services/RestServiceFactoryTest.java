@@ -34,8 +34,7 @@ import com.codenvy.eclipse.core.services.WorkspaceService;
  * @author Stéphane Daviet
  */
 public class RestServiceFactoryTest {
-    private static final String       CODENVY_URL     = "http://dummy.com";
-    private static final String       SDK_TOKEN_VALUE = "123123";
+    private static final String       CODENVY_URL = "http://dummy.com";
 
     private static RestServiceFactory restServiceFactory;
 

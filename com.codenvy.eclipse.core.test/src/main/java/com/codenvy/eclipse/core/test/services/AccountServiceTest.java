@@ -36,9 +36,7 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
  * @author Kevin Pollet
  */
 public class AccountServiceTest extends RestApiBaseTest {
-    private static final String   DUMMY_USERNAME  = "dummyUsername";
-    private static final String   DUMMY_PASSWORD  = "dummyPassword";
-    private static final String   SDK_TOKEN_VALUE = "123123";
+    private static final String   DUMMY_USERNAME = "dummyUsername";
 
     private static AccountService accountService;
 
