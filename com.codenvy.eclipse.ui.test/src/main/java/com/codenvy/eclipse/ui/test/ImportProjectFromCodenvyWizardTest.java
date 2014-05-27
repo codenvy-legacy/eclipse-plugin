@@ -86,11 +86,11 @@ public class ImportProjectFromCodenvyWizardTest {
 
         // authentication
 
-        bot.comboBox(0).typeText("http://localhost:8080");
+        bot.comboBox(0).setText("http://localhost:8080");
         Assert.assertEquals("https://codenvy.com", bot.comboBox(0).items()[0]);
         Assert.assertFalse(bot.button("Next >").isEnabled());
 
-        bot.comboBox(1).typeText("codenvy@codenvy.com");
+        bot.comboBox(1).typeText("johndoe");
         Assert.assertFalse(bot.button("Next >").isEnabled());
 
         bot.text(0).typeText("secret");
