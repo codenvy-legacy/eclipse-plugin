@@ -37,19 +37,26 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyProject;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
+import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
  * {@link ProjectService} test.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class ProjectServiceTest extends RestApiBaseTest {
+    private static final String     DUMMY_USERNAME  = "dummyUsername";
+    private static final String     DUMMY_PASSWORD  = "dummyPassword";
+    private static final String     SDK_TOKEN_VALUE = "123123";
+
     private static ProjectService   projectService;
     private static WorkspaceService workspaceService;
     private static WorkspaceRef     defaultWorkspace;
@@ -64,10 +71,19 @@ public class ProjectServiceTest extends RestApiBaseTest {
         final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
         Assert.assertNotNull(restServiceFactory);
 
-        projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, REST_API_URL, new CodenvyToken("dummy"));
+        final ServiceReference<SecureStorageService> secureStorageServiceRef = context.getServiceReference(SecureStorageService.class);
+        Assert.assertNotNull(secureStorageServiceRef);
+
+        final SecureStorageService secureStorageService = context.getService(secureStorageServiceRef);
+        Assert.assertNotNull(secureStorageService);
+
+        secureStorageService.storeCredentials(REST_API_URL, new CodenvyCredentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+                                              new CodenvyToken(SDK_TOKEN_VALUE));
+
+        projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, REST_API_URL, DUMMY_USERNAME);
         Assert.assertNotNull(projectService);
 
-        workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, REST_API_URL, new CodenvyToken("dummy"));
+        workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, REST_API_URL, DUMMY_USERNAME);
         Assert.assertNotNull(workspaceService);
 
         defaultWorkspace = workspaceService.getWorkspaceByName("default");

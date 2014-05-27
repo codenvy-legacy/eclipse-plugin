@@ -38,6 +38,7 @@
 		<jackson.version>2.3.2</jackson.version>
 		<javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
 		<jersey-client.version>2.7</jersey-client.version>
+		<javax.annotation-api.version>1.2</javax.annotation-api.version>
 	</properties>
 
 	<dependencies>
@@ -55,6 +56,11 @@
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
 			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>${javax.annotation-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
@@ -89,7 +95,8 @@
 						<Embed-Dependency>*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 						<Export-Package>javax.ws.rs.*, com.fasterxml.jackson.annotation.*,
-							com.fasterxml.jackson.core.*, com.fasterxml.jackson.databind.*</Export-Package>
+							com.fasterxml.jackson.core.*, com.fasterxml.jackson.databind.*,
+							javax.annotation.*</Export-Package>
 						<Import-Package>sun.misc.*;resolution:=optional</Import-Package>
 					</instructions>
 				</configuration>

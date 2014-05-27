@@ -21,7 +21,6 @@ import static java.util.Arrays.asList;
 import java.util.List;
 
 import com.codenvy.eclipse.core.model.CodenvyAccount;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AccountService;
 
 /**
@@ -32,7 +31,7 @@ import com.codenvy.eclipse.core.services.AccountService;
 public class AccountServiceMock implements AccountService {
     public static final String MOCK_ACCOUNT_ID = "account-codenvy-id";
 
-    public AccountServiceMock(String url, CodenvyToken codenvyToken) {
+    public AccountServiceMock(String url, String username) {
     }
 
     @Override

@@ -16,8 +16,6 @@
  */
 package com.codenvy.eclipse.core.impl.services;
 
-import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.Response.Status.OK;
@@ -25,16 +23,22 @@ import static javax.ws.rs.core.Response.Status.OK;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
+
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AbstractRestService;
 import com.codenvy.eclipse.core.services.AuthenticationService;
+import com.codenvy.eclipse.core.services.SecureStorageService;
 
 /**
  * The Codenvy authentication client service.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class DefaultAuthenticationService extends AbstractRestService implements AuthenticationService {
     /**
@@ -49,20 +53,41 @@ public class DefaultAuthenticationService extends AbstractRestService implements
     }
 
     @Override
-    public CodenvyToken login(String username, String password) {
-        checkNotNull(username);
-        checkArgument(!isNullOrEmpty(username));
-        checkNotNull(password);
-        checkArgument(!isNullOrEmpty(password));
+    public CodenvyToken login(CodenvyCredentials credentials) {
+        return login(credentials, true);
+    }
+
+    @Override
+    public CodenvyToken login(CodenvyCredentials credentials, boolean storeCredentials) {
+        checkNotNull(credentials);
 
         final Response response = getWebTarget().path("login")
                                                 .request(MediaType.APPLICATION_JSON)
-                                                .post(json(new CodenvyCredentials(username, password)));
+                                                .post(json(credentials));
 
         if (OK.getStatusCode() != response.getStatus()) {
             throw new AuthenticationException("Authentication failed : Wrong username or password");
         }
 
-        return response.readEntity(CodenvyToken.class);
+        CodenvyToken token = response.readEntity(CodenvyToken.class);
+
+        if (storeCredentials) {
+            final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+            final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
+                                                                                          context.getServiceReference(SecureStorageService.class);
+            if (codenvySecureStorageServiceRef != null) {
+                try {
+                    final SecureStorageService codenvySecureStorageService =
+                                                                             context.getService(codenvySecureStorageServiceRef);
+                    if (codenvySecureStorageService != null) {
+                        codenvySecureStorageService.storeCredentials(getUrl(), credentials, token);
+                    }
+                } finally {
+                    context.ungetService(codenvySecureStorageServiceRef);
+                }
+            }
+        }
+
+        return token;
     }
 }

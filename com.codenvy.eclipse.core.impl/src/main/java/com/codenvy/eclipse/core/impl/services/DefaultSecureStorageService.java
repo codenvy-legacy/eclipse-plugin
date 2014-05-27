@@ -104,6 +104,17 @@ public class DefaultSecureStorageService implements SecureStorageService {
     }
 
     @Override
+    public CodenvyCredentials getCredentials(String url, String username) {
+        checkNotNull(url);
+        checkArgument(!isNullOrEmpty(url));
+        checkNotNull(username);
+        checkArgument(!isNullOrEmpty(username));
+
+        String password = getPassword(url, username);
+        return password == null ? null : new CodenvyCredentials(username, password);
+    }
+
+    @Override
     public void deleteCredentials(String url, String username) {
         checkNotNull(url);
         checkArgument(!isNullOrEmpty(url));
@@ -113,6 +124,32 @@ public class DefaultSecureStorageService implements SecureStorageService {
         final ISecurePreferences node = getNode(url, username, true);
         if (node != null) {
             node.removeNode();
+        }
+    }
+
+    @Override
+    public void deletePassword(String url, String username) {
+        checkNotNull(url);
+        checkArgument(!isNullOrEmpty(url));
+        checkNotNull(username);
+        checkArgument(!isNullOrEmpty(username));
+
+        final ISecurePreferences node = getNode(url, username, true);
+        if (node != null) {
+            node.remove(CODENVY_PASSWORD_KEY_NAME);
+        }
+    }
+
+    @Override
+    public void deleteToken(String url, String username) {
+        checkNotNull(url);
+        checkArgument(!isNullOrEmpty(url));
+        checkNotNull(username);
+        checkArgument(!isNullOrEmpty(username));
+
+        final ISecurePreferences node = getNode(url, username, true);
+        if (node != null) {
+            node.remove(CODENVY_TOKEN_KEY_NAME);
         }
     }
 

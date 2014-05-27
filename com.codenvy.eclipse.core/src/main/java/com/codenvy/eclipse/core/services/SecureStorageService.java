@@ -29,9 +29,9 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
  */
 public interface SecureStorageService {
     /**
-     * Stores codenvy url, {@link CodenvyCredentials} and {@link CodenvyToken} in Eclipse secure storage.
+     * Stores Codenvy URL, {@link CodenvyCredentials} and {@link CodenvyToken} in Eclipse secure storage.
      * 
-     * @param url the codenvy instance url.
+     * @param url the Codenvy instance URL.
      * @param credentials the {@link CodenvyCredentials}
      * @param token the {@link CodenvyToken}.
      * @throws NullPointerException if url, credentials or token parameter is {@code null}.
@@ -40,21 +40,21 @@ public interface SecureStorageService {
     void storeCredentials(String url, CodenvyCredentials credentials, CodenvyToken token);
 
     /**
-     * Gets the codenvy password corresponding to the given url and username.
+     * Gets the Codenvy password corresponding to the given URL and username.
      * 
-     * @param url the codenvy url.
-     * @param username the codenvy username.
-     * @return the codenvy password or {@code null} if not found.
+     * @param url the Codenvy URL.
+     * @param username the Codenvy username.
+     * @return the Codenvy password or {@code null} if not found.
      * @throws NullPointerException if url or username parameter is {@code null}.
      * @throws IllegalArgumentException if url or username is an empty {@code String}.
      */
     String getPassword(String url, String username);
 
     /**
-     * Gets the {@link CodenvyToken} corresponding to the given codenvy url and username.
+     * Gets the {@link CodenvyToken} corresponding to the given Codenvy URL and username.
      * 
-     * @param url the codenvy url.
-     * @param username the codenvy username.
+     * @param url the Codenvy URL.
+     * @param username the Codenvy username.
      * @return the {@link CodenvyToken} or {@code null} if not found.
      * @throws NullPointerException if url or username parameter is {@code null}.
      * @throws IllegalArgumentException if url or username is an empty {@code String}.
@@ -64,27 +64,58 @@ public interface SecureStorageService {
     /**
      * Deletes the codenvy credentials corresponding to the given codenvy url and username.
      * 
-     * @param url the codenvy url.
-     * @param username the codenvy username.
+     * @param url the Codenvy URL.
+     * @param username the Codenvy username.
      * @throws NullPointerException if url or username parameter is {@code null}.
      * @throws IllegalArgumentException if url or username is an empty {@code String}.
      */
     void deleteCredentials(String url, String username);
 
     /**
-     * Returns all url stored in the Eclipse secure storage.
+     * Deletes the password corresponding to the given codenvy url and username.
      * 
-     * @return the urls never {@code null}.
+     * @param url the Codenvy URL.
+     * @param username the Codenvy username.
+     * @throws NullPointerException if url or username parameter is {@code null}.
+     * @throws IllegalArgumentException if url or username is an empty {@code String}.
+     */
+    void deletePassword(String url, String username);
+
+    /**
+     * Deletes the token corresponding to the given codenvy url and username.
+     * 
+     * @param url the Codenvy URL.
+     * @param username the Codenvy username.
+     * @throws NullPointerException if url or username parameter is {@code null}.
+     * @throws IllegalArgumentException if url or username is an empty {@code String}.
+     */
+    void deleteToken(String url, String username);
+
+    /**
+     * Returns all URL stored in the Eclipse secure storage.
+     * 
+     * @return the URLs never {@code null}.
      */
     List<String> getURLs();
 
     /**
-     * Gets all codenvy usernames associated with the given codenvy url.
+     * Gets all Codenvy usernames associated with the given Codenvy URL.
      * 
-     * @param url the codenvy url.
+     * @param url the Codenvy URL.
      * @return the usernames never {@code null}.
      * @throws NullPointerException if url parameter is {@code null}.
      * @throws IllegalArgumentException if url is an empty {@code String}.
      */
     List<String> getUsernamesForURL(String url);
+
+    /**
+     * Get a plain {@link CodenvyCredentials} object.
+     * 
+     * @param url the Codenvy URL.
+     * @param username the Codenvy username.
+     * @return the {@link CodenvyCredentials} or {@code null} if not found.
+     * @throws NullPointerException if url or username parameter is {@code null}.
+     * @throws IllegalArgumentException if url or username is an empty {@code String}.
+     */
+    CodenvyCredentials getCredentials(String url, String username);
 }

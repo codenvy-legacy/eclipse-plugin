@@ -48,6 +48,14 @@ public class SecureStorageServiceMock implements SecureStorageService {
     }
 
     @Override
+    public void deletePassword(String url, String username) {
+    }
+
+    @Override
+    public void deleteToken(String url, String username) {
+    }
+
+    @Override
     public List<String> getURLs() {
         return new ArrayList<>();
     }
@@ -55,5 +63,10 @@ public class SecureStorageServiceMock implements SecureStorageService {
     @Override
     public List<String> getUsernamesForURL(String url) {
         return new ArrayList<>();
+    }
+
+    @Override
+    public CodenvyCredentials getCredentials(String url, String username) {
+        return null;
     }
 }

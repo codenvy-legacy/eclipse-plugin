@@ -68,7 +68,6 @@ import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.model.CodenvyAccount;
 import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
 import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.ProjectService;
@@ -82,6 +81,7 @@ import com.google.common.base.Optional;
  * Project wizard page. In this wizard page the user selects the projects to import in Eclipse.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class ProjectWizardPage extends WizardPage implements IPageChangedListener {
     private ComboViewer                  workspaceComboViewer;
@@ -282,7 +282,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-                    final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
+                    final ServiceReference<RestServiceFactory> restServiceFactoryRef =
+                                                                                       context.getServiceReference(RestServiceFactory.class);
 
                     if (restServiceFactoryRef != null) {
                         final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
@@ -294,15 +295,19 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
 
                                 final String url = importWizardSharedData.getUrl().get();
-                                final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
-                                final AccountService accountService = restServiceFactory.newRestServiceWithAuth(AccountService.class, url, token);
-                                final WorkspaceService workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class, url, token);
+                                final String username = importWizardSharedData.getUsername().get();
+                                final AccountService accountService =
+                                                                      restServiceFactory.newRestServiceWithAuth(AccountService.class, url,
+                                                                                                                username);
+                                final WorkspaceService workspaceService =
+                                                                          restServiceFactory.newRestServiceWithAuth(WorkspaceService.class,
+                                                                                                                    url, username);
                                 final List<CodenvyAccount> currentUserAccounts = accountService.getCurrentUserAccounts();
-
                                 final List<WorkspaceRef> workspaces = new ArrayList<>();
                                 if (currentUserAccounts != null) {
                                     for (CodenvyAccount oneAccount : currentUserAccounts) {
-                                        final List<WorkspaceRef> oneAccountWorkspaces = workspaceService.findWorkspacesByAccount(oneAccount.id);
+                                        final List<WorkspaceRef> oneAccountWorkspaces =
+                                                                                        workspaceService.findWorkspacesByAccount(oneAccount.id);
                                         workspaces.addAll(oneAccountWorkspaces);
                                     }
                                 }
@@ -343,7 +348,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-                    final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
+                    final ServiceReference<RestServiceFactory> restServiceFactoryRef =
+                                                                                       context.getServiceReference(RestServiceFactory.class);
 
                     if (restServiceFactoryRef != null) {
                         final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
@@ -355,8 +361,10 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
 
                                 final String url = importWizardSharedData.getUrl().get();
-                                final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
-                                final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
+                                final String username = importWizardSharedData.getUsername().get();
+                                final ProjectService projectService =
+                                                                      restServiceFactory.newRestServiceWithAuth(ProjectService.class, url,
+                                                                                                                username);
                                 final List<CodenvyProject> projects = projectService.getWorkspaceProjects(workspaceRef.id);
 
                                 Display.getDefault().syncExec(new Runnable() {
@@ -367,9 +375,12 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                         final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
                                         final List<IWorkingSet> workingSets = new ArrayList<>(asList(workingSetManager.getWorkingSets()));
 
-                                        IWorkingSet codenvyWorkspaceWorkingSet = workingSetManager.getWorkingSet(codenvyWorkspaceWorkingSetName);
+                                        IWorkingSet codenvyWorkspaceWorkingSet =
+                                                                                 workingSetManager.getWorkingSet(codenvyWorkspaceWorkingSetName);
                                         if (codenvyWorkspaceWorkingSet == null) {
-                                            codenvyWorkspaceWorkingSet = workingSetManager.createWorkingSet(codenvyWorkspaceWorkingSetName, new IAdaptable[0]);
+                                            codenvyWorkspaceWorkingSet =
+                                                                         workingSetManager.createWorkingSet(codenvyWorkspaceWorkingSetName,
+                                                                                                            new IAdaptable[0]);
                                             workingSets.add(0, codenvyWorkspaceWorkingSet);
                                         }
 

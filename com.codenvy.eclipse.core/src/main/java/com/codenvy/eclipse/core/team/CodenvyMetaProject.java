@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * The Codenvy project meta data.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class CodenvyMetaProject {
     private static final ConcurrentMap<IProject, CodenvyMetaProject> repositoryProviderCache = new ConcurrentHashMap<>();
@@ -103,19 +104,19 @@ public class CodenvyMetaProject {
     }
 
     public final String url;
+    public final String username;
     public final String projectName;
     public final String workspaceId;
-    public final String codenvyToken;
 
     @JsonCreator
     public CodenvyMetaProject(@JsonProperty("url") String url,
+                              @JsonProperty("username") String username,
                               @JsonProperty("projectName") String projectName,
-                              @JsonProperty("workspaceId") String workspaceId,
-                              @JsonProperty("codenvyToken") String codenvyToken) {
+                              @JsonProperty("workspaceId") String workspaceId) {
 
         this.url = url;
+        this.username = username;
         this.projectName = projectName;
         this.workspaceId = workspaceId;
-        this.codenvyToken = codenvyToken;
     }
 }

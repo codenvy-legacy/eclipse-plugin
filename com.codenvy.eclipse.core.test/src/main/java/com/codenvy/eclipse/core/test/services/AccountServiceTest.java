@@ -27,7 +27,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.model.CodenvyAccount;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 
@@ -37,6 +36,8 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
  * @author Kevin Pollet
  */
 public class AccountServiceTest extends RestApiBaseTest {
+    private static final String   DUMMY_USERNAME  = "dummyUsername";
+    private static final String   DUMMY_PASSWORD  = "dummyPassword";
     private static final String   SDK_TOKEN_VALUE = "123123";
 
     private static AccountService accountService;
@@ -50,7 +51,7 @@ public class AccountServiceTest extends RestApiBaseTest {
         final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
         Assert.assertNotNull(restServiceFactory);
 
-        accountService = restServiceFactory.newRestServiceWithAuth(AccountService.class, REST_API_URL, new CodenvyToken(SDK_TOKEN_VALUE));
+        accountService = restServiceFactory.newRestServiceWithAuth(AccountService.class, REST_API_URL, DUMMY_USERNAME);
         Assert.assertNotNull(accountService);
     }
 

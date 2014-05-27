@@ -59,6 +59,7 @@ import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
  * Wizard used to import Codenvy projects from the given Codenvy platform.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWizard, INewWizard {
     private final AuthenticationWizardPage authenticationWizardPage;
@@ -132,14 +133,23 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                             monitor.beginTask("Importing projects", projectsToImport.size());
 
                             final String url = importWizardSharedData.getUrl().get();
-                            final CodenvyToken token = importWizardSharedData.getCodenvyToken().get();
+                            final String username = importWizardSharedData.getUsername().get();
                             final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
                             final List<IProject> importedProjects = new ArrayList<>();
-                            final ProjectService projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, url, token);
+                            final ProjectService projectService =
+                                                                  restServiceFactory.newRestServiceWithAuth(ProjectService.class, url,
+                                                                                                            username);
 
                             for (CodenvyProject oneProject : projectsToImport) {
                                 final ZipInputStream zipInputStream = projectService.exportResources(oneProject, null);
-                                final IProject newProject = EclipseProjectHelper.createIProjectFromZipStream(zipInputStream, new CodenvyMetaProject(url, oneProject.name, oneProject.workspaceId, token.value), monitor);
+                                final IProject newProject =
+                                                            EclipseProjectHelper.createIProjectFromZipStream(zipInputStream,
+                                                                                                             new CodenvyMetaProject(
+                                                                                                                                    url,
+                                                                                                                                    username,
+                                                                                                                                    oneProject.name,
+                                                                                                                                    oneProject.workspaceId),
+                                                                                                             monitor);
                                 importedProjects.add(newProject);
 
                                 monitor.worked(1);
@@ -148,7 +158,10 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                             if (importWizardSharedData.getWorkingSet().isPresent()) {
                                 final IWorkingSet workingSet = importWizardSharedData.getWorkingSet().get();
                                 final boolean workingSetExists = workingSetManager.getWorkingSet(workingSet.getName()) != null;
-                                final IAdaptable[] workingSetElements = concat( workingSet.getElements(), workingSet.adaptElements(importedProjects.toArray(new IProject[importedProjects.size()])), IAdaptable.class);
+                                final IAdaptable[] workingSetElements =
+                                                                        concat(workingSet.getElements(),
+                                                                               workingSet.adaptElements(importedProjects.toArray(new IProject[importedProjects.size()])),
+                                                                               IAdaptable.class);
 
                                 workingSet.setElements(workingSetElements);
                                 if (!workingSetExists) {

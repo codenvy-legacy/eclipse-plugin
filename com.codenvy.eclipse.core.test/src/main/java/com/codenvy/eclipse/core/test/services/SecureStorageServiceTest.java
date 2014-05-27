@@ -201,6 +201,70 @@ public class SecureStorageServiceTest {
         Assert.assertFalse(codenvyNode.node(DUMMY_URL_ENCODED).nodeExists(DUMMY_CREDENTIALS.username));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testDeletePasswordWithNullUrl() {
+        secureStorageService.deletePassword(null, DUMMY_CREDENTIALS.username);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeletePasswordWithEmptyUrl() {
+        secureStorageService.deletePassword("", DUMMY_CREDENTIALS.username);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testDeletePasswordWithNullUsername() {
+        secureStorageService.deletePassword(DUMMY_URL, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeletePasswordWithEmptyUsername() {
+        secureStorageService.deletePassword(DUMMY_URL, "");
+    }
+
+    @Test
+    public void testDeletePassword() throws StorageException {
+        final ISecurePreferences dummyNode = codenvyNode.node(DUMMY_URL_ENCODED).node(DUMMY_CREDENTIALS.username);
+        dummyNode.put(CODENVY_PASSWORD_KEY_NAME, DUMMY_CREDENTIALS.password, true);
+        dummyNode.put(CODENVY_TOKEN_KEY_NAME, DUMMY_TOKEN.value, true);
+
+        secureStorageService.deletePassword(DUMMY_URL, DUMMY_CREDENTIALS.username);
+
+        Assert.assertTrue(codenvyNode.nodeExists(DUMMY_URL_ENCODED));
+        Assert.assertNull(codenvyNode.node(DUMMY_URL_ENCODED).get(CODENVY_PASSWORD_KEY_NAME, null));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testDeleteTokenWithNullUrl() {
+        secureStorageService.deleteToken(null, DUMMY_CREDENTIALS.username);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteTokenWithEmptyUrl() {
+        secureStorageService.deleteToken("", DUMMY_CREDENTIALS.username);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testDeleteTokenWithNullUsername() {
+        secureStorageService.deleteToken(DUMMY_URL, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteTokenWithEmptyUsername() {
+        secureStorageService.deleteToken(DUMMY_URL, "");
+    }
+
+    @Test
+    public void testDeleteToken() throws StorageException {
+        final ISecurePreferences dummyNode = codenvyNode.node(DUMMY_URL_ENCODED).node(DUMMY_CREDENTIALS.username);
+        dummyNode.put(CODENVY_PASSWORD_KEY_NAME, DUMMY_CREDENTIALS.password, true);
+        dummyNode.put(CODENVY_TOKEN_KEY_NAME, DUMMY_TOKEN.value, true);
+
+        secureStorageService.deleteToken(DUMMY_URL, DUMMY_CREDENTIALS.username);
+
+        Assert.assertTrue(codenvyNode.nodeExists(DUMMY_URL_ENCODED));
+        Assert.assertNull(codenvyNode.node(DUMMY_URL_ENCODED).get(CODENVY_TOKEN_KEY_NAME, null));
+    }
+
     @Test
     public void getUrls() throws StorageException {
         final ISecurePreferences dummyNode = codenvyNode.node(DUMMY_URL_ENCODED).node(DUMMY_CREDENTIALS.username);
@@ -235,5 +299,37 @@ public class SecureStorageServiceTest {
         Assert.assertNotNull(usernames);
         Assert.assertFalse(usernames.isEmpty());
         Assert.assertTrue(usernames.contains(DUMMY_CREDENTIALS.username));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testGetCredentialsWithNullUrl() {
+        secureStorageService.getCredentials(null, DUMMY_CREDENTIALS.username);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetCredentialsWithEmptyUrl() {
+        secureStorageService.getCredentials("", DUMMY_CREDENTIALS.username);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testGetCredentialsWithNullUsername() {
+        secureStorageService.getCredentials(DUMMY_URL, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetCredentialsWithEmptyUsername() {
+        secureStorageService.getCredentials(DUMMY_URL, "");
+    }
+
+    @Test
+    public void testGetCredentials() throws StorageException {
+        final ISecurePreferences dummyNode = codenvyNode.node(DUMMY_URL_ENCODED).node(DUMMY_CREDENTIALS.username);
+        dummyNode.put(CODENVY_PASSWORD_KEY_NAME, DUMMY_CREDENTIALS.password, true);
+        dummyNode.put(CODENVY_TOKEN_KEY_NAME, DUMMY_TOKEN.value, true);
+
+        CodenvyCredentials credentials = secureStorageService.getCredentials(DUMMY_URL, DUMMY_CREDENTIALS.username);
+
+        Assert.assertEquals(DUMMY_CREDENTIALS.username, credentials.username);
+        Assert.assertEquals(DUMMY_CREDENTIALS.password, credentials.password);
     }
 }

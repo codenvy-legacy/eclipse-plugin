@@ -24,26 +24,26 @@ import java.util.List;
 import org.eclipse.ui.IWorkingSet;
 
 import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.google.common.base.Optional;
 
 /**
  * Class used to share data between project pages.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public final class ImportWizardSharedData {
-    private Optional<String>       url;
-    private Optional<CodenvyToken> codenvyToken;
-    private List<CodenvyProject>   projects;
-    private Optional<IWorkingSet>  workingSet;
+    private Optional<String>      url;
+    private Optional<String>      username;
+    private List<CodenvyProject>  projects;
+    private Optional<IWorkingSet> workingSet;
 
     /**
      * Default constructor.
      */
     public ImportWizardSharedData() {
         this.url = Optional.absent();
-        this.codenvyToken = Optional.absent();
+        this.username = Optional.absent();
         this.projects = new ArrayList<>();
         this.workingSet = Optional.absent();
     }
@@ -64,30 +64,31 @@ public final class ImportWizardSharedData {
      * @throws NullPointerException if url parameter is {@code null}
      */
     public void setUrl(Optional<String> url) {
-        checkNotNull(codenvyToken);
+        checkNotNull(url);
 
         this.url = url;
     }
 
     /**
-     * Returns the Codenvy authentication token negotiated.
+     * Returns the username entered.
      * 
-     * @return the Codenvy authentication token never {@code null}.
+     * @return the username never {@code null}.
      */
-    public Optional<CodenvyToken> getCodenvyToken() {
-        return codenvyToken;
+    public Optional<String> getUsername() {
+        return username;
     }
 
-    /**
-     * Defines the Codenvy authentication token.
-     * 
-     * @param codenvyToken the the Codenvy authentication token.
-     * @throws NullPointerException if codenvyToken parameter is {@code null}.
-     */
-    public void setCodenvyToken(Optional<CodenvyToken> codenvyToken) {
-        checkNotNull(codenvyToken);
 
-        this.codenvyToken = codenvyToken;
+    /**
+     * Defines the username.
+     * 
+     * @param username the username.
+     * @throws NullPointerException if username parameter is {@code null}
+     */
+    public void setUsername(Optional<String> username) {
+        checkNotNull(username);
+
+        this.username = username;
     }
 
     /**

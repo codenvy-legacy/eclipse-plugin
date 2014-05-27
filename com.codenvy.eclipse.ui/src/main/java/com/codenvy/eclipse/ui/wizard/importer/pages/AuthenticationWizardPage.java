@@ -51,7 +51,6 @@ import org.osgi.framework.ServiceReference;
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.model.CodenvyCredentials;
 import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
@@ -175,9 +174,9 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                         final AuthenticationService authenticationService =
                                                                             restServiceFactory.newRestService(AuthenticationService.class,
                                                                                                               urls.getText());
-                        final CodenvyToken token = authenticationService.login(usernames.getText(), password.getText());
-
-                        importWizardSharedData.setCodenvyToken(Optional.fromNullable(token));
+                        authenticationService.login(new CodenvyCredentials(usernames.getText(), password.getText()),
+                                                    storeUserCredentials.getSelection());
+                        importWizardSharedData.setUsername(Optional.fromNullable(usernames.getText()));
                         importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
                         importWizardSharedData.setProjects(new ArrayList<CodenvyProject>());
 
@@ -192,18 +191,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                                                             CodenvyPreferencesInitializer.createList(ObjectArrays.concat(urls.getText(),
                                                                                                                          locations
                                                                                                                  )));
-                        }
-
-                        if (storeUserCredentials.getSelection()) {
-                            final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
-                                                                                                          context.getServiceReference(SecureStorageService.class);
-                            if (codenvySecureStorageServiceRef != null) {
-                                final SecureStorageService codenvySecureStorageService =
-                                                                                         context.getService(codenvySecureStorageServiceRef);
-                                codenvySecureStorageService.storeCredentials(urls.getText(), new CodenvyCredentials(usernames.getText(),
-                                                                                                                    password.getText()),
-                                                                             token);
-                            }
                         }
 
                         setErrorMessage(null);

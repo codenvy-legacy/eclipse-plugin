@@ -19,4 +19,5 @@ Import-Package: com.codenvy.eclipse.core.exceptions;version="1.0.0.qualifier",
  org.eclipse.core.runtime;version="3.4.0",
  org.eclipse.core.runtime.jobs,
  org.eclipse.equinox.security.storage,
- org.eclipse.team.core
+ org.eclipse.team.core,
+ org.osgi.framework;version="1.7.0"

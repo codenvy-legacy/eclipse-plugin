@@ -33,4 +33,11 @@
 			<provide interface="com.codenvy.eclipse.core.services.SecureStorageService" />
 		</service>
 	</scr:component>
+	<scr:component>
+		<implementation
+			class="com.codenvy.eclipse.core.impl.DefaultTokenProvider" />
+		<service>
+			<provide interface="com.codenvy.eclipse.core.services.TokenProvider" />
+		</service>
+	</scr:component>
 </root:components>

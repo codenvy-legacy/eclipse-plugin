@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.ProjectService;
@@ -37,6 +36,7 @@ import com.codenvy.eclipse.core.services.WorkspaceService;
  * {@link RestServiceFactory} mock.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class RestServiceFactoryMock implements RestServiceFactory {
     private final Map<Class< ? extends RestService>, Class< ? >>         restServiceBindings;
@@ -71,15 +71,15 @@ public class RestServiceFactoryMock implements RestServiceFactory {
     }
 
     @Override
-    public <T extends RestServiceWithAuth, S extends T> T newRestServiceWithAuth(Class<T> clazz, String url, CodenvyToken token) {
+    public <T extends RestServiceWithAuth, S extends T> T newRestServiceWithAuth(Class<T> clazz, String url, String username) {
         checkNotNull(clazz);
 
         try {
 
             @SuppressWarnings("unchecked")
             final Class<S> impl = (Class<S>)restServiceWithAuthBindings.get(clazz);
-            final Constructor<S> constructor = impl.getConstructor(String.class, CodenvyToken.class);
-            return constructor.newInstance(url, token);
+            final Constructor<S> constructor = impl.getConstructor(String.class, String.class);
+            return constructor.newInstance(url, username);
 
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
             | InvocationTargetException e) {

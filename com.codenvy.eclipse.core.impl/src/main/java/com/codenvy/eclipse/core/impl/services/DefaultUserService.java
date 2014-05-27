@@ -18,7 +18,6 @@ package com.codenvy.eclipse.core.impl.services;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.model.CodenvyUser;
 import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.services.UserService;
@@ -27,18 +26,19 @@ import com.codenvy.eclipse.core.services.UserService;
  * The Codenvy user client service.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class DefaultUserService extends AbstractRestServiceWithAuth implements UserService {
     /**
      * Constructs an instance of {@linkplain DefaultUserService}.
      * 
      * @param url the Codenvy platform url.
-     * @param codenvyToken the Codenvy authentication token.
-     * @throws NullPointerException if url or codenvyToken is {@code null}.
+     * @param username the username.
+     * @throws NullPointerException if url or username is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
-    public DefaultUserService(String url, CodenvyToken codenvyToken) {
-        super(url, "api/user", codenvyToken);
+    public DefaultUserService(String url, String username) {
+        super(url, username, "api/user");
     }
 
     @Override
