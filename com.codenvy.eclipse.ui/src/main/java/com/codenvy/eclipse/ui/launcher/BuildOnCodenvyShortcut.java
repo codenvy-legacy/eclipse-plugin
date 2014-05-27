@@ -16,10 +16,10 @@
  */
 package com.codenvy.eclipse.ui.launcher;
 
+import static com.codenvy.eclipse.core.launcher.LaunchConstants.BUILDER_LAUNCH_CONFIGURATION_NAME_PREFIX;
+import static com.codenvy.eclipse.core.launcher.LaunchConstants.BUILDER_LAUNCH_DELEGATE_ID;
 import static com.codenvy.eclipse.core.launcher.LaunchConstants.CODENVY_PROJECT_NAME_ATTRIBUTE_NAME;
 import static com.codenvy.eclipse.core.launcher.LaunchConstants.LAUNCH_CONFIGURATION_TYPE_ID;
-import static com.codenvy.eclipse.core.launcher.LaunchConstants.RUNNER_LAUNCH_CONFIGURATION_NAME_PREFIX;
-import static com.codenvy.eclipse.core.launcher.LaunchConstants.RUNNER_LAUNCH_DELEGATE_ID;
 import static java.util.Collections.singleton;
 import static org.eclipse.core.resources.IResource.ROOT;
 import static org.eclipse.debug.core.ILaunchManager.RUN_MODE;
@@ -44,12 +44,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleConstants;
 
 /**
- * The codenvy run shortcut implementation.
+ * The codenvy build shortcut implementation.
  * 
  * @author Kevin Pollet
  */
-// TODO error handling
-public class RunOnCodenvyShortcut implements ILaunchShortcut {
+public class BuildOnCodenvyShortcut implements ILaunchShortcut {
     @Override
     public void launch(ISelection selection, String mode) {
         if (selection instanceof IStructuredSelection && RUN_MODE.equalsIgnoreCase(mode)) {
@@ -59,7 +58,7 @@ public class RunOnCodenvyShortcut implements ILaunchShortcut {
                 final IResource resource = (IResource)adaptable.getAdapter(IResource.class);
 
                 if (resource != null && resource.getType() != ROOT) {
-                    runProjectOnCodenvy(resource.getProject(), mode);
+                    buildProjectOnCodenvy(resource.getProject(), mode);
                 }
             }
         }
@@ -72,12 +71,12 @@ public class RunOnCodenvyShortcut implements ILaunchShortcut {
             final IResource resource = (IResource)editorInput.getAdapter(IResource.class);
 
             if (resource != null && resource.getType() != ROOT) {
-                runProjectOnCodenvy(resource.getProject(), mode);
+                buildProjectOnCodenvy(resource.getProject(), mode);
             }
         }
     }
 
-    private void runProjectOnCodenvy(IProject project, final String mode) {
+    private void buildProjectOnCodenvy(IProject project, final String mode) {
         final ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
         final ILaunchConfigurationType launchConfigurationType = launchManager.getLaunchConfigurationType(LAUNCH_CONFIGURATION_TYPE_ID);
         if (launchConfigurationType != null) {
@@ -101,7 +100,7 @@ public class RunOnCodenvyShortcut implements ILaunchShortcut {
                                                         String mode) {
 
         ILaunchConfiguration launchConfiguration = null;
-        final String launchConfigurationName = RUNNER_LAUNCH_CONFIGURATION_NAME_PREFIX + project.getName();
+        final String launchConfigurationName = BUILDER_LAUNCH_CONFIGURATION_NAME_PREFIX + project.getName();
 
         try {
 
@@ -115,7 +114,7 @@ public class RunOnCodenvyShortcut implements ILaunchShortcut {
 
             if (launchConfiguration == null) {
                 final ILaunchConfigurationWorkingCopy workingCopy = launchConfigurationType.newInstance(null, launchConfigurationName);
-                workingCopy.setPreferredLaunchDelegate(singleton(RUN_MODE), RUNNER_LAUNCH_DELEGATE_ID);
+                workingCopy.setPreferredLaunchDelegate(singleton(RUN_MODE), BUILDER_LAUNCH_DELEGATE_ID);
                 workingCopy.setAttribute(CODENVY_PROJECT_NAME_ATTRIBUTE_NAME, project.getName());
 
                 launchConfiguration = workingCopy.doSave();

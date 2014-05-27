@@ -17,9 +17,10 @@
 package com.codenvy.eclipse.core.launcher;
 
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
-import static com.codenvy.eclipse.core.model.CodenvyRunnerStatus.Status.CANCELLED;
-import static com.codenvy.eclipse.core.model.CodenvyRunnerStatus.Status.RUNNING;
-import static com.codenvy.eclipse.core.model.CodenvyRunnerStatus.Status.STOPPED;
+import static com.codenvy.eclipse.core.model.CodenvyBuilderStatus.Status.CANCELLED;
+import static com.codenvy.eclipse.core.model.CodenvyBuilderStatus.Status.FAILED;
+import static com.codenvy.eclipse.core.model.CodenvyBuilderStatus.Status.IN_PROGRESS;
+import static com.codenvy.eclipse.core.model.CodenvyBuilderStatus.Status.SUCCESSFUL;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
@@ -41,51 +42,49 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
+import com.codenvy.eclipse.core.model.CodenvyBuilderStatus;
 import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyRunnerStatus;
-import com.codenvy.eclipse.core.model.Link;
-import com.codenvy.eclipse.core.services.RunnerService;
+import com.codenvy.eclipse.core.services.BuilderService;
 
 /**
- * The codenvy runner process.
+ * The codenvy builder process.
  * 
  * @author Kevin Pollet
  */
-public class CodenvyRunnerProcess implements IProcess {
+public class CodenvyBuilderProcess implements IProcess {
     private static final int                TICK_DELAY     = 500;
     private static final TimeUnit           TICK_TIME_UNIT = MILLISECONDS;
 
     private final ILaunch                   launch;
-    private final RunnerService             runnerService;
+    private final BuilderService            builderService;
     private final CodenvyProject            project;
     private final Map<String, String>       attributes;
     private final AtomicBoolean             terminated;
-    private final AtomicBoolean             running;
-    private long                            processId;
+    private final AtomicBoolean             building;
+    private long                            taskId;
     private final ScheduledExecutorService  executorService;
-    private final CodenvyRunnerLogsThread   codenvyRunnerLogsThread;
-    private Link                            webLink;
+    private final CodenvyBuilderLogsThread  codenvyBuilderLogsThread;
     private final StringBufferStreamMonitor outputStream;
     private final StringBufferStreamMonitor errorStream;
     private int                             exitValue;
 
     /**
-     * Constructs an instance of {@link CodenvyRunnerProcess}.
+     * Constructs an instance of {@link CodenvyBuilderProcess}.
      * 
      * @param launch the {@link ILaunch} object.
-     * @param runnerService the {@link RunnerService}.
+     * @param builderService the {@link BuilderService}.
      * @param project the {@link CodenvyProject} to run.
-     * @throws NullPointerException if launch, runnerService or project parameter is {@code null}.
+     * @throws NullPointerException if launch, builderService or project parameter is {@code null}.
      */
-    public CodenvyRunnerProcess(ILaunch launch, RunnerService runnerService, CodenvyProject project) {
+    public CodenvyBuilderProcess(ILaunch launch, BuilderService builderService, CodenvyProject project) {
         this.launch = launch;
-        this.runnerService = runnerService;
+        this.builderService = builderService;
         this.project = project;
         this.attributes = new HashMap<>();
         this.terminated = new AtomicBoolean(false);
-        this.running = new AtomicBoolean(false);
+        this.building = new AtomicBoolean(false);
         this.executorService = Executors.newScheduledThreadPool(4);
-        this.codenvyRunnerLogsThread = new CodenvyRunnerLogsThread();
+        this.codenvyBuilderLogsThread = new CodenvyBuilderLogsThread();
         this.outputStream = new StringBufferStreamMonitor();
         this.errorStream = new StringBufferStreamMonitor();
         this.exitValue = 0;
@@ -95,11 +94,11 @@ public class CodenvyRunnerProcess implements IProcess {
 
         try {
 
-            final CodenvyRunnerStatus runnerStatus = this.runnerService.run(project);
-            this.processId = runnerStatus.processId;
+            final CodenvyBuilderStatus builderStatus = builderService.build(project);
+            this.taskId = builderStatus.taskId;
 
-            executorService.scheduleAtFixedRate(new CodenvyRunnerStatusThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
-            executorService.scheduleAtFixedRate(codenvyRunnerLogsThread, 0, TICK_DELAY, TICK_TIME_UNIT);
+            executorService.scheduleAtFixedRate(new CodenvyBuilderStatusThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
+            executorService.scheduleAtFixedRate(codenvyBuilderLogsThread, 0, TICK_DELAY, TICK_TIME_UNIT);
 
         } catch (APIException e) {
             terminateWithAnError(e);
@@ -128,7 +127,7 @@ public class CodenvyRunnerProcess implements IProcess {
     public void terminate() throws DebugException {
         try {
 
-            runnerService.stop(project, processId);
+            builderService.cancel(project, taskId);
 
             stopProcess();
 
@@ -146,7 +145,7 @@ public class CodenvyRunnerProcess implements IProcess {
 
     private void stopProcess() {
         terminated.set(true);
-        running.set(false);
+        building.set(false);
 
         executorService.shutdownNow();
         fireDebugEvent(DebugEvent.TERMINATE);
@@ -154,7 +153,7 @@ public class CodenvyRunnerProcess implements IProcess {
 
     @Override
     public String getLabel() {
-        return "Running project on Codenvy";
+        return "Building project on Codenvy";
     }
 
     @Override
@@ -206,31 +205,27 @@ public class CodenvyRunnerProcess implements IProcess {
         return exitValue;
     }
 
-    public Link getWebLink() {
-        return webLink;
-    }
-
     private void fireDebugEvent(int kind) {
         DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[]{new DebugEvent(this, kind)});
     }
 
     /**
-     * {@link Runnable} polling the runner status.
+     * {@link Runnable} polling the builder status.
      * 
      * @author Kevin Pollet
      */
-    class CodenvyRunnerStatusThread implements Runnable {
+    class CodenvyBuilderStatusThread implements Runnable {
         @Override
         public void run() {
             try {
 
-                final CodenvyRunnerStatus runnerStatus = runnerService.status(project, processId);
-                final boolean isTerminated = runnerStatus.status == STOPPED || runnerStatus.status == CANCELLED;
+                final CodenvyBuilderStatus builderStatus = builderService.status(project, taskId);
+                final boolean isTerminated = builderStatus.status == CANCELLED
+                                             || builderStatus.status == SUCCESSFUL
+                                             || builderStatus.status == FAILED;
 
-                if (runnerStatus.status == RUNNING) {
-                    webLink = runnerStatus.getWebLink();
-                    running.set(true);
-                }
+                terminated.set(isTerminated);
+                building.set(builderStatus.status == IN_PROGRESS);
 
                 if (isTerminated) {
                     stopProcess();
@@ -243,17 +238,17 @@ public class CodenvyRunnerProcess implements IProcess {
     }
 
     /**
-     * {@link Runnable} polling the runner logs.
+     * {@link Runnable} polling the builder logs.
      * 
      * @author Kevin Pollet
      */
-    class CodenvyRunnerLogsThread implements Runnable {
+    class CodenvyBuilderLogsThread implements Runnable {
         @Override
         public void run() {
-            if (running.get()) {
+            if (building.get()) {
                 try {
 
-                    final String fullLogs = runnerService.logs(project, processId).trim();
+                    final String fullLogs = builderService.logs(project, taskId).trim();
                     final String logsDiff = fullLogs.substring(outputStream.getContents().length());
 
                     if (!logsDiff.isEmpty()) {

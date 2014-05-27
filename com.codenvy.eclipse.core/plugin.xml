@@ -52,9 +52,16 @@
       <launchDelegate
             delegate="com.codenvy.eclipse.core.launcher.RunOnCodenvyDelegate"
             delegateDescription="Run on Codenvy"
-            id="com.codenvy.eclipse.core.launcher.runLaunchCodenvyProject"
+            id="com.codenvy.eclipse.core.launcher.runLaunchDelegate"
             modes="run"
             name="Run on Codenvy Launcher"
+            type="com.codenvy.eclipse.core.launcher.launchConfigurationType">
+      </launchDelegate>
+      <launchDelegate
+            delegate="com.codenvy.eclipse.core.launcher.BuildOnCodenvyDelegate"
+            id="com.codenvy.eclipse.core.launcher.buildLaunchDelegate"
+            modes="run"
+            name="Build on Codenvy Launcher"
             type="com.codenvy.eclipse.core.launcher.launchConfigurationType">
       </launchDelegate>
    </extension>

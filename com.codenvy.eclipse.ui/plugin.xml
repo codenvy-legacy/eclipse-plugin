@@ -269,6 +269,33 @@
                </or></enablement>
          </contextualLaunch>
       </shortcut>
+      <shortcut
+            class="com.codenvy.eclipse.ui.launcher.BuildOnCodenvyShortcut"
+            description="Builds an application on Codenvy"
+            icon="images/BuildOnCodenvy.png"
+            id="com.codenvy.eclipse.ui.launcher.buildOnCodenvy"
+            label="Build on Codenvy"
+            modes="run"
+            path="codenvy">
+         <contextualLaunch>
+            <enablement>
+               <or>
+                  <with
+                        variable="activeMenuSelection">
+                     <reference
+                           definitionId="com.codenvy.eclipse.ui.team.resourceContributions">
+                     </reference>
+                  </with>
+                  <with
+                        variable="activeMenuEditorInput">
+                     <reference
+                           definitionId="com.codenvy.eclipse.ui.team.resourceContributions">
+                     </reference>
+                  </with>
+               </or>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
    </extension>
    <extension
          point="org.eclipse.debug.ui.consoleLineTrackers">

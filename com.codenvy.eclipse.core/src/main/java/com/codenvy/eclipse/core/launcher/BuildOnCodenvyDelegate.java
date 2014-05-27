@@ -34,18 +34,19 @@ import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.services.BuilderService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
-import com.codenvy.eclipse.core.services.RunnerService;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 
 /**
- * The run on codenvy delegate.
+ * The build on codenvy delegate.
  * 
  * @author Kevin Pollet
  */
 // TODO push project modifications before run
 // TODO use secure storage to retrieve credentials
-public final class RunOnCodenvyDelegate implements ILaunchConfigurationDelegate {
+// TODO downloads the artifacts
+public final class BuildOnCodenvyDelegate implements ILaunchConfigurationDelegate {
     @Override
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
         // this delegate handle only the run mode
@@ -67,6 +68,7 @@ public final class RunOnCodenvyDelegate implements ILaunchConfigurationDelegate 
                                                                               .withWorkspaceId(metaProject.workspaceId)
                                                                               .build();
 
+
             final BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
             final ServiceReference<RestServiceFactory> serviceRef = bundleContext.getServiceReference(RestServiceFactory.class);
             if (serviceRef != null) {
@@ -74,10 +76,10 @@ public final class RunOnCodenvyDelegate implements ILaunchConfigurationDelegate 
 
                     final RestServiceFactory service = bundleContext.getService(serviceRef);
                     if (service != null) {
-                        final RunnerService runnerService =
-                                                            service.newRestServiceWithAuth(RunnerService.class, metaProject.url,
-                                                                                           metaProject.username);
-                        new CodenvyRunnerProcess(launch, runnerService, codenvyProject);
+                        final BuilderService builderService =
+                                                              service.newRestServiceWithAuth(BuilderService.class, metaProject.url,
+                                                                                             metaProject.username);
+                        new CodenvyBuilderProcess(launch, builderService, codenvyProject);
                         return;
                     }
 
