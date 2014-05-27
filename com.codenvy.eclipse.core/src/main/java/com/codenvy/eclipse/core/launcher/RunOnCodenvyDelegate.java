@@ -74,7 +74,7 @@ public final class RunOnCodenvyDelegate implements ILaunchConfigurationDelegate 
 
                     final RestServiceFactory service = bundleContext.getService(serviceRef);
                     if (service != null) {
-                        final RunnerService runnerService = service.newRestServiceWithAuth(RunnerService.class, metaProject.url, new CodenvyToken(metaProject.url));
+                        final RunnerService runnerService = service.newRestServiceWithAuth(RunnerService.class, metaProject.url, new CodenvyToken(metaProject.codenvyToken));
                         new CodenvyRunnerProcess(launch, runnerService, codenvyProject);
                         return;
                     }
