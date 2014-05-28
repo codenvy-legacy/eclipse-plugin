@@ -248,7 +248,7 @@
             description="Runs an application on Codenvy"
             icon="images/RunOnCodenvy.png"
             id="com.codenvy.eclipse.ui.launcher.runOnCodenvy"
-            label="Run on Codenvy"
+            label="Run project on Codenvy"
             modes="run"
             path="codenvy">
          <contextualLaunch>
@@ -274,7 +274,7 @@
             description="Builds an application on Codenvy"
             icon="images/BuildOnCodenvy.png"
             id="com.codenvy.eclipse.ui.launcher.buildOnCodenvy"
-            label="Build on Codenvy"
+            label="Build project on Codenvy"
             modes="run"
             path="codenvy">
          <contextualLaunch>
