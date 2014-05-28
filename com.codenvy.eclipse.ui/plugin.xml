@@ -304,5 +304,10 @@
             id="com.codenvy.eclipse.ui.launcher.runOnCodenvyConsoleLineTracker"
             processType="com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess">
       </consoleLineTracker>
+      <consoleLineTracker
+            class="com.codenvy.eclipse.ui.launcher.BuildOnCodenvyConsoleLineTracker"
+            id="com.codenvy.eclipse.ui.launcher.buildOnCodenvyConsoleLineTracker"
+            processType="com.codenvy.eclipse.core.launcher.CodenvyBuilderProcess">
+      </consoleLineTracker>
    </extension>
 </plugin>

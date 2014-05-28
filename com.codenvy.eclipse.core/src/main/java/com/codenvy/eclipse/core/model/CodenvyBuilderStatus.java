@@ -16,6 +16,8 @@
  */
 package com.codenvy.eclipse.core.model;
 
+import static com.codenvy.eclipse.core.model.Link.DOWNLOAD_LINK_REL_ATTRIBUTE_VALUE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,20 @@ public class CodenvyBuilderStatus {
         this.startTime = startTime;
         this.status = status;
         this.links = ImmutableList.copyOf(links == null ? new ArrayList<Link>() : links);
+    }
+
+    /**
+     * Gets the build result download {@link Link}.
+     * 
+     * @return the download {@link Link}.
+     */
+    public Link getDownloadLink() {
+        for (Link oneLink : links) {
+            if (DOWNLOAD_LINK_REL_ATTRIBUTE_VALUE.equals(oneLink.rel)) {
+                return oneLink;
+            }
+        }
+        return null;
     }
 
     @Override

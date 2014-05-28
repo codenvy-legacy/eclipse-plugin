@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Link {
     public static final String WEB_LINK_REL_ATTRIBUTE_VALUE = "web url";
+    public static final String DOWNLOAD_LINK_REL_ATTRIBUTE_VALUE = "download result";
 
     public final String        href;
     public final String        rel;

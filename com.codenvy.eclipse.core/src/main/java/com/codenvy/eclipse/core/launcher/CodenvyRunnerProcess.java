@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugEvent;
@@ -52,22 +51,21 @@ import com.codenvy.eclipse.core.services.RunnerService;
  * @author Kevin Pollet
  */
 public class CodenvyRunnerProcess implements IProcess {
-    private static final int                TICK_DELAY     = 500;
-    private static final TimeUnit           TICK_TIME_UNIT = MILLISECONDS;
+    private static final int                    TICK_DELAY     = 500;
+    private static final TimeUnit               TICK_TIME_UNIT = MILLISECONDS;
 
-    private final ILaunch                   launch;
-    private final RunnerService             runnerService;
-    private final CodenvyProject            project;
-    private final Map<String, String>       attributes;
-    private final AtomicBoolean             terminated;
-    private final AtomicBoolean             running;
-    private long                            processId;
-    private final ScheduledExecutorService  executorService;
-    private final CodenvyRunnerLogsThread   codenvyRunnerLogsThread;
-    private Link                            webLink;
-    private final StringBufferStreamMonitor outputStream;
-    private final StringBufferStreamMonitor errorStream;
-    private int                             exitValue;
+    private final ILaunch                       launch;
+    private final RunnerService                 runnerService;
+    private final CodenvyProject                project;
+    private final Map<String, String>           attributes;
+    private volatile CodenvyRunnerStatus.Status status;
+    private long                                processId;
+    private final ScheduledExecutorService      executorService;
+    private final CodenvyRunnerLogsThread       codenvyRunnerLogsThread;
+    private volatile Link                       webLink;
+    private final StringBufferStreamMonitor     outputStream;
+    private final StringBufferStreamMonitor     errorStream;
+    private int                                 exitValue;
 
     /**
      * Constructs an instance of {@link CodenvyRunnerProcess}.
@@ -82,8 +80,6 @@ public class CodenvyRunnerProcess implements IProcess {
         this.runnerService = runnerService;
         this.project = project;
         this.attributes = new HashMap<>();
-        this.terminated = new AtomicBoolean(false);
-        this.running = new AtomicBoolean(false);
         this.executorService = Executors.newScheduledThreadPool(4);
         this.codenvyRunnerLogsThread = new CodenvyRunnerLogsThread();
         this.outputStream = new StringBufferStreamMonitor();
@@ -97,6 +93,7 @@ public class CodenvyRunnerProcess implements IProcess {
 
             final CodenvyRunnerStatus runnerStatus = this.runnerService.run(project);
             this.processId = runnerStatus.processId;
+            this.status = runnerStatus.status;
 
             executorService.scheduleAtFixedRate(new CodenvyRunnerStatusThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
             executorService.scheduleAtFixedRate(codenvyRunnerLogsThread, 0, TICK_DELAY, TICK_TIME_UNIT);
@@ -121,7 +118,7 @@ public class CodenvyRunnerProcess implements IProcess {
 
     @Override
     public boolean isTerminated() {
-        return terminated.get();
+        return status == STOPPED || status == CANCELLED;
     }
 
     @Override
@@ -129,6 +126,7 @@ public class CodenvyRunnerProcess implements IProcess {
         try {
 
             runnerService.stop(project, processId);
+            status = STOPPED;
 
             stopProcess();
 
@@ -140,14 +138,12 @@ public class CodenvyRunnerProcess implements IProcess {
     private void terminateWithAnError(APIException exception) {
         errorStream.append("Error: " + exception.getMessage());
         exitValue = exception.getStatus();
+        status = CANCELLED;
 
         stopProcess();
     }
 
     private void stopProcess() {
-        terminated.set(true);
-        running.set(false);
-
         executorService.shutdownNow();
         fireDebugEvent(DebugEvent.TERMINATE);
     }
@@ -207,7 +203,9 @@ public class CodenvyRunnerProcess implements IProcess {
     }
 
     public Link getWebLink() {
-        return webLink;
+        synchronized (this) {
+            return webLink;
+        }
     }
 
     private void fireDebugEvent(int kind) {
@@ -225,14 +223,13 @@ public class CodenvyRunnerProcess implements IProcess {
             try {
 
                 final CodenvyRunnerStatus runnerStatus = runnerService.status(project, processId);
-                final boolean isTerminated = runnerStatus.status == STOPPED || runnerStatus.status == CANCELLED;
+                status = runnerStatus.status;
 
-                if (runnerStatus.status == RUNNING) {
+                synchronized (CodenvyRunnerProcess.this) {
                     webLink = runnerStatus.getWebLink();
-                    running.set(true);
                 }
 
-                if (isTerminated) {
+                if (isTerminated()) {
                     stopProcess();
                 }
 
@@ -250,7 +247,7 @@ public class CodenvyRunnerProcess implements IProcess {
     class CodenvyRunnerLogsThread implements Runnable {
         @Override
         public void run() {
-            if (running.get()) {
+            if (status == RUNNING) {
                 try {
 
                     final String fullLogs = runnerService.logs(project, processId).trim();

@@ -35,7 +35,7 @@ import org.eclipse.ui.PlatformUI;
 import com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess;
 
 /**
- * Track the run on codenvy cosole output.
+ * Track the run on codenvy console output.
  * 
  * @author Kevin Pollet
  */
