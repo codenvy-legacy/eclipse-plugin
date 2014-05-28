@@ -59,6 +59,7 @@
       </launchDelegate>
       <launchDelegate
             delegate="com.codenvy.eclipse.core.launcher.BuildOnCodenvyDelegate"
+            delegateDescription="Build on Codenvy"
             id="com.codenvy.eclipse.core.launcher.buildLaunchDelegate"
             modes="run"
             name="Build on Codenvy Launcher"
