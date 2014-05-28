@@ -51,7 +51,7 @@
          point="org.eclipse.debug.core.launchDelegates">
       <launchDelegate
             delegate="com.codenvy.eclipse.core.launcher.RunOnCodenvyDelegate"
-            delegateDescription="Run on Codenvy"
+            delegateDescription="Runs a project on Codenvy"
             id="com.codenvy.eclipse.core.launcher.runLaunchDelegate"
             modes="run"
             name="Run on Codenvy Launcher"
@@ -59,7 +59,7 @@
       </launchDelegate>
       <launchDelegate
             delegate="com.codenvy.eclipse.core.launcher.BuildOnCodenvyDelegate"
-            delegateDescription="Build on Codenvy"
+            delegateDescription="Builds a project on Codenvy"
             id="com.codenvy.eclipse.core.launcher.buildLaunchDelegate"
             modes="run"
             name="Build on Codenvy Launcher"
