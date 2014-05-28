@@ -17,6 +17,8 @@
 package com.codenvy.eclipse.ui.launcher;
 
 
+import static com.codenvy.eclipse.core.launcher.LaunchConstants.CODENVY_PROJECT_NAME_ATTRIBUTE_NAME;
+import static com.codenvy.eclipse.ui.Images.RUN_MAIN_TAB_ICON;
 import static org.eclipse.ui.model.WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider;
 
 import org.eclipse.core.resources.IProject;
@@ -25,9 +27,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -36,7 +40,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
-import com.codenvy.eclipse.core.launcher.LaunchConstants;
+import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 
 /**
  * The codenvy launch configuration main tab.
@@ -98,7 +102,7 @@ public class RunMainConfigurationTab extends AbstractLaunchConfigurationTab {
     public void initializeFrom(ILaunchConfiguration configuration) {
         try {
 
-            projectLocation.setText(configuration.getAttribute(LaunchConstants.CODENVY_PROJECT_NAME_ATTRIBUTE_NAME, ""));
+            projectLocation.setText(configuration.getAttribute(CODENVY_PROJECT_NAME_ATTRIBUTE_NAME, ""));
 
         } catch (CoreException e) {
             throw new RuntimeException(e);
@@ -107,11 +111,17 @@ public class RunMainConfigurationTab extends AbstractLaunchConfigurationTab {
 
     @Override
     public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-        configuration.setAttribute(LaunchConstants.CODENVY_PROJECT_NAME_ATTRIBUTE_NAME, projectLocation.getText());
+        configuration.setAttribute(CODENVY_PROJECT_NAME_ATTRIBUTE_NAME, projectLocation.getText());
     }
 
     @Override
     public String getName() {
         return TAB_NAME;
+    }
+    
+    @Override
+    public Image getImage() {
+        final ImageRegistry imageRegistry = CodenvyUIPlugin.getDefault().getImageRegistry();
+        return imageRegistry.get(RUN_MAIN_TAB_ICON);
     }
 }

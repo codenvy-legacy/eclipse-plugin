@@ -16,6 +16,7 @@
  */
 package com.codenvy.eclipse.ui;
 
+import static com.codenvy.eclipse.ui.Images.RUN_MAIN_TAB_ICON;
 import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -58,5 +59,6 @@ public class CodenvyUIPlugin extends AbstractUIPlugin {
     @Override
     protected void initializeImageRegistry(ImageRegistry registry) {
         registry.put(WIZARD_LOGO, ImageDescriptor.createFromFile(CodenvyUIPlugin.class, "/images/WizardLogo.png"));
+        registry.put(RUN_MAIN_TAB_ICON, ImageDescriptor.createFromFile(CodenvyUIPlugin.class, "/images/RunMainTab.gif"));
     }
 }
