@@ -47,7 +47,7 @@ import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
- * {@link ProjectService} test.
+ * {@link ProjectService} tests.
  * 
  * @author Kevin Pollet
  * @author Stéphane Daviet

@@ -34,7 +34,7 @@ import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.core.services.TokenProvider;
 
 /**
- * The {@link TokenProvider} tests.
+ * {@link TokenProvider} tests.
  * 
  * @author Stéphane Daviet
  */

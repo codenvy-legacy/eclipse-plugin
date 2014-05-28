@@ -28,7 +28,7 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
- * {@link RestServiceFactory} test.
+ * {@link RestServiceFactory} tests.
  * 
  * @author Kevin Pollet
  * @author Stéphane Daviet

@@ -36,7 +36,7 @@ import com.codenvy.eclipse.core.model.CodenvyToken;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 
 /**
- * The {@link SecureStorageService} test.
+ * {@link SecureStorageService} tests.
  * 
  * @author Kevin Pollet
  */

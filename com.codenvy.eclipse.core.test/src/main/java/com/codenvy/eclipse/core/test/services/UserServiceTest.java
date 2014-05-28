@@ -31,7 +31,7 @@ import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.core.services.UserService;
 
 /**
- * {@link UserService} test.
+ * {@link UserService} tests.
  * 
  * @author Kevin Pollet
  * @author Stéphane Daviet

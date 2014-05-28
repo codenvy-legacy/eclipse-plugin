@@ -24,7 +24,7 @@ import org.junit.BeforeClass;
 
 
 /**
- * The REST API base test.
+ * REST API base test.
  * 
  * @author Kevin Pollet
  */

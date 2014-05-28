@@ -31,7 +31,7 @@ import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 
 /**
- * {@link AccountService} test.
+ * {@link AccountService} tests.
  * 
  * @author Kevin Pollet
  */

@@ -35,7 +35,7 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 
 /**
- * {@link AuthenticationService} test.
+ * {@link AuthenticationService} tests.
  * 
  * @author Kevin Pollet
  */
