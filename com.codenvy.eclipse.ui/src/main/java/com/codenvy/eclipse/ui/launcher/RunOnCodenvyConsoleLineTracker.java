@@ -16,6 +16,9 @@
  */
 package com.codenvy.eclipse.ui.launcher;
 
+import static org.eclipse.ui.browser.IWorkbenchBrowserSupport.LOCATION_BAR;
+import static org.eclipse.ui.browser.IWorkbenchBrowserSupport.NAVIGATION_BAR;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -61,7 +64,9 @@ public class RunOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
                         try {
 
                             if (codenvyRunnerProcess.getWebLink() != null) {
-                                workbench.getBrowserSupport().createBrowser(null).openURL(new URL(codenvyRunnerProcess.getWebLink().href));
+                                workbench.getBrowserSupport()
+                                         .createBrowser(NAVIGATION_BAR | LOCATION_BAR, null, null, null)
+                                         .openURL(new URL(codenvyRunnerProcess.getWebLink().href));
                             }
 
                         } catch (PartInitException | MalformedURLException e) {
