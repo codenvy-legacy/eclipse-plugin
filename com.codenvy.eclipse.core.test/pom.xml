@@ -111,6 +111,7 @@
 						</goals>
 						<configuration>
 							<target>
+								<delete dir="${codenvy.ide.path}/temp"/>
 								<replace file="${codenvy.ide.path}/bin/setenv.sh" token="8080"
 									value="${port1}" />
 								<replace file="${codenvy.ide.path}/bin/codenvy.sh"
@@ -125,6 +126,9 @@
 									<arg value="${codenvy.ide.path}/bin/codenvy.sh" />
 									<arg value="start" />
 								</exec>
+								<waitfor maxwait="1" maxwaitunit="minute">
+        							<resourcecontains resource="${codenvy.ide.path}/logs/catalina.out" substring="Server startup in" />
+    							</waitfor>
 							</target>
 						</configuration>
 					</execution>
