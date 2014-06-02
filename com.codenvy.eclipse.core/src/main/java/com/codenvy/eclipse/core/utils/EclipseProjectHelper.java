@@ -41,7 +41,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.eclipse.core.CodenvyNature;
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
@@ -107,13 +107,13 @@ public final class EclipseProjectHelper {
     /**
      * Updates the given resource in the given codenvy project.
      * 
-     * @param codenvyProject the {@link CodenvyProject}.
+     * @param codenvyProject the {@link Project}.
      * @param resource the {@link IResource} to update in Codenvy.
      * @param projectService the {@link ProjectService} instance.
      * @param monitor the {@link IProgressMonitor} or {@code null} if none.
      * @throws NullPointerException if codenvyProject, resource or projectService is {@code null}.
      */
-    public static void updateCodenvyProjectResource(CodenvyProject codenvyProject,
+    public static void updateCodenvyProjectResource(Project codenvyProject,
                                                     IResource resource,
                                                     ProjectService projectService,
                                                     IProgressMonitor monitor) {
@@ -167,13 +167,13 @@ public final class EclipseProjectHelper {
     /**
      * Updates the given {@link IResource} from codenvy (no resource are deleted).
      * 
-     * @param codenvyProject the {@link CodenvyProject}.
+     * @param codenvyProject the {@link Project}.
      * @param resource the {@link IResource} to update in Codenvy.
      * @param projectService the {@link ProjectService} instance.
      * @param monitor the {@link IProgressMonitor} or {@code null} if none.
      * @throws NullPointerException if stream, file or monitor parameter is {@code null}.
      */
-    public static void updateIResource(CodenvyProject codenvyProject,
+    public static void updateIResource(Project codenvyProject,
                                        IResource resource,
                                        ProjectService projectService,
                                        IProgressMonitor monitor) {

@@ -26,8 +26,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
@@ -114,9 +114,9 @@ public class TokenProviderIT extends RestApiBaseIT {
 
     @Test
     public void testGetToken() {
-        final CodenvyToken tokenPostAuthentication = authenticationService.login(new CodenvyCredentials(DUMMY_USERNAME, DUMMY_PASSWORD));
+        final Token tokenPostAuthentication = authenticationService.login(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
 
-        CodenvyToken token = tokenProvider.getToken(REST_API_URL, DUMMY_USERNAME);
+        Token token = tokenProvider.getToken(REST_API_URL, DUMMY_USERNAME);
         assertNotNull(token);
         assertEquals(tokenPostAuthentication, token);
     }
@@ -125,7 +125,7 @@ public class TokenProviderIT extends RestApiBaseIT {
     public void testRenewToken() {
         secureStorageService.deleteToken(REST_API_URL, DUMMY_USERNAME);
 
-        CodenvyToken token = tokenProvider.renewToken(REST_API_URL, DUMMY_USERNAME);
+        Token token = tokenProvider.renewToken(REST_API_URL, DUMMY_USERNAME);
         assertNotNull(token);
     }
 }

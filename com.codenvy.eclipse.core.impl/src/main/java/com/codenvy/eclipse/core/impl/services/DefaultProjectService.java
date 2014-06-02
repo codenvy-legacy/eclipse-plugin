@@ -31,7 +31,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.services.ProjectService;
 
@@ -55,30 +55,30 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public List<CodenvyProject> getWorkspaceProjects(String workspaceId) {
+    public List<Project> getWorkspaceProjects(String workspaceId) {
         checkNotNull(workspaceId);
         checkArgument(!isNullOrEmpty(workspaceId));
 
         return getWebTarget().path(workspaceId)
                              .request()
                              .accept(APPLICATION_JSON)
-                             .get(new GenericType<List<CodenvyProject>>() {
+                             .get(new GenericType<List<Project>>() {
                              });
     }
 
     @Override
-    public CodenvyProject newProject(CodenvyProject project) {
+    public Project newProject(Project project) {
         checkNotNull(project);
 
         return getWebTarget().path(project.workspaceId)
                              .queryParam("name", project.name)
                              .request()
                              .accept(APPLICATION_JSON)
-                             .post(json(project), CodenvyProject.class);
+                             .post(json(project), Project.class);
     }
 
     @Override
-    public ZipInputStream exportResources(CodenvyProject project, String resourcePath) {
+    public ZipInputStream exportResources(Project project, String resourcePath) {
         checkNotNull(project);
 
         final InputStream stream = getWebTarget().path(project.workspaceId)
@@ -92,7 +92,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public void updateFile(CodenvyProject project, String filePath, InputStream fileInputStream) {
+    public void updateFile(Project project, String filePath, InputStream fileInputStream) {
         checkNotNull(project);
         checkNotNull(filePath);
         checkArgument(!isNullOrEmpty(filePath));
@@ -107,7 +107,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public InputStream getFile(CodenvyProject project, String filePath) {
+    public InputStream getFile(Project project, String filePath) {
         checkNotNull(project);
         checkNotNull(filePath);
         checkArgument(!isNullOrEmpty(filePath));
@@ -121,7 +121,7 @@ public class DefaultProjectService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public boolean isResourceInProject(CodenvyProject project, String resourcePath) {
+    public boolean isResourceInProject(Project project, String resourcePath) {
         checkNotNull(project);
         checkNotNull(resourcePath);
         checkArgument(!isNullOrEmpty(resourcePath));

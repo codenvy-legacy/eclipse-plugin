@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CodenvyProject {
+public class Project {
     public final String url;
     public final String visibility;
     public final String projectTypeId;
@@ -46,7 +46,7 @@ public class CodenvyProject {
     public final String ideUrl;
 
     /**
-     * Constructs an instance of {@linkplain CodenvyProject}.
+     * Constructs an instance of {@linkplain Project}.
      * 
      * @param url the project url.
      * @param visibility the project visibility (private or public).
@@ -61,7 +61,7 @@ public class CodenvyProject {
      * @param ideUrl the project ide url.
      */
     @JsonCreator
-    public CodenvyProject(
+    public Project(
                           @JsonProperty("url") String url,
                           @JsonProperty("visibility") String visibility,
                           @JsonProperty("projectTypeId") String projectTypeId,
@@ -149,8 +149,8 @@ public class CodenvyProject {
             return this;
         }
 
-        public CodenvyProject build() {
-            return new CodenvyProject(url, visibility, projectTypeId, workspaceId, projectTypeName, name, description, workspaceName,
+        public Project build() {
+            return new Project(url, visibility, projectTypeId, workspaceId, projectTypeName, name, description, workspaceName,
                                       null, new Date(), ideUrl);
         }
     }
@@ -174,7 +174,7 @@ public class CodenvyProject {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CodenvyProject other = (CodenvyProject)obj;
+        Project other = (Project)obj;
         if (creationDate == null) {
             if (other.creationDate != null)
                 return false;

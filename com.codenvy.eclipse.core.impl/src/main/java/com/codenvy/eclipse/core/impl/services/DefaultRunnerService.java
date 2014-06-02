@@ -24,8 +24,8 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import javax.ws.rs.core.Response;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
-import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyRunnerStatus;
+import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.RunnerStatus;
 import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.services.RunnerService;
 
@@ -48,7 +48,7 @@ public class DefaultRunnerService extends AbstractRestServiceWithAuth implements
     }
 
     @Override
-    public CodenvyRunnerStatus run(CodenvyProject project) throws APIException {
+    public RunnerStatus run(Project project) throws APIException {
         checkNotNull(project);
 
         final Response response = getWebTarget().path(project.workspaceId)
@@ -58,11 +58,11 @@ public class DefaultRunnerService extends AbstractRestServiceWithAuth implements
                                                 .accept(APPLICATION_JSON_TYPE)
                                                 .post(null);
 
-        return readBody(response, CodenvyRunnerStatus.class);
+        return readBody(response, RunnerStatus.class);
     }
 
     @Override
-    public CodenvyRunnerStatus stop(CodenvyProject project, long processId) throws APIException {
+    public RunnerStatus stop(Project project, long processId) throws APIException {
         checkNotNull(project);
 
         final Response response = getWebTarget().path(project.workspaceId)
@@ -72,11 +72,11 @@ public class DefaultRunnerService extends AbstractRestServiceWithAuth implements
                                                 .accept(APPLICATION_JSON_TYPE)
                                                 .post(null);
 
-        return readBody(response, CodenvyRunnerStatus.class);
+        return readBody(response, RunnerStatus.class);
     }
 
     @Override
-    public CodenvyRunnerStatus status(CodenvyProject project, long processId) throws APIException {
+    public RunnerStatus status(Project project, long processId) throws APIException {
         checkNotNull(project);
 
         final Response response = getWebTarget().path(project.workspaceId)
@@ -86,11 +86,11 @@ public class DefaultRunnerService extends AbstractRestServiceWithAuth implements
                                                 .accept(APPLICATION_JSON_TYPE)
                                                 .get();
 
-        return readBody(response, CodenvyRunnerStatus.class);
+        return readBody(response, RunnerStatus.class);
     }
 
     @Override
-    public String logs(CodenvyProject project, long processId) throws APIException {
+    public String logs(Project project, long processId) throws APIException {
         checkNotNull(project);
 
         final Response response = getWebTarget().path(project.workspaceId)

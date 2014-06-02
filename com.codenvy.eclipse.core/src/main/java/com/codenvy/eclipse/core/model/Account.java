@@ -16,38 +16,35 @@
  */
 package com.codenvy.eclipse.core.model;
 
-import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
+import static com.codenvy.eclipse.core.utils.StringHelper.isEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class represents the user credentials used for authentication.
+ * The account resource on Codenvy.
  * 
  * @author Kevin Pollet
  */
-public class CodenvyCredentials {
-    public final String username;
-    public final String password;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Account {
+    public final String id;
 
     /**
-     * Construct an instance of {@linkplain CodenvyCredentials}.
+     * Constructs an instance of {@link Account}.
      * 
-     * @param username the user username.
-     * @param password the user password.
-     * @throws NullPointerException if username or password parameter is {@code null}.
-     * @throws IllegalArgumentException if username or password are empty {@linkplain String}.
+     * @param id the account id.
+     * @throws NullPointerException if id parameter is {@code null}.
+     * @throws IllegalArgumentException if id parameter is an empty {@link String} or contains only whitespace.
      */
     @JsonCreator
-    public CodenvyCredentials(@JsonProperty("username") String username, @JsonProperty("password") String password) {
-        checkNotNull(username);
-        checkArgument(!isNullOrEmpty(username));
-        checkNotNull(password);
-        checkArgument(!isNullOrEmpty(password));
+    public Account(@JsonProperty("id") String id) {
+        checkNotNull(id);
+        checkArgument(!isEmpty(id));
 
-        this.username = username;
-        this.password = password;
+        this.id = id;
     }
 }

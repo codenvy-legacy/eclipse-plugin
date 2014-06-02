@@ -26,17 +26,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  * @author Kevin Pollet
  */
-public class CodenvyToken {
+public class Token {
     public final String value;
 
     /**
-     * Constructs an instance of {@linkplain CodenvyToken}.
+     * Constructs an instance of {@linkplain Token}.
      * 
      * @param value the authentication token.
      * @throws NullPointerException if the value parameter is {@code null}.
      */
     @JsonCreator
-    public CodenvyToken(@JsonProperty("value") String value) {
+    public Token(@JsonProperty("value") String value) {
         checkNotNull(value);
 
         this.value = value;
@@ -58,7 +58,7 @@ public class CodenvyToken {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CodenvyToken other = (CodenvyToken)obj;
+        Token other = (Token)obj;
         if (value == null) {
             if (other.value != null)
                 return false;

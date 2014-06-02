@@ -22,8 +22,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import javax.ws.rs.core.Response;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
-import com.codenvy.eclipse.core.model.CodenvyBuilderStatus;
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.BuilderStatus;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.services.BuilderService;
 
@@ -46,7 +46,7 @@ public class DefaultBuilderService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public CodenvyBuilderStatus build(CodenvyProject project) throws APIException {
+    public BuilderStatus build(Project project) throws APIException {
         checkNotNull(project);
 
         final Response response = getWebTarget().path(project.workspaceId)
@@ -55,11 +55,11 @@ public class DefaultBuilderService extends AbstractRestServiceWithAuth implement
                                                 .request()
                                                 .post(null);
 
-        return readBody(response, CodenvyBuilderStatus.class);
+        return readBody(response, BuilderStatus.class);
     }
 
     @Override
-    public CodenvyBuilderStatus status(CodenvyProject project, long taskId) throws APIException {
+    public BuilderStatus status(Project project, long taskId) throws APIException {
         checkNotNull(project);
 
         final Response response = getWebTarget().path(project.workspaceId)
@@ -68,11 +68,11 @@ public class DefaultBuilderService extends AbstractRestServiceWithAuth implement
                                                 .request()
                                                 .get();
 
-        return readBody(response, CodenvyBuilderStatus.class);
+        return readBody(response, BuilderStatus.class);
     }
 
     @Override
-    public String logs(CodenvyProject project, long taskId) throws APIException {
+    public String logs(Project project, long taskId) throws APIException {
         checkNotNull(project);
 
         final Response response = getWebTarget().path(project.workspaceId)
@@ -85,7 +85,7 @@ public class DefaultBuilderService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public CodenvyBuilderStatus cancel(CodenvyProject project, long taskId) throws APIException {
+    public BuilderStatus cancel(Project project, long taskId) throws APIException {
         checkNotNull(project);
 
         final Response response = getWebTarget().path(project.workspaceId)
@@ -94,6 +94,6 @@ public class DefaultBuilderService extends AbstractRestServiceWithAuth implement
                                                 .request()
                                                 .get();
 
-        return readBody(response, CodenvyBuilderStatus.class);
+        return readBody(response, BuilderStatus.class);
     }
 }

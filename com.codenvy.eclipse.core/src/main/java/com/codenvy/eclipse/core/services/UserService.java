@@ -16,7 +16,7 @@
  */
 package com.codenvy.eclipse.core.services;
 
-import com.codenvy.eclipse.core.model.CodenvyUser;
+import com.codenvy.eclipse.core.model.User;
 
 /**
  * Codenvy user service contract.
@@ -29,5 +29,5 @@ public interface UserService extends RestServiceWithAuth {
      * 
      * @return the current user.
      */
-    CodenvyUser getCurrentUser();
+    User getCurrentUser();
 }

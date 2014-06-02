@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.ProjectService;
 
 /**
@@ -34,27 +34,27 @@ public class ProjectServiceMock implements ProjectService {
     public static final String         MOCK_PROJECT_TYPE_NAME   = "maven";
     public static final String         MOCK_PROJECT_DESCRIPTION = "prj1-description";
 
-    private final List<CodenvyProject> projects;
+    private final List<Project> projects;
 
     public ProjectServiceMock(String url, String username) {
         this.projects = new ArrayList<>();
 
-        final CodenvyProject prj1 = new CodenvyProject.Builder().withName(MOCK_PROJECT_NAME)
+        final Project prj1 = new Project.Builder().withName(MOCK_PROJECT_NAME)
                                                                 .withProjectTypeName(MOCK_PROJECT_TYPE_NAME)
                                                                 .withDescription(MOCK_PROJECT_DESCRIPTION)
                                                                 .build();
 
-        final CodenvyProject prj2 = new CodenvyProject.Builder().withName("prj2")
+        final Project prj2 = new Project.Builder().withName("prj2")
                                                                 .withProjectTypeName("maven")
                                                                 .withDescription("prj2-description")
                                                                 .build();
 
-        final CodenvyProject prj3 = new CodenvyProject.Builder().withName("prj3")
+        final Project prj3 = new Project.Builder().withName("prj3")
                                                                 .withProjectTypeName("maven")
                                                                 .withDescription("prj3-description")
                                                                 .build();
 
-        final CodenvyProject prj4 = new CodenvyProject.Builder().withName("prj4")
+        final Project prj4 = new Project.Builder().withName("prj4")
                                                                 .withProjectTypeName("maven")
                                                                 .withDescription("prj4-description")
                                                                 .build();
@@ -66,7 +66,7 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public List<CodenvyProject> getWorkspaceProjects(String workspaceId) {
+    public List<Project> getWorkspaceProjects(String workspaceId) {
         if (WorkspaceServiceMock.MOCK_WORKSPACE_ID.equals(workspaceId)) {
             return projects;
         }
@@ -74,27 +74,27 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public CodenvyProject newProject(CodenvyProject project) {
+    public Project newProject(Project project) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ZipInputStream exportResources(CodenvyProject project, String resourcePath) {
+    public ZipInputStream exportResources(Project project, String resourcePath) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateFile(CodenvyProject project, String filePath, InputStream fileInputStream) {
+    public void updateFile(Project project, String filePath, InputStream fileInputStream) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isResourceInProject(CodenvyProject project, String resourcePath) {
+    public boolean isResourceInProject(Project project, String resourcePath) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public InputStream getFile(CodenvyProject project, String filePath) {
+    public InputStream getFile(Project project, String filePath) {
         throw new UnsupportedOperationException();
     }
 }

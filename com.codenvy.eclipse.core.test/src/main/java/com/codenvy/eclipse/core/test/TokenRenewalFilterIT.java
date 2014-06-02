@@ -29,8 +29,8 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.TokenRenewalFilter;
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
@@ -49,7 +49,7 @@ public class TokenRenewalFilterIT extends RestApiBaseIT {
     private static final String          DUMMY_URL      = "http://www.dummy.com";
     private static final String          DUMMY_USERNAME = "dummyUsername";
     private static final String          DUMMY_PASSWORD = "dummyPassword";
-    private static final CodenvyToken    SDK_TOKEN      = new CodenvyToken("123123");
+    private static final Token    SDK_TOKEN      = new Token("123123");
 
     @BeforeClass
     public static void initialize() {
@@ -98,13 +98,13 @@ public class TokenRenewalFilterIT extends RestApiBaseIT {
 
     @Test
     public void testFilter() throws IOException {
-        authenticationService.login(new CodenvyCredentials(DUMMY_USERNAME, DUMMY_PASSWORD));
+        authenticationService.login(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
 
         secureStorageService.deleteToken(REST_API_URL, DUMMY_USERNAME);
 
         new TokenRenewalFilter(REST_API_URL, DUMMY_USERNAME).filter(null);
 
-        CodenvyToken token = tokenProvider.getToken(REST_API_URL, DUMMY_USERNAME);
+        Token token = tokenProvider.getToken(REST_API_URL, DUMMY_USERNAME);
         assertNotNull(token);
         assertEquals(SDK_TOKEN, token);
     }

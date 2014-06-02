@@ -23,7 +23,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.eclipse.core.impl.services.DefaultProjectService;
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyMetaResource;
@@ -54,7 +54,7 @@ public class DefaultCodenvyMetaResource implements CodenvyMetaResource {
                 if (metaProject != null) {
                     final ProjectService projectService =
                                                           new DefaultProjectService(metaProject.url, metaProject.username);
-                    final CodenvyProject codenvyProject = new CodenvyProject.Builder().withName(metaProject.projectName)
+                    final Project codenvyProject = new Project.Builder().withName(metaProject.projectName)
                                                                                       .withWorkspaceId(metaProject.workspaceId)
                                                                                       .build();
 

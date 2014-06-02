@@ -24,7 +24,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
@@ -35,7 +35,7 @@ import com.codenvy.eclipse.core.services.TokenProvider;
  */
 public class DefaultTokenProvider implements TokenProvider {
     @Override
-    public CodenvyToken getToken(String url, String username) {
+    public Token getToken(String url, String username) {
         checkNotNull(url);
         checkArgument(!isNullOrEmpty(url));
         checkNotNull(username);
@@ -55,7 +55,7 @@ public class DefaultTokenProvider implements TokenProvider {
     }
 
     @Override
-    public CodenvyToken renewToken(String url, String username) {
+    public Token renewToken(String url, String username) {
         checkNotNull(url);
         checkArgument(!isNullOrEmpty(url));
         checkNotNull(username);

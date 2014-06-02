@@ -25,8 +25,8 @@ import java.util.List;
 
 import javax.ws.rs.core.GenericType;
 
-import com.codenvy.eclipse.core.model.CodenvyWorkspace;
-import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
+import com.codenvy.eclipse.core.model.Workspace;
+import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
@@ -50,11 +50,11 @@ public class DefaultWorkspaceService extends AbstractRestServiceWithAuth impleme
     }
 
     @Override
-    public List<CodenvyWorkspace> getAllWorkspaces() {
+    public List<Workspace> getAllWorkspaces() {
         return getWebTarget().path("all")
                              .request()
                              .accept(APPLICATION_JSON)
-                             .get(new GenericType<List<CodenvyWorkspace>>() {
+                             .get(new GenericType<List<Workspace>>() {
                              });
     }
 

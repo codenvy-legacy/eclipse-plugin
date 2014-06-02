@@ -17,9 +17,9 @@
 package com.codenvy.eclipse.core.launcher;
 
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
-import static com.codenvy.eclipse.core.model.CodenvyRunnerStatus.Status.CANCELLED;
-import static com.codenvy.eclipse.core.model.CodenvyRunnerStatus.Status.RUNNING;
-import static com.codenvy.eclipse.core.model.CodenvyRunnerStatus.Status.STOPPED;
+import static com.codenvy.eclipse.core.model.RunnerStatus.Status.CANCELLED;
+import static com.codenvy.eclipse.core.model.RunnerStatus.Status.RUNNING;
+import static com.codenvy.eclipse.core.model.RunnerStatus.Status.STOPPED;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
@@ -40,8 +40,8 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
-import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyRunnerStatus;
+import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.RunnerStatus;
 import com.codenvy.eclipse.core.model.Link;
 import com.codenvy.eclipse.core.services.RunnerService;
 
@@ -56,9 +56,9 @@ public class CodenvyRunnerProcess implements IProcess {
 
     private final ILaunch                       launch;
     private final RunnerService                 runnerService;
-    private final CodenvyProject                project;
+    private final Project                project;
     private final Map<String, String>           attributes;
-    private volatile CodenvyRunnerStatus.Status status;
+    private volatile RunnerStatus.Status status;
     private long                                processId;
     private final ScheduledExecutorService      executorService;
     private final CodenvyRunnerLogsThread       codenvyRunnerLogsThread;
@@ -72,10 +72,10 @@ public class CodenvyRunnerProcess implements IProcess {
      * 
      * @param launch the {@link ILaunch} object.
      * @param runnerService the {@link RunnerService}.
-     * @param project the {@link CodenvyProject} to run.
+     * @param project the {@link Project} to run.
      * @throws NullPointerException if launch, runnerService or project parameter is {@code null}.
      */
-    public CodenvyRunnerProcess(ILaunch launch, RunnerService runnerService, CodenvyProject project) {
+    public CodenvyRunnerProcess(ILaunch launch, RunnerService runnerService, Project project) {
         this.launch = launch;
         this.runnerService = runnerService;
         this.project = project;
@@ -91,7 +91,7 @@ public class CodenvyRunnerProcess implements IProcess {
 
         try {
 
-            final CodenvyRunnerStatus runnerStatus = this.runnerService.run(project);
+            final RunnerStatus runnerStatus = this.runnerService.run(project);
             this.processId = runnerStatus.processId;
             this.status = runnerStatus.status;
 
@@ -222,7 +222,7 @@ public class CodenvyRunnerProcess implements IProcess {
         public void run() {
             try {
 
-                final CodenvyRunnerStatus runnerStatus = runnerService.status(project, processId);
+                final RunnerStatus runnerStatus = runnerService.status(project, processId);
                 status = runnerStatus.status;
 
                 synchronized (CodenvyRunnerProcess.this) {

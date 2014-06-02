@@ -28,8 +28,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
@@ -42,7 +42,7 @@ import com.codenvy.eclipse.core.services.SecureStorageService;
 public class AuthenticationServiceIT extends RestApiBaseIT {
     private static final String          USERNAME  = "codenvy@codenvy.com";
     private static final String          PASSWORD  = "password";
-    private static final CodenvyToken    SDK_TOKEN = new CodenvyToken("123123");
+    private static final Token    SDK_TOKEN = new Token("123123");
 
     private static AuthenticationService authenticationService;
     private static SecureStorageService  secureStorageService;
@@ -78,7 +78,7 @@ public class AuthenticationServiceIT extends RestApiBaseIT {
 
     @Test
     public void testLoginDefault() {
-        final CodenvyToken token = authenticationService.login(new CodenvyCredentials(USERNAME, PASSWORD));
+        final Token token = authenticationService.login(new Credentials(USERNAME, PASSWORD));
 
         Assert.assertNotNull(token);
         Assert.assertEquals(SDK_TOKEN, token);
@@ -88,12 +88,12 @@ public class AuthenticationServiceIT extends RestApiBaseIT {
     public void testLoginStoreCredentials() {
         secureStorageService.deleteCredentials(REST_API_URL, USERNAME);
 
-        final CodenvyToken tokenPostAuthentication = authenticationService.login(new CodenvyCredentials(USERNAME, PASSWORD), true);
+        final Token tokenPostAuthentication = authenticationService.login(new Credentials(USERNAME, PASSWORD), true);
 
         Assert.assertNotNull(tokenPostAuthentication);
         Assert.assertEquals(SDK_TOKEN, tokenPostAuthentication);
 
-        CodenvyToken token = secureStorageService.getToken(REST_API_URL, USERNAME);
+        Token token = secureStorageService.getToken(REST_API_URL, USERNAME);
         assertNotNull(token);
         assertEquals(tokenPostAuthentication, token);
 
@@ -106,12 +106,12 @@ public class AuthenticationServiceIT extends RestApiBaseIT {
     public void testLoginDonNotStoreCredentials() {
         secureStorageService.deleteCredentials(REST_API_URL, USERNAME);
 
-        final CodenvyToken tokenPostAuthentication = authenticationService.login(new CodenvyCredentials(USERNAME, PASSWORD), false);
+        final Token tokenPostAuthentication = authenticationService.login(new Credentials(USERNAME, PASSWORD), false);
 
         Assert.assertNotNull(tokenPostAuthentication);
         Assert.assertEquals(SDK_TOKEN, tokenPostAuthentication);
 
-        CodenvyToken token = secureStorageService.getToken(REST_API_URL, USERNAME);
+        Token token = secureStorageService.getToken(REST_API_URL, USERNAME);
         assertNull(token);
 
         String password = secureStorageService.getPassword(REST_API_URL, USERNAME);

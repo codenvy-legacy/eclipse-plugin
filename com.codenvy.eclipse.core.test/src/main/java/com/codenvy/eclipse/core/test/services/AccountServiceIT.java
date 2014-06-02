@@ -26,7 +26,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyAccount;
+import com.codenvy.eclipse.core.model.Account;
 import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 
@@ -56,7 +56,7 @@ public class AccountServiceIT extends RestApiBaseIT {
     @Test
     @Ignore("The account API is not availbale in the sdk")
     public void testGetCurrentUserAccount() {
-        final List<CodenvyAccount> currentUserAccounts = accountService.getCurrentUserAccounts();
+        final List<Account> currentUserAccounts = accountService.getCurrentUserAccounts();
 
         Assert.assertNotNull(currentUserAccounts);
         Assert.assertFalse(currentUserAccounts.isEmpty());

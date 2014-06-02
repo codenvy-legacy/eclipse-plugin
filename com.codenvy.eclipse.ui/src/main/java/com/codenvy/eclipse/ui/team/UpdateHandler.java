@@ -32,7 +32,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -74,8 +74,8 @@ public class UpdateHandler extends AbstractResourceHandler {
                                 try {
 
                                     for (IResource oneResource : resources) {
-                                        final CodenvyProject codenvyProject =
-                                                                              new CodenvyProject.Builder().withName(metaProject.projectName)
+                                        final Project codenvyProject =
+                                                                              new Project.Builder().withName(metaProject.projectName)
                                                                                                           .withWorkspaceId(metaProject.workspaceId)
                                                                                                           .build();
 

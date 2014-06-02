@@ -17,8 +17,8 @@
 package com.codenvy.eclipse.core.services;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
-import com.codenvy.eclipse.core.model.CodenvyBuilderStatus;
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.BuilderStatus;
+import com.codenvy.eclipse.core.model.Project;
 
 /**
  * Codenvy builder service contract.
@@ -28,25 +28,25 @@ import com.codenvy.eclipse.core.model.CodenvyProject;
 // TODO is CodenvyProject parameter always needed?
 public interface BuilderService extends RestServiceWithAuth {
     /**
-     * Builds the given {@link CodenvyProject} on codenvy.
+     * Builds the given {@link Project} on codenvy.
      * 
      * @param project the project to build.
-     * @return the {@link CodenvyBuilderStatus}.
+     * @return the {@link BuilderStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    CodenvyBuilderStatus build(CodenvyProject project) throws APIException;
+    BuilderStatus build(Project project) throws APIException;
 
     /**
      * Gets the status of the builder with the given task id.
      * 
      * @param project the project.
      * @param taskId the builder task id.
-     * @return the {@link CodenvyBuilderStatus}.
+     * @return the {@link BuilderStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    CodenvyBuilderStatus status(CodenvyProject project, long taskId) throws APIException;
+    BuilderStatus status(Project project, long taskId) throws APIException;
 
     /**
      * Gets the logs of the builder with the given task id.
@@ -57,16 +57,16 @@ public interface BuilderService extends RestServiceWithAuth {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    String logs(CodenvyProject project, long taskId) throws APIException;
+    String logs(Project project, long taskId) throws APIException;
 
     /**
      * Cancels the builder with the given task id.
      * 
      * @param project the project.
      * @param taskId the builder task id.
-     * @return the {@link CodenvyBuilderStatus}.
+     * @return the {@link BuilderStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    CodenvyBuilderStatus cancel(CodenvyProject project, long taskId) throws APIException;
+    BuilderStatus cancel(Project project, long taskId) throws APIException;
 }

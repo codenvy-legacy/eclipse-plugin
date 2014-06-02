@@ -17,10 +17,10 @@
 package com.codenvy.eclipse.core.launcher;
 
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
-import static com.codenvy.eclipse.core.model.CodenvyBuilderStatus.Status.CANCELLED;
-import static com.codenvy.eclipse.core.model.CodenvyBuilderStatus.Status.FAILED;
-import static com.codenvy.eclipse.core.model.CodenvyBuilderStatus.Status.IN_PROGRESS;
-import static com.codenvy.eclipse.core.model.CodenvyBuilderStatus.Status.SUCCESSFUL;
+import static com.codenvy.eclipse.core.model.BuilderStatus.Status.CANCELLED;
+import static com.codenvy.eclipse.core.model.BuilderStatus.Status.FAILED;
+import static com.codenvy.eclipse.core.model.BuilderStatus.Status.IN_PROGRESS;
+import static com.codenvy.eclipse.core.model.BuilderStatus.Status.SUCCESSFUL;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
@@ -41,8 +41,8 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
-import com.codenvy.eclipse.core.model.CodenvyBuilderStatus;
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.BuilderStatus;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.model.Link;
 import com.codenvy.eclipse.core.services.BuilderService;
 
@@ -57,7 +57,7 @@ public class CodenvyBuilderProcess implements IProcess {
 
     private final ILaunch                        launch;
     private final BuilderService                 builderService;
-    private final CodenvyProject                 project;
+    private final Project                 project;
     private final Map<String, String>            attributes;
     private long                                 taskId;
     private final ScheduledExecutorService       executorService;
@@ -65,7 +65,7 @@ public class CodenvyBuilderProcess implements IProcess {
     private final StringBufferStreamMonitor      outputStream;
     private final StringBufferStreamMonitor      errorStream;
     private int                                  exitValue;
-    private volatile CodenvyBuilderStatus.Status status;
+    private volatile BuilderStatus.Status status;
     private volatile Link                        downloadLink;
 
     /**
@@ -73,10 +73,10 @@ public class CodenvyBuilderProcess implements IProcess {
      * 
      * @param launch the {@link ILaunch} object.
      * @param builderService the {@link BuilderService}.
-     * @param project the {@link CodenvyProject} to run.
+     * @param project the {@link Project} to run.
      * @throws NullPointerException if launch, builderService or project parameter is {@code null}.
      */
-    public CodenvyBuilderProcess(ILaunch launch, BuilderService builderService, CodenvyProject project) {
+    public CodenvyBuilderProcess(ILaunch launch, BuilderService builderService, Project project) {
         this.launch = launch;
         this.builderService = builderService;
         this.project = project;
@@ -92,7 +92,7 @@ public class CodenvyBuilderProcess implements IProcess {
 
         try {
 
-            final CodenvyBuilderStatus builderStatus = builderService.build(project);
+            final BuilderStatus builderStatus = builderService.build(project);
             this.taskId = builderStatus.taskId;
             this.status = builderStatus.status;
             this.downloadLink = builderStatus.getDownloadLink();
@@ -224,7 +224,7 @@ public class CodenvyBuilderProcess implements IProcess {
         public void run() {
             try {
 
-                final CodenvyBuilderStatus builderStatus = builderService.status(project, taskId);
+                final BuilderStatus builderStatus = builderService.status(project, taskId);
                 status = builderStatus.status;
 
                 synchronized (CodenvyBuilderProcess.this) {

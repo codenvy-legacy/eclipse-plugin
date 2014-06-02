@@ -20,7 +20,7 @@ import static java.util.Arrays.asList;
 
 import java.util.List;
 
-import com.codenvy.eclipse.core.model.CodenvyAccount;
+import com.codenvy.eclipse.core.model.Account;
 import com.codenvy.eclipse.core.services.AccountService;
 
 /**
@@ -35,7 +35,7 @@ public class AccountServiceMock implements AccountService {
     }
 
     @Override
-    public List<CodenvyAccount> getCurrentUserAccounts() {
-        return asList(new CodenvyAccount(MOCK_ACCOUNT_ID));
+    public List<Account> getCurrentUserAccounts() {
+        return asList(new Account(MOCK_ACCOUNT_ID));
     }
 }

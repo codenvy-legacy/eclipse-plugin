@@ -16,7 +16,7 @@
  */
 package com.codenvy.eclipse.core.model;
 
-import static com.codenvy.eclipse.core.model.Link.WEB_LINK_REL_ATTRIBUTE_VALUE;
+import static com.codenvy.eclipse.core.model.Link.DOWNLOAD_LINK_REL_ATTRIBUTE_VALUE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,41 +32,31 @@ import com.google.common.collect.ImmutableList;
  * @author Kevin Pollet
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CodenvyRunnerStatus {
-    public final long       stopTime;
-    public final String     debugHost;
-    public final long       debugPort;
-    public final long       processId;
+public class BuilderStatus {
+    public final long       taskId;
     public final long       startTime;
     public final Status     status;
     public final List<Link> links;
 
     @JsonCreator
-    public CodenvyRunnerStatus(@JsonProperty("stopTime") long stopTime,
-                               @JsonProperty("debugHost") String debugHost,
-                               @JsonProperty("debugPort") long debugPort,
-                               @JsonProperty("processId") long processId,
-                               @JsonProperty("startTime") long startTime,
-                               @JsonProperty("status") Status status,
-                               @JsonProperty("links") List<Link> links) {
-
-        this.stopTime = stopTime;
-        this.debugHost = debugHost;
-        this.debugPort = debugPort;
-        this.processId = processId;
+    public BuilderStatus(@JsonProperty("taskId") long taskId,
+                                @JsonProperty("startTime") long startTime,
+                                @JsonProperty("status") Status status,
+                                @JsonProperty("links") List<Link> links) {
+        this.taskId = taskId;
         this.startTime = startTime;
         this.status = status;
         this.links = ImmutableList.copyOf(links == null ? new ArrayList<Link>() : links);
     }
 
     /**
-     * Returns the web {@link Link}.
+     * Gets the build result download {@link Link}.
      * 
-     * @return the web {@link Link} or {@code null}.
+     * @return the download {@link Link}.
      */
-    public Link getWebLink() {
+    public Link getDownloadLink() {
         for (Link oneLink : links) {
-            if (WEB_LINK_REL_ATTRIBUTE_VALUE.equalsIgnoreCase(oneLink.rel)) {
+            if (DOWNLOAD_LINK_REL_ATTRIBUTE_VALUE.equals(oneLink.rel)) {
                 return oneLink;
             }
         }
@@ -75,14 +65,14 @@ public class CodenvyRunnerStatus {
 
     @Override
     public String toString() {
-        return "CodenvyRunnerStatus [stopTime=" + stopTime + ", debugHost=" + debugHost + ", debugPort=" + debugPort + ", processId="
-               + processId + ", startTime=" + startTime + ", status=" + status + ", links=" + links + "]";
+        return "CodenvyBuilderStatus [taskId=" + taskId + ", startTime=" + startTime + ", status=" + status + ", links=" + links + "]";
     }
 
     public enum Status {
-        NEW,
-        RUNNING,
-        CANCELLED,
-        STOPPED
+        IN_QUEUE,
+        IN_PROGRESS,
+        SUCCESSFUL,
+        FAILED,
+        CANCELLED
     }
 }

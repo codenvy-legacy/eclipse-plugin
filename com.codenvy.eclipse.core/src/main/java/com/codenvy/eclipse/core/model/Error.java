@@ -30,18 +30,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Kevin Pollet
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CodenvyError {
+public class Error {
     public final String message;
 
     /**
-     * Constructs an instance of {@link CodenvyError}.
+     * Constructs an instance of {@link Error}.
      * 
      * @param message the error message.
      * @throws NullPointerException if message is {@code null}.
      * @throws IllegalArgumentException if message is an empty {@link String} or contains only whitespace.
      */
     @JsonCreator
-    public CodenvyError(@JsonProperty("status") int status, @JsonProperty("message") String message) {
+    public Error(@JsonProperty("status") int status, @JsonProperty("message") String message) {
         checkNotNull(message);
         checkArgument(!isEmpty(message));
         

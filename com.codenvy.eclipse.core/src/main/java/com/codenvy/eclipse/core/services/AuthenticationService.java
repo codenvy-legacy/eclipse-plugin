@@ -16,8 +16,8 @@
  */
 package com.codenvy.eclipse.core.services;
 
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Token;
 
 /**
  * Codenvy authentication service contract.
@@ -29,19 +29,19 @@ public interface AuthenticationService extends RestService {
     /**
      * Authenticates the user on the Codenvy platform. Default behavior: will automatically store credentials in Eclipse secure storage.
      * 
-     * @param credentials the {@link CodenvyCredentials}.
-     * @return the authentication {@link CodenvyToken}.
+     * @param credentials the {@link Credentials}.
+     * @return the authentication {@link Token}.
      * @throws NullPointerException if credentials parameter is {@code null}.
      */
-    CodenvyToken login(CodenvyCredentials credentials);
+    Token login(Credentials credentials);
 
     /**
      * Authenticates the user on the Codenvy platform, given the choice to store credentials in Eclipse secure storage.
      * 
-     * @param credentials the {@link CodenvyCredentials}.
+     * @param credentials the {@link Credentials}.
      * @param storeCredentials if {@code true} store credentials in Eclipse secure storage.
-     * @return the authentication {@link CodenvyToken}.
+     * @return the authentication {@link Token}.
      * @throws NullPointerException if credentials parameter is {@code null}.
      */
-    CodenvyToken login(CodenvyCredentials credentials, boolean storeCredentials);
+    Token login(Credentials credentials, boolean storeCredentials);
 }

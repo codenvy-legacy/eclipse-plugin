@@ -45,7 +45,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -128,7 +128,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
                         try {
 
-                            final List<CodenvyProject> projectsToImport = importWizardSharedData.getProjects();
+                            final List<Project> projectsToImport = importWizardSharedData.getProjects();
                             monitor.beginTask("Importing projects", projectsToImport.size());
 
                             final String url = importWizardSharedData.getUrl().get();
@@ -139,7 +139,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                                                                   restServiceFactory.newRestServiceWithAuth(ProjectService.class, url,
                                                                                                             username);
 
-                            for (CodenvyProject oneProject : projectsToImport) {
+                            for (Project oneProject : projectsToImport) {
                                 final ZipInputStream zipInputStream = projectService.exportResources(oneProject, null);
                                 final IProject newProject =
                                                             EclipseProjectHelper.createIProjectFromZipStream(zipInputStream,

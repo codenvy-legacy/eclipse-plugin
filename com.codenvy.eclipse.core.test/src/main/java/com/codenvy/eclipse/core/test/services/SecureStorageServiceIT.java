@@ -31,8 +31,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 
 /**
@@ -43,8 +43,8 @@ import com.codenvy.eclipse.core.services.SecureStorageService;
 public class SecureStorageServiceIT {
     private static final String             DUMMY_URL                            = "http://www.dummy.com";
     private static final String             DUMMY_URL_ENCODED                    = encodeSlashes(DUMMY_URL);
-    private static final CodenvyCredentials DUMMY_CREDENTIALS                    = new CodenvyCredentials("dummyUsername", "dummyPassword");
-    private static final CodenvyToken       DUMMY_TOKEN                          = new CodenvyToken("dummyToken");
+    private static final Credentials DUMMY_CREDENTIALS                    = new Credentials("dummyUsername", "dummyPassword");
+    private static final Token       DUMMY_TOKEN                          = new Token("dummyToken");
     private static final String             CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
     private static final String             CODENVY_PASSWORD_KEY_NAME            = "password";
     private static final String             CODENVY_TOKEN_KEY_NAME               = "token";
@@ -163,7 +163,7 @@ public class SecureStorageServiceIT {
         dummyNode.put(CODENVY_PASSWORD_KEY_NAME, DUMMY_CREDENTIALS.password, true);
         dummyNode.put(CODENVY_TOKEN_KEY_NAME, DUMMY_TOKEN.value, true);
 
-        final CodenvyToken token = secureStorageService.getToken(DUMMY_URL, DUMMY_CREDENTIALS.username);
+        final Token token = secureStorageService.getToken(DUMMY_URL, DUMMY_CREDENTIALS.username);
 
         Assert.assertNotNull(token);
         Assert.assertEquals(DUMMY_TOKEN.value, token.value);
@@ -327,7 +327,7 @@ public class SecureStorageServiceIT {
         dummyNode.put(CODENVY_PASSWORD_KEY_NAME, DUMMY_CREDENTIALS.password, true);
         dummyNode.put(CODENVY_TOKEN_KEY_NAME, DUMMY_TOKEN.value, true);
 
-        CodenvyCredentials credentials = secureStorageService.getCredentials(DUMMY_URL, DUMMY_CREDENTIALS.username);
+        Credentials credentials = secureStorageService.getCredentials(DUMMY_URL, DUMMY_CREDENTIALS.username);
 
         Assert.assertEquals(DUMMY_CREDENTIALS.username, credentials.username);
         Assert.assertEquals(DUMMY_CREDENTIALS.password, credentials.password);

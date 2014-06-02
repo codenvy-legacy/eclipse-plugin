@@ -17,8 +17,8 @@
 package com.codenvy.eclipse.core.services;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
-import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyRunnerStatus;
+import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.RunnerStatus;
 
 /**
  * Codenvy runner service contract.
@@ -31,33 +31,33 @@ public interface RunnerService extends RestServiceWithAuth {
      * Runs the given project with a codenvy runner.
      * 
      * @param project the project to run.
-     * @return the {@link CodenvyRunnerStatus}.
+     * @return the {@link RunnerStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    CodenvyRunnerStatus run(CodenvyProject project) throws APIException;
+    RunnerStatus run(Project project) throws APIException;
 
     /**
      * Stops the project runner with the given process id.
      * 
      * @param project the project.
      * @param processId the runner process id.
-     * @return the {@link CodenvyRunnerStatus}.
+     * @return the {@link RunnerStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    CodenvyRunnerStatus stop(CodenvyProject project, long processId) throws APIException;
+    RunnerStatus stop(Project project, long processId) throws APIException;
 
     /**
      * Gets the project runner status with the given process id.
      * 
      * @param project the project.
      * @param processId the runner process id.
-     * @return the {@link CodenvyRunnerStatus}.
+     * @return the {@link RunnerStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    CodenvyRunnerStatus status(CodenvyProject project, long processId) throws APIException;
+    RunnerStatus status(Project project, long processId) throws APIException;
 
     /**
      * Gets the project runner logs with the given process id.
@@ -68,5 +68,5 @@ public interface RunnerService extends RestServiceWithAuth {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
-    String logs(CodenvyProject project, long processId) throws APIException;
+    String logs(Project project, long processId) throws APIException;
 }

@@ -23,9 +23,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.CodenvyUser;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Token;
+import com.codenvy.eclipse.core.model.User;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.core.services.UserService;
@@ -61,13 +61,13 @@ public class UserServiceIT extends RestApiBaseIT {
         final SecureStorageService secureStorageService = context.getService(secureStorageServiceRef);
         Assert.assertNotNull(secureStorageService);
 
-        secureStorageService.storeCredentials(REST_API_URL, new CodenvyCredentials(DUMMY_USERNAME, DUMMY_PASSWORD),
-                                              new CodenvyToken(SDK_TOKEN_VALUE));
+        secureStorageService.storeCredentials(REST_API_URL, new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+                                              new Token(SDK_TOKEN_VALUE));
     }
 
     @Test
     public void testGetCurrentUser() {
-        final CodenvyUser currentUser = userService.getCurrentUser();
+        final User currentUser = userService.getCurrentUser();
 
         Assert.assertNotNull(currentUser);
         Assert.assertNotNull(currentUser.id);

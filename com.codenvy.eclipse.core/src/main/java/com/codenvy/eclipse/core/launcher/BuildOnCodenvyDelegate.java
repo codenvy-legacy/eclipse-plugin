@@ -33,7 +33,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.BuilderService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -64,7 +64,7 @@ public final class BuildOnCodenvyDelegate implements ILaunchConfigurationDelegat
 
 
             final CodenvyMetaProject metaProject = CodenvyMetaProject.get(project);
-            final CodenvyProject codenvyProject = new CodenvyProject.Builder().withName(metaProject.projectName)
+            final Project codenvyProject = new Project.Builder().withName(metaProject.projectName)
                                                                               .withWorkspaceId(metaProject.workspaceId)
                                                                               .build();
 

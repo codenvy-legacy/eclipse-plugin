@@ -28,8 +28,8 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.AbstractRestService;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.SecureStorageService;
@@ -53,12 +53,12 @@ public class DefaultAuthenticationService extends AbstractRestService implements
     }
 
     @Override
-    public CodenvyToken login(CodenvyCredentials credentials) {
+    public Token login(Credentials credentials) {
         return login(credentials, true);
     }
 
     @Override
-    public CodenvyToken login(CodenvyCredentials credentials, boolean storeCredentials) {
+    public Token login(Credentials credentials, boolean storeCredentials) {
         checkNotNull(credentials);
 
         final Response response = getWebTarget().path("login")
@@ -69,7 +69,7 @@ public class DefaultAuthenticationService extends AbstractRestService implements
             throw new AuthenticationException("Authentication failed : Wrong username or password");
         }
 
-        CodenvyToken token = response.readEntity(CodenvyToken.class);
+        Token token = response.readEntity(Token.class);
 
         if (storeCredentials) {
             final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();

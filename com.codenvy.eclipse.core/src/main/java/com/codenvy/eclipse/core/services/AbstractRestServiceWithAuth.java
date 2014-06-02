@@ -27,7 +27,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.TokenRenewalFilter;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Token;
 
 /**
  * Abstract rest service with authentication implementation.
@@ -61,12 +61,12 @@ public class AbstractRestServiceWithAuth extends AbstractRestService {
     }
 
     /**
-     * Get the {@link CodenvyToken} from the secure storage through {@link SecureStorageService#getToken(String, String)} based on
+     * Get the {@link Token} from the secure storage through {@link SecureStorageService#getToken(String, String)} based on
      * {@link #getUrl()} and {@link #getUsername()} for parameters.
      * 
-     * @return the {@link CodenvyToken} or {@code null} is none is stored for URL and username.
+     * @return the {@link Token} or {@code null} is none is stored for URL and username.
      */
-    public CodenvyToken getCodenvyToken() {
+    public Token getCodenvyToken() {
         final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 
         final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
@@ -87,7 +87,7 @@ public class AbstractRestServiceWithAuth extends AbstractRestService {
 
     @Override
     public WebTarget getWebTarget() {
-        CodenvyToken token = getCodenvyToken();
+        Token token = getCodenvyToken();
         if (token == null) {
             throw new RuntimeException("Token not found in secure storage.");
         }

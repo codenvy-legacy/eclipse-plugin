@@ -21,8 +21,8 @@ import static com.codenvy.eclipse.ui.test.mocks.AccountServiceMock.MOCK_ACCOUNT_
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codenvy.eclipse.core.model.CodenvyWorkspace;
-import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
+import com.codenvy.eclipse.core.model.Workspace;
+import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
@@ -45,7 +45,7 @@ public class WorkspaceServiceMock implements WorkspaceService {
     }
 
     @Override
-    public List<CodenvyWorkspace> getAllWorkspaces() {
+    public List<Workspace> getAllWorkspaces() {
         throw new UnsupportedOperationException();
     }
 

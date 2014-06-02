@@ -18,7 +18,7 @@ package com.codenvy.eclipse.core.services;
 
 import java.util.List;
 
-import com.codenvy.eclipse.core.model.CodenvyAccount;
+import com.codenvy.eclipse.core.model.Account;
 
 /**
  * Codenvy account service contract.
@@ -31,5 +31,5 @@ public interface AccountService extends RestServiceWithAuth {
      * 
      * @return the accounts of the current user.
      */
-    List<CodenvyAccount> getCurrentUserAccounts();
+    List<Account> getCurrentUserAccounts();
 }

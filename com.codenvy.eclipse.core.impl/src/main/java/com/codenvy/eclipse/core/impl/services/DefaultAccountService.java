@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.ws.rs.core.GenericType;
 
-import com.codenvy.eclipse.core.model.CodenvyAccount;
+import com.codenvy.eclipse.core.model.Account;
 import com.codenvy.eclipse.core.services.AbstractRestServiceWithAuth;
 import com.codenvy.eclipse.core.services.AccountService;
 
@@ -45,10 +45,10 @@ public class DefaultAccountService extends AbstractRestServiceWithAuth implement
     }
 
     @Override
-    public List<CodenvyAccount> getCurrentUserAccounts() {
+    public List<Account> getCurrentUserAccounts() {
         return getWebTarget().request()
                              .accept(APPLICATION_JSON)
-                             .get(new GenericType<List<CodenvyAccount>>() {
+                             .get(new GenericType<List<Account>>() {
                              });
     }
 }

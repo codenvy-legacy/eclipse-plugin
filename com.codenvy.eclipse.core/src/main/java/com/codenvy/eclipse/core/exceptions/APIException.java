@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.ws.rs.core.Response;
 
-import com.codenvy.eclipse.core.model.CodenvyError;
+import com.codenvy.eclipse.core.model.Error;
 
 /**
  * Exception thrown when something is wrong with the REST API.
@@ -39,7 +39,7 @@ public class APIException extends RuntimeException {
     public static APIException from(Response response) {
         checkNotNull(response);
 
-        final CodenvyError codenvyError = response.readEntity(CodenvyError.class);
+        final Error codenvyError = response.readEntity(Error.class);
         return new APIException(response.getStatus(), codenvyError.message);
     }
 

@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
-import com.codenvy.eclipse.core.model.CodenvyProject;
+import com.codenvy.eclipse.core.model.Project;
 
 /**
  * Codenvy project service contract.
@@ -36,7 +36,7 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws NullPointerException if workspaceId parameter is {@code null}.
      * @throws IllegalArgumentException if workspaceId parameter is an empty {@linkplain String}.
      */
-    List<CodenvyProject> getWorkspaceProjects(String workspaceId);
+    List<Project> getWorkspaceProjects(String workspaceId);
 
     /**
      * Creates a project in the given workspace.
@@ -45,7 +45,7 @@ public interface ProjectService extends RestServiceWithAuth {
      * @return the new project, never {@code null}.
      * @throws NullPointerException if project parameter is {@code null}.
      */
-    CodenvyProject newProject(CodenvyProject project);
+    Project newProject(Project project);
 
     /**
      * Exports a resource in the given project.
@@ -55,7 +55,7 @@ public interface ProjectService extends RestServiceWithAuth {
      * @return the resource {@link ZipInputStream} or {@code null} if the resource is not found.
      * @throws NullPointerException if project parameter is {@code null}.
      */
-    ZipInputStream exportResources(CodenvyProject project, String resourcePath);
+    ZipInputStream exportResources(Project project, String resourcePath);
 
     /**
      * Updates a resource in the given project.
@@ -66,7 +66,7 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws NullPointerException if project, filePath or fileInputStream parameter is {@code null}.
      * @throws IllegalArgumentException if filePath parameter is an empty {@linkplain String}.
      */
-    void updateFile(CodenvyProject project, String filePath, InputStream fileInputStream);
+    void updateFile(Project project, String filePath, InputStream fileInputStream);
 
     /**
      * Gets file content in the given project.
@@ -75,7 +75,7 @@ public interface ProjectService extends RestServiceWithAuth {
      * @param filePath the file path.
      * @return the file {@link InputStream} or {@code null} if not found.
      */
-    InputStream getFile(CodenvyProject project, String filePath);
+    InputStream getFile(Project project, String filePath);
 
     /**
      * Returns if the given resource exists in the given codenvy project.
@@ -87,5 +87,5 @@ public interface ProjectService extends RestServiceWithAuth {
      * @throws IllegalArgumentException if resourcePath parameter is an empty {@code String}.
      */
     // TODO workaround to check if a resource exists
-    boolean isResourceInProject(CodenvyProject project, String resourcePath);
+    boolean isResourceInProject(Project project, String resourcePath);
 }

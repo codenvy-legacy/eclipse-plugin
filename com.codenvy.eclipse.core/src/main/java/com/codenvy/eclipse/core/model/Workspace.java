@@ -30,17 +30,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Kevin Pollet
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CodenvyWorkspace {
-    public final CodenvyWorkspace.WorkspaceRef workspaceRef;
+public class Workspace {
+    public final Workspace.WorkspaceRef workspaceRef;
 
     /**
-     * Constructs an instance of {@linkplain CodenvyWorkspace}.
+     * Constructs an instance of {@linkplain Workspace}.
      * 
      * @param workspaceRef the workspace reference.
      * @throws NullPointerException if workspaceRef parameter is {@code null}.
      */
     @JsonCreator
-    public CodenvyWorkspace(@JsonProperty("workspaceRef") CodenvyWorkspace.WorkspaceRef workspaceRef) {
+    public Workspace(@JsonProperty("workspaceRef") Workspace.WorkspaceRef workspaceRef) {
         checkNotNull(workspaceRef);
 
         this.workspaceRef = workspaceRef;
@@ -130,7 +130,7 @@ public class CodenvyWorkspace {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CodenvyWorkspace other = (CodenvyWorkspace)obj;
+        Workspace other = (Workspace)obj;
         if (workspaceRef == null) {
             if (other.workspaceRef != null)
                 return false;

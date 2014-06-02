@@ -37,10 +37,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyProject;
-import com.codenvy.eclipse.core.model.CodenvyToken;
-import com.codenvy.eclipse.core.model.CodenvyWorkspace.WorkspaceRef;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.Token;
+import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
@@ -60,7 +60,7 @@ public class ProjectServiceIT extends RestApiBaseIT {
     private static ProjectService   projectService;
     private static WorkspaceService workspaceService;
     private static WorkspaceRef     defaultWorkspace;
-    private static CodenvyProject   projectPrj1;
+    private static Project   projectPrj1;
 
     @BeforeClass
     public static void initialize() {
@@ -77,8 +77,8 @@ public class ProjectServiceIT extends RestApiBaseIT {
         final SecureStorageService secureStorageService = context.getService(secureStorageServiceRef);
         Assert.assertNotNull(secureStorageService);
 
-        secureStorageService.storeCredentials(REST_API_URL, new CodenvyCredentials(DUMMY_USERNAME, DUMMY_PASSWORD),
-                                              new CodenvyToken(SDK_TOKEN_VALUE));
+        secureStorageService.storeCredentials(REST_API_URL, new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+                                              new Token(SDK_TOKEN_VALUE));
 
         projectService = restServiceFactory.newRestServiceWithAuth(ProjectService.class, REST_API_URL, DUMMY_USERNAME);
         Assert.assertNotNull(projectService);
@@ -89,7 +89,7 @@ public class ProjectServiceIT extends RestApiBaseIT {
         defaultWorkspace = workspaceService.getWorkspaceByName("default");
         Assert.assertNotNull(defaultWorkspace);
 
-        projectPrj1 = new CodenvyProject.Builder().withProjectTypeId("maven")
+        projectPrj1 = new Project.Builder().withProjectTypeId("maven")
                                                   .withName("prj1")
                                                   .withDescription("description")
                                                   .withWorkspaceId(defaultWorkspace.id)
@@ -122,7 +122,7 @@ public class ProjectServiceIT extends RestApiBaseIT {
 
     @Test
     public void testGetWorkspaceProjects() {
-        final List<CodenvyProject> projects = projectService.getWorkspaceProjects(defaultWorkspace.id);
+        final List<Project> projects = projectService.getWorkspaceProjects(defaultWorkspace.id);
 
         Assert.assertNotNull(projects);
         Assert.assertFalse(projects.isEmpty());

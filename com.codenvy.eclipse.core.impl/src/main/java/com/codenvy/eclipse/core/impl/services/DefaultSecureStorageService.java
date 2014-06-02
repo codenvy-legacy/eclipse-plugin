@@ -30,8 +30,8 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 
 /**
@@ -47,7 +47,7 @@ public class DefaultSecureStorageService implements SecureStorageService {
     private static final String CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
 
     @Override
-    public void storeCredentials(String url, CodenvyCredentials credentials, CodenvyToken token) {
+    public void storeCredentials(String url, Credentials credentials, Token token) {
         checkNotNull(url);
         checkArgument(!isNullOrEmpty(url));
         checkNotNull(credentials);
@@ -82,7 +82,7 @@ public class DefaultSecureStorageService implements SecureStorageService {
     }
 
     @Override
-    public CodenvyToken getToken(String url, String username) {
+    public Token getToken(String url, String username) {
         checkNotNull(url);
         checkArgument(!isNullOrEmpty(url));
         checkNotNull(username);
@@ -96,7 +96,7 @@ public class DefaultSecureStorageService implements SecureStorageService {
             }
 
             final String nodeValue = node.get(CODENVY_TOKEN_KEY_NAME, null);
-            return nodeValue == null ? null : new CodenvyToken(nodeValue);
+            return nodeValue == null ? null : new Token(nodeValue);
 
         } catch (StorageException e) {
             throw new RuntimeException(e);
@@ -104,14 +104,14 @@ public class DefaultSecureStorageService implements SecureStorageService {
     }
 
     @Override
-    public CodenvyCredentials getCredentials(String url, String username) {
+    public Credentials getCredentials(String url, String username) {
         checkNotNull(url);
         checkArgument(!isNullOrEmpty(url));
         checkNotNull(username);
         checkArgument(!isNullOrEmpty(username));
 
         String password = getPassword(url, username);
-        return password == null ? null : new CodenvyCredentials(username, password);
+        return password == null ? null : new Credentials(username, password);
     }
 
     @Override

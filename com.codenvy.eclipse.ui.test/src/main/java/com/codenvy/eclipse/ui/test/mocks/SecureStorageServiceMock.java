@@ -19,8 +19,8 @@ package com.codenvy.eclipse.ui.test.mocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codenvy.eclipse.core.model.CodenvyCredentials;
-import com.codenvy.eclipse.core.model.CodenvyToken;
+import com.codenvy.eclipse.core.model.Credentials;
+import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 
 /**
@@ -30,7 +30,7 @@ import com.codenvy.eclipse.core.services.SecureStorageService;
  */
 public class SecureStorageServiceMock implements SecureStorageService {
     @Override
-    public void storeCredentials(String url, CodenvyCredentials credentials, CodenvyToken token) {
+    public void storeCredentials(String url, Credentials credentials, Token token) {
     }
 
     @Override
@@ -39,7 +39,7 @@ public class SecureStorageServiceMock implements SecureStorageService {
     }
 
     @Override
-    public CodenvyToken getToken(String url, String username) {
+    public Token getToken(String url, String username) {
         return null;
     }
 
@@ -66,7 +66,7 @@ public class SecureStorageServiceMock implements SecureStorageService {
     }
 
     @Override
-    public CodenvyCredentials getCredentials(String url, String username) {
+    public Credentials getCredentials(String url, String username) {
         return null;
     }
 }
