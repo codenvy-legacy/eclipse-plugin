@@ -70,19 +70,6 @@ public class DefaultWorkspaceService extends AbstractRestServiceWithAuth impleme
     }
 
     @Override
-    public List<WorkspaceRef> findWorkspacesByAccount(String accountId) {
-        checkNotNull(accountId);
-        checkArgument(!accountId.trim().isEmpty());
-
-        return getWebTarget().path("find/account")
-                             .queryParam("id", accountId)
-                             .request()
-                             .accept(APPLICATION_JSON)
-                             .get(new GenericType<List<WorkspaceRef>>() {
-                             });
-    }
-
-    @Override
     public WorkspaceRef newWorkspace(WorkspaceRef workspaceRef) {
         checkNotNull(workspaceRef);
 

@@ -25,6 +25,7 @@ import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
  * Codenvy workspace service contract.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public interface WorkspaceService extends RestServiceWithAuth {
     /**
@@ -43,16 +44,6 @@ public interface WorkspaceService extends RestServiceWithAuth {
      * @throws IllegalArgumentException if name parameter is an empty {@link String}.
      */
     WorkspaceRef getWorkspaceByName(String name);
-
-    /**
-     * Finds Codenvy workspaces of the given account.
-     * 
-     * @param accountId the account id.
-     * @return the Codenvy workspace list never {@code null}.
-     * @throws NullPointerException if accountId parameter is {@code null}.
-     * @throws IllegalArgumentException if accountId parameter is an empty {@link String}.
-     */
-    List<WorkspaceRef> findWorkspacesByAccount(String accountId);
 
     /**
      * Creates the given workspace.

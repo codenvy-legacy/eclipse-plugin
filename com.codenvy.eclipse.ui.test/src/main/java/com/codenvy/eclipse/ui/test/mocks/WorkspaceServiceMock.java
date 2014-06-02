@@ -16,8 +16,6 @@
  */
 package com.codenvy.eclipse.ui.test.mocks;
 
-import static com.codenvy.eclipse.ui.test.mocks.AccountServiceMock.MOCK_ACCOUNT_ID;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,37 +27,35 @@ import com.codenvy.eclipse.core.services.WorkspaceService;
  * {@link WorkspaceService} mock.
  * 
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class WorkspaceServiceMock implements WorkspaceService {
-    public static final String       MOCK_WORKSPACE_ID   = "ws1-id";
-    public static final String       MOCK_WORKSPACE_NAME = "ws1";
+    public static final String    MOCK_WORKSPACE_ID   = "ws1-id";
+    public static final String    MOCK_WORKSPACE_NAME = "ws1";
 
-    private final List<WorkspaceRef> workspaces;
+    private final List<Workspace> workspaces;
 
     public WorkspaceServiceMock(String url, String username) {
         this.workspaces = new ArrayList<>();
-        this.workspaces.add(new WorkspaceRef(MOCK_WORKSPACE_ID, MOCK_WORKSPACE_NAME, "codenvy-organization"));
-        this.workspaces.add(new WorkspaceRef("ws2-id", "ws2", "codenvy-organization"));
-        this.workspaces.add(new WorkspaceRef("ws3-id", "ws3", "codenvy-organization"));
-        this.workspaces.add(new WorkspaceRef("ws4-id", "ws4", "codenvy-organization"));
+        this.workspaces.add(new Workspace(new WorkspaceRef(MOCK_WORKSPACE_ID, MOCK_WORKSPACE_NAME, "codenvy-organization")));
+        this.workspaces.add(new Workspace(new WorkspaceRef("ws2-id", "ws2", "codenvy-organization")));
+        this.workspaces.add(new Workspace(new WorkspaceRef("ws3-id", "ws3", "codenvy-organization")));
+        this.workspaces.add(new Workspace(new WorkspaceRef("ws4-id", "ws4", "codenvy-organization")));
     }
 
     @Override
     public List<Workspace> getAllWorkspaces() {
-        throw new UnsupportedOperationException();
+        return workspaces;
     }
 
     @Override
     public WorkspaceRef getWorkspaceByName(String name) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<WorkspaceRef> findWorkspacesByAccount(String accountId) {
-        if (MOCK_ACCOUNT_ID.equals(accountId)) {
-            return workspaces;
+        for (Workspace workspace : workspaces) {
+            if (workspace.workspaceRef.name.equals(name)) {
+                return workspace.workspaceRef;
+            }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     @Override

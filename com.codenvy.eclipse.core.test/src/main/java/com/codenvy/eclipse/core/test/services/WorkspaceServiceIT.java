@@ -20,20 +20,18 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.Account;
 import com.codenvy.eclipse.core.model.Credentials;
 import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.model.Workspace;
 import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
-import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
+import com.codenvy.eclipse.core.services.UserService;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 
 /**
@@ -49,7 +47,7 @@ public class WorkspaceServiceIT extends RestApiBaseIT {
     private static final String     SDK_WORKSPACE_NAME = "default";
 
     private static WorkspaceService workspaceService;
-    private static AccountService   accountService;
+    private static UserService      userService;
 
     @BeforeClass
     public static void initialize() {
@@ -65,8 +63,8 @@ public class WorkspaceServiceIT extends RestApiBaseIT {
                                                                      DUMMY_USERNAME);
         Assert.assertNotNull(workspaceService);
 
-        accountService = restServiceFactory.newRestServiceWithAuth(AccountService.class, REST_API_URL, DUMMY_USERNAME);
-        Assert.assertNotNull(accountService);
+        userService = restServiceFactory.newRestServiceWithAuth(UserService.class, REST_API_URL, DUMMY_USERNAME);
+        Assert.assertNotNull(userService);
 
         final ServiceReference<SecureStorageService> secureStorageServiceRef = context.getServiceReference(SecureStorageService.class);
         Assert.assertNotNull(secureStorageServiceRef);
@@ -109,32 +107,7 @@ public class WorkspaceServiceIT extends RestApiBaseIT {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testFindWorkspacesByAccountWithNullAccountId() {
-        workspaceService.findWorkspacesByAccount(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testFindWorkspacesByAccountWithEmptyAccountId() {
-        workspaceService.findWorkspacesByAccount("");
-    }
-
-    @Test
-    @Ignore("The account API is not availbale in the sdk")
-    public void testFindWorkspacesByAccount() {
-        final List<Account> currentUserAccounts = accountService.getCurrentUserAccounts();
-        Assert.assertNotNull(currentUserAccounts);
-        Assert.assertFalse(currentUserAccounts.isEmpty());
-
-        final List<WorkspaceRef> workspaces = workspaceService.findWorkspacesByAccount(currentUserAccounts.get(0).id);
-
-        Assert.assertNotNull(workspaces);
-        Assert.assertTrue(workspaces.size() > 0);
-        Assert.assertNotNull(workspaces.get(0).id);
-        Assert.assertNotNull(workspaces.get(0).name);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testNewWorkspaceWithNullWorkspaceRef() {
+    public void testNewWorkspaceWithNullCodenvyWorkspaceRef() {
         workspaceService.newWorkspace(null);
     }
 }

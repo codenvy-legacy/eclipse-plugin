@@ -66,10 +66,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.codenvy.eclipse.core.model.Account;
 import com.codenvy.eclipse.core.model.Project;
+import com.codenvy.eclipse.core.model.Workspace;
 import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
-import com.codenvy.eclipse.core.services.AccountService;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.WorkspaceService;
@@ -296,28 +295,20 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
                                 final String url = importWizardSharedData.getUrl().get();
                                 final String username = importWizardSharedData.getUsername().get();
-                                final AccountService accountService =
-                                                                      restServiceFactory.newRestServiceWithAuth(AccountService.class, url,
-                                                                                                                username);
-                                final WorkspaceService workspaceService =
-                                                                          restServiceFactory.newRestServiceWithAuth(WorkspaceService.class,
+                                final WorkspaceService workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class,
                                                                                                                     url, username);
-                                final List<Account> currentUserAccounts = accountService.getCurrentUserAccounts();
-                                final List<WorkspaceRef> workspaces = new ArrayList<>();
-                                if (currentUserAccounts != null) {
-                                    for (Account oneAccount : currentUserAccounts) {
-                                        final List<WorkspaceRef> oneAccountWorkspaces =
-                                                                                        workspaceService.findWorkspacesByAccount(oneAccount.id);
-                                        workspaces.addAll(oneAccountWorkspaces);
-                                    }
+                                final List<Workspace> workspaces = workspaceService.getAllWorkspaces();
+                                final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
+                                for (Workspace workspace : workspaces) {
+                                    workspaceRefs.add(workspaceService.getWorkspaceByName(workspace.workspaceRef.name));
                                 }
 
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
                                     public void run() {
-                                        workspaceComboViewer.setInput(workspaces.toArray());
+                                        workspaceComboViewer.setInput(workspaceRefs.toArray());
                                         if (!workspaces.isEmpty()) {
-                                            workspaceComboViewer.setSelection(new StructuredSelection(workspaces.get(0)));
+                                            workspaceComboViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
                                         }
                                     }
                                 });
