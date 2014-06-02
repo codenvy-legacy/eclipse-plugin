@@ -16,7 +16,6 @@
  */
 package com.codenvy.eclipse.ui.wizard.importer.pages;
 
-import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Arrays.asList;
 import static org.eclipse.core.runtime.IProgressMonitor.UNKNOWN;
@@ -54,7 +53,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -62,6 +60,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -74,7 +73,6 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
-import com.google.common.base.Optional;
 
 /**
  * Project wizard page. In this wizard page the user selects the projects to import in Eclipse.
@@ -85,8 +83,7 @@ import com.google.common.base.Optional;
 public class ProjectWizardPage extends WizardPage implements IPageChangedListener {
     private ComboViewer                  workspaceComboViewer;
     private CheckboxTableViewer          projectTableViewer;
-    private ComboViewer                  workingSetComboViewer;
-    private Button                       addToWorkingSet;
+    private WorkingSetGroup              workingSetGroup;
     private final ImportWizardSharedData importWizardSharedData;
 
     /**
@@ -219,43 +216,11 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             }
         });
 
-        addToWorkingSet = new Button(wizardContainer, SWT.CHECK);
-        addToWorkingSet.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        addToWorkingSet.setText("Add project(s) to working set");
-        addToWorkingSet.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                final Combo workingSetCombo = workingSetComboViewer.getCombo();
-                if (addToWorkingSet.getSelection()) {
-                    workingSetCombo.setEnabled(true);
-                    workingSetCombo.setFocus();
-                } else {
-                    workingSetCombo.setEnabled(false);
-                }
-
-                setWorkingSet();
-            }
-        });
-
-        workingSetComboViewer = new ComboViewer(wizardContainer, SWT.NONE);
-        workingSetComboViewer.getCombo().setEnabled(false);
-        workingSetComboViewer.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        workingSetComboViewer.setContentProvider(new ArrayContentProvider());
-        workingSetComboViewer.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof IWorkingSet) {
-                    return ((IWorkingSet)element).getLabel();
-                }
-                return super.getText(element);
-            }
-        });
-        workingSetComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                setWorkingSet();
-            }
-        });
+        // TODO: replace hardcoded ids once bug 245106 is fixed
+        String[] workingSetTypes = new String[]{"org.eclipse.ui.resourceWorkingSetPage", //$NON-NLS-1$
+                "org.eclipse.jdt.ui.JavaWorkingSetPage" //$NON-NLS-1$
+        };
+        workingSetGroup = new WorkingSetGroup(wizardContainer, null, workingSetTypes);
 
         setControl(wizardContainer);
     }
@@ -264,7 +229,6 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
     public void pageChanged(PageChangedEvent event) {
         if (isCurrentPage()) {
             projectTableViewer.setInput(null);
-            workingSetComboViewer.setInput(null);
             workspaceComboViewer.setInput(null);
             setPageComplete(!importWizardSharedData.getProjects().isEmpty());
             loadWorkspaces();
@@ -375,8 +339,6 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                             workingSets.add(0, codenvyWorkspaceWorkingSet);
                                         }
 
-                                        workingSetComboViewer.setInput(workingSets.toArray());
-                                        workingSetComboViewer.setSelection(new StructuredSelection(codenvyWorkspaceWorkingSet));
                                         projectTableViewer.setInput(projects);
 
                                         // existing projects should be grayed
@@ -425,18 +387,12 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
     }
 
     /**
-     * Defines selected working set in shared data.
+     * Get selected working set.
      * 
-     * @see ImportWizardSharedData
+     * @return the selected working sets
      */
-    private void setWorkingSet() {
-        if (addToWorkingSet.getSelection()) {
-            final IStructuredSelection structuredSelection = (IStructuredSelection)workingSetComboViewer.getSelection();
-            final IWorkingSet selectedWorkingSet = (IWorkingSet)structuredSelection.getFirstElement();
-            importWizardSharedData.setWorkingSet(fromNullable(selectedWorkingSet));
-        } else {
-            importWizardSharedData.setWorkingSet(Optional.<IWorkingSet> absent());
-        }
+    public IWorkingSet[] getWorkingSets() {
+        return workingSetGroup.getSelectedWorkingSets();
     }
 
     /**

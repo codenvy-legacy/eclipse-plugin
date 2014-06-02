@@ -16,8 +16,6 @@
  */
 package com.codenvy.eclipse.ui.wizard.importer;
 
-import static com.google.common.collect.ObjectArrays.concat;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipInputStream;
@@ -114,6 +112,8 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
     @Override
     public boolean performFinish() {
+        final IWorkingSet[] workingSets = projectWizardPage.getWorkingSets();
+
         final Job importProjectsJob = new Job("Import projects from Codenvy") {
 
             @Override
@@ -133,7 +133,6 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
                             final String url = importWizardSharedData.getUrl().get();
                             final String username = importWizardSharedData.getUsername().get();
-                            final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
                             final List<IProject> importedProjects = new ArrayList<>();
                             final ProjectService projectService =
                                                                   restServiceFactory.newRestServiceWithAuth(ProjectService.class, url,
@@ -154,20 +153,10 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                                 monitor.worked(1);
                             }
 
-                            if (importWizardSharedData.getWorkingSet().isPresent()) {
-                                final IWorkingSet workingSet = importWizardSharedData.getWorkingSet().get();
-                                final boolean workingSetExists = workingSetManager.getWorkingSet(workingSet.getName()) != null;
-                                final IAdaptable[] workingSetElements =
-                                                                        concat(workingSet.getElements(),
-                                                                               workingSet.adaptElements(importedProjects.toArray(new IProject[importedProjects.size()])),
-                                                                               IAdaptable.class);
-
-                                workingSet.setElements(workingSetElements);
-                                if (!workingSetExists) {
-                                    workingSetManager.addWorkingSet(workingSet);
-                                }
+                            final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
+                            for (IAdaptable importedProject : importedProjects) {
+                                workingSetManager.addToWorkingSets(importedProject, workingSets);
                             }
-
                         } finally {
                             context.ungetService(restServiceFactoryRef);
                             monitor.done();

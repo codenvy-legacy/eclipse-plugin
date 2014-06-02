@@ -129,11 +129,7 @@ public class ImportProjectFromCodenvyWizardTest {
         bot.table(0).getTableItem(0).check();
         Assert.assertTrue(bot.button("Finish").isEnabled());
 
-        Assert.assertFalse(bot.comboBox(1).isEnabled());
-        Assert.assertEquals("codenvy-ws-" + MOCK_WORKSPACE_NAME, bot.comboBox(1).selection());
-
-        bot.checkBox(0).click();
-        Assert.assertTrue(bot.comboBox(1).isEnabled());
+        // TODO Stéphane Daviet - 2014/05/30: Test workspace combo
 
         bot.button("Finish").click();
     }
