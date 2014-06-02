@@ -42,8 +42,8 @@ import org.eclipse.debug.core.model.IStreamsProxy;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
 import com.codenvy.eclipse.core.model.BuilderStatus;
-import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.model.Link;
+import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.BuilderService;
 
 /**
@@ -52,21 +52,19 @@ import com.codenvy.eclipse.core.services.BuilderService;
  * @author Kevin Pollet
  */
 public class CodenvyBuilderProcess implements IProcess {
-    private static final int                     TICK_DELAY     = 500;
-    private static final TimeUnit                TICK_TIME_UNIT = MILLISECONDS;
+    private static final int                TICK_DELAY     = 500;
+    private static final TimeUnit           TICK_TIME_UNIT = MILLISECONDS;
 
-    private final ILaunch                        launch;
-    private final BuilderService                 builderService;
-    private final Project                 project;
-    private final Map<String, String>            attributes;
-    private long                                 taskId;
-    private final ScheduledExecutorService       executorService;
-    private final CodenvyBuilderLogsThread       codenvyBuilderLogsThread;
-    private final StringBufferStreamMonitor      outputStream;
-    private final StringBufferStreamMonitor      errorStream;
-    private int                                  exitValue;
-    private volatile BuilderStatus.Status status;
-    private volatile Link                        downloadLink;
+    private final ILaunch                   launch;
+    private final BuilderService            builderService;
+    private final Project                   project;
+    private final Map<String, String>       attributes;
+    private long                            taskId;
+    private final ScheduledExecutorService  executorService;
+    private final StringBufferStreamMonitor outputStream;
+    private final StringBufferStreamMonitor errorStream;
+    private int                             exitValue;
+    private volatile BuilderStatus.Status   status;
 
     /**
      * Constructs an instance of {@link CodenvyBuilderProcess}.
@@ -82,7 +80,6 @@ public class CodenvyBuilderProcess implements IProcess {
         this.project = project;
         this.attributes = new HashMap<>();
         this.executorService = Executors.newScheduledThreadPool(4);
-        this.codenvyBuilderLogsThread = new CodenvyBuilderLogsThread();
         this.outputStream = new StringBufferStreamMonitor();
         this.errorStream = new StringBufferStreamMonitor();
         this.exitValue = 0;
@@ -95,10 +92,8 @@ public class CodenvyBuilderProcess implements IProcess {
             final BuilderStatus builderStatus = builderService.build(project);
             this.taskId = builderStatus.taskId;
             this.status = builderStatus.status;
-            this.downloadLink = builderStatus.getDownloadLink();
 
-            executorService.scheduleAtFixedRate(new CodenvyBuilderStatusThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
-            executorService.scheduleAtFixedRate(codenvyBuilderLogsThread, 0, TICK_DELAY, TICK_TIME_UNIT);
+            executorService.scheduleAtFixedRate(new CodenvyBuilderThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
 
         } catch (APIException e) {
             terminateWithAnError(e);
@@ -146,12 +141,6 @@ public class CodenvyBuilderProcess implements IProcess {
     }
 
     private void stopProcess() {
-        if (status == SUCCESSFUL) {
-            synchronized (this) {
-                outputStream.append("\n\nLink to download build result: " + downloadLink.href + "\n");
-            }
-        }
-
         executorService.shutdownNow();
         fireDebugEvent(DebugEvent.TERMINATE);
     }
@@ -171,7 +160,6 @@ public class CodenvyBuilderProcess implements IProcess {
         return new IStreamsProxy() {
             @Override
             public void write(String input) throws IOException {
-                outputStream.append(input);
             }
 
             @Override
@@ -215,23 +203,30 @@ public class CodenvyBuilderProcess implements IProcess {
     }
 
     /**
-     * {@link Runnable} polling the builder status.
+     * {@link Runnable} polling the builder status and logs.
      * 
      * @author Kevin Pollet
      */
-    class CodenvyBuilderStatusThread implements Runnable {
+    class CodenvyBuilderThread implements Runnable {
         @Override
         public void run() {
             try {
 
                 final BuilderStatus builderStatus = builderService.status(project, taskId);
+                final Link downloadLink = builderStatus.getDownloadLink();
+                boolean isLogsAppended = false;
+
                 status = builderStatus.status;
 
-                synchronized (CodenvyBuilderProcess.this) {
-                    downloadLink = builderStatus.getDownloadLink();
+                if (status == IN_PROGRESS || status == SUCCESSFUL || status == FAILED) {
+                    isLogsAppended = appendLogsToOutputStream();
                 }
 
-                if (isTerminated()) {
+                if (isTerminated() && !isLogsAppended) {
+                    if (downloadLink != null) {
+                        outputStream.append("\n\nLink to download build result: " + downloadLink.href + "\n");
+                    }
+
                     stopProcess();
                 }
 
@@ -239,30 +234,15 @@ public class CodenvyBuilderProcess implements IProcess {
                 terminateWithAnError(e);
             }
         }
-    }
 
-    /**
-     * {@link Runnable} polling the builder logs.
-     * 
-     * @author Kevin Pollet
-     */
-    class CodenvyBuilderLogsThread implements Runnable {
-        @Override
-        public void run() {
-            if (status == IN_PROGRESS) {
-                try {
+        private boolean appendLogsToOutputStream() {
+            final String fullLogs = builderService.logs(project, taskId).trim();
+            final String logsDiff = fullLogs.substring(outputStream.getContents().length());
 
-                    final String fullLogs = builderService.logs(project, taskId).trim();
-                    final String logsDiff = fullLogs.substring(outputStream.getContents().length());
-
-                    if (!logsDiff.isEmpty()) {
-                        outputStream.append(logsDiff);
-                    }
-
-                } catch (APIException e) {
-                    terminateWithAnError(e);
-                }
+            if (!logsDiff.isEmpty()) {
+                outputStream.append(logsDiff);
             }
+            return logsDiff.isEmpty();
         }
     }
 }

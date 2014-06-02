@@ -40,9 +40,9 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
 import com.codenvy.eclipse.core.exceptions.APIException;
+import com.codenvy.eclipse.core.model.Link;
 import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.model.RunnerStatus;
-import com.codenvy.eclipse.core.model.Link;
 import com.codenvy.eclipse.core.services.RunnerService;
 
 /**
@@ -51,21 +51,20 @@ import com.codenvy.eclipse.core.services.RunnerService;
  * @author Kevin Pollet
  */
 public class CodenvyRunnerProcess implements IProcess {
-    private static final int                    TICK_DELAY     = 500;
-    private static final TimeUnit               TICK_TIME_UNIT = MILLISECONDS;
+    private static final int                TICK_DELAY     = 500;
+    private static final TimeUnit           TICK_TIME_UNIT = MILLISECONDS;
 
-    private final ILaunch                       launch;
-    private final RunnerService                 runnerService;
-    private final Project                project;
-    private final Map<String, String>           attributes;
-    private volatile RunnerStatus.Status status;
-    private long                                processId;
-    private final ScheduledExecutorService      executorService;
-    private final CodenvyRunnerLogsThread       codenvyRunnerLogsThread;
-    private volatile Link                       webLink;
-    private final StringBufferStreamMonitor     outputStream;
-    private final StringBufferStreamMonitor     errorStream;
-    private int                                 exitValue;
+    private final ILaunch                   launch;
+    private final RunnerService             runnerService;
+    private final Project                   project;
+    private final Map<String, String>       attributes;
+    private volatile RunnerStatus.Status    status;
+    private long                            processId;
+    private final ScheduledExecutorService  executorService;
+    private volatile Link                   webLink;
+    private final StringBufferStreamMonitor outputStream;
+    private final StringBufferStreamMonitor errorStream;
+    private int                             exitValue;
 
     /**
      * Constructs an instance of {@link CodenvyRunnerProcess}.
@@ -81,7 +80,6 @@ public class CodenvyRunnerProcess implements IProcess {
         this.project = project;
         this.attributes = new HashMap<>();
         this.executorService = Executors.newScheduledThreadPool(4);
-        this.codenvyRunnerLogsThread = new CodenvyRunnerLogsThread();
         this.outputStream = new StringBufferStreamMonitor();
         this.errorStream = new StringBufferStreamMonitor();
         this.exitValue = 0;
@@ -96,7 +94,7 @@ public class CodenvyRunnerProcess implements IProcess {
             this.status = runnerStatus.status;
 
             executorService.scheduleAtFixedRate(new CodenvyRunnerStatusThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
-            executorService.scheduleAtFixedRate(codenvyRunnerLogsThread, 0, TICK_DELAY, TICK_TIME_UNIT);
+            executorService.scheduleAtFixedRate(new CodenvyRunnerLogsThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
 
         } catch (APIException e) {
             terminateWithAnError(e);
@@ -163,7 +161,6 @@ public class CodenvyRunnerProcess implements IProcess {
         return new IStreamsProxy() {
             @Override
             public void write(String input) throws IOException {
-                outputStream.append(input);
             }
 
             @Override
