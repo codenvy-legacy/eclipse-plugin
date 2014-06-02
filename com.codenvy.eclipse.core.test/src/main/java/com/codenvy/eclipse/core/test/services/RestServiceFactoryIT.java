@@ -33,14 +33,14 @@ import com.codenvy.eclipse.core.services.WorkspaceService;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class RestServiceFactoryTest {
+public class RestServiceFactoryIT {
     private static final String       CODENVY_URL = "http://dummy.com";
 
     private static RestServiceFactory restServiceFactory;
 
     @BeforeClass
     public static void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(RestServiceFactoryTest.class).getBundleContext();
+        final BundleContext context = FrameworkUtil.getBundle(RestServiceFactoryIT.class).getBundleContext();
         final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
         Assert.assertNotNull(restServiceFactoryRef);
 

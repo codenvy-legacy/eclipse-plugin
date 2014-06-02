@@ -39,7 +39,7 @@ import com.codenvy.eclipse.core.services.SecureStorageService;
  * 
  * @author Kevin Pollet
  */
-public class AuthenticationServiceTest extends RestApiBaseTest {
+public class AuthenticationServiceIT extends RestApiBaseIT {
     private static final String          USERNAME  = "codenvy@codenvy.com";
     private static final String          PASSWORD  = "password";
     private static final CodenvyToken    SDK_TOKEN = new CodenvyToken("123123");
@@ -49,7 +49,7 @@ public class AuthenticationServiceTest extends RestApiBaseTest {
 
     @BeforeClass
     public static void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(AuthenticationServiceTest.class).getBundleContext();
+        final BundleContext context = FrameworkUtil.getBundle(AuthenticationServiceIT.class).getBundleContext();
         final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
         Assert.assertNotNull(restServiceFactoryRef);
 

@@ -35,14 +35,14 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
  * 
  * @author Kevin Pollet
  */
-public class AccountServiceTest extends RestApiBaseTest {
+public class AccountServiceIT extends RestApiBaseIT {
     private static final String   DUMMY_USERNAME = "dummyUsername";
 
     private static AccountService accountService;
 
     @BeforeClass
     public static void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(AccountServiceTest.class).getBundleContext();
+        final BundleContext context = FrameworkUtil.getBundle(AccountServiceIT.class).getBundleContext();
         final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
         Assert.assertNotNull(restServiceFactoryRef);
 

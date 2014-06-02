@@ -28,7 +28,7 @@ import org.junit.BeforeClass;
  * 
  * @author Kevin Pollet
  */
-public abstract class RestApiBaseTest {
+public abstract class RestApiBaseIT {
     private static final String REST_API_URL_PROPERTY_NAME = "rest.api.url";
     protected static String     REST_API_URL;
 
@@ -36,7 +36,7 @@ public abstract class RestApiBaseTest {
     public static void loadRestApiUrl() {
         final Properties codenvySdkProperties = new Properties();
         try {
-            codenvySdkProperties.load(RestApiBaseTest.class.getResourceAsStream("/codenvy-sdk.properties"));
+            codenvySdkProperties.load(RestApiBaseIT.class.getResourceAsStream("/codenvy-sdk.properties"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

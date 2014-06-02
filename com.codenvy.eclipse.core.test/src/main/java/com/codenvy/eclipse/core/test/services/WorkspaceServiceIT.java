@@ -42,7 +42,7 @@ import com.codenvy.eclipse.core.services.WorkspaceService;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class WorkspaceServiceTest extends RestApiBaseTest {
+public class WorkspaceServiceIT extends RestApiBaseIT {
     private static final String     DUMMY_USERNAME     = "dummyUsername";
     private static final String     DUMMY_PASSWORD     = "dummyPassword";
     private static final String     SDK_TOKEN_VALUE    = "123123";
@@ -53,7 +53,7 @@ public class WorkspaceServiceTest extends RestApiBaseTest {
 
     @BeforeClass
     public static void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(WorkspaceServiceTest.class).getBundleContext();
+        final BundleContext context = FrameworkUtil.getBundle(WorkspaceServiceIT.class).getBundleContext();
         final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
         Assert.assertNotNull(restServiceFactoryRef);
 

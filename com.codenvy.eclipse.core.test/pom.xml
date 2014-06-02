@@ -167,6 +167,10 @@
 					<threadCount>1</threadCount>
     				<perCoreThreadCount>false</perCoreThreadCount>
 					<parallel>classes</parallel>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*IT.java</include>
+					</includes>
 					<dependencies>
 						<dependency>
 							<artifactId>org.eclipse.equinox.ds</artifactId>

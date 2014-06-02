@@ -52,7 +52,7 @@ import com.codenvy.eclipse.core.services.WorkspaceService;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class ProjectServiceTest extends RestApiBaseTest {
+public class ProjectServiceIT extends RestApiBaseIT {
     private static final String     DUMMY_USERNAME  = "dummyUsername";
     private static final String     DUMMY_PASSWORD  = "dummyPassword";
     private static final String     SDK_TOKEN_VALUE = "123123";
@@ -64,7 +64,7 @@ public class ProjectServiceTest extends RestApiBaseTest {
 
     @BeforeClass
     public static void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(ProjectServiceTest.class).getBundleContext();
+        final BundleContext context = FrameworkUtil.getBundle(ProjectServiceIT.class).getBundleContext();
         final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
         Assert.assertNotNull(restServiceFactoryRef);
 
@@ -106,7 +106,7 @@ public class ProjectServiceTest extends RestApiBaseTest {
                  .path(projectPrj1.name)
                  .queryParam("name", "file.txt")
                  .request()
-                 .post(Entity.text(ProjectServiceTest.class.getResourceAsStream("/file.txt")));
+                 .post(Entity.text(ProjectServiceIT.class.getResourceAsStream("/file.txt")));
 
     }
 

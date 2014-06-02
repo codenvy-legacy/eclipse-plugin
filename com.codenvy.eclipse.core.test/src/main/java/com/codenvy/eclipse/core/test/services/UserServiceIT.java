@@ -36,7 +36,7 @@ import com.codenvy.eclipse.core.services.UserService;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class UserServiceTest extends RestApiBaseTest {
+public class UserServiceIT extends RestApiBaseIT {
     private static final String DUMMY_USERNAME  = "dummyUsername";
     private static final String DUMMY_PASSWORD  = "dummyPassword";
     private static final String SDK_TOKEN_VALUE = "123123";
@@ -45,7 +45,7 @@ public class UserServiceTest extends RestApiBaseTest {
 
     @BeforeClass
     public static void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(UserServiceTest.class).getBundleContext();
+        final BundleContext context = FrameworkUtil.getBundle(UserServiceIT.class).getBundleContext();
         final ServiceReference<RestServiceFactory> restServiceFactoryRef = context.getServiceReference(RestServiceFactory.class);
         Assert.assertNotNull(restServiceFactoryRef);
 

@@ -40,7 +40,7 @@ import com.codenvy.eclipse.core.services.SecureStorageService;
  * 
  * @author Kevin Pollet
  */
-public class SecureStorageServiceTest {
+public class SecureStorageServiceIT {
     private static final String             DUMMY_URL                            = "http://www.dummy.com";
     private static final String             DUMMY_URL_ENCODED                    = encodeSlashes(DUMMY_URL);
     private static final CodenvyCredentials DUMMY_CREDENTIALS                    = new CodenvyCredentials("dummyUsername", "dummyPassword");
@@ -54,7 +54,7 @@ public class SecureStorageServiceTest {
 
     @BeforeClass
     public static void initialize() {
-        final BundleContext context = FrameworkUtil.getBundle(WorkspaceServiceTest.class).getBundleContext();
+        final BundleContext context = FrameworkUtil.getBundle(WorkspaceServiceIT.class).getBundleContext();
         final ServiceReference<SecureStorageService> secureStorageServiceRef = context.getServiceReference(SecureStorageService.class);
         Assert.assertNotNull(secureStorageServiceRef);
 
