@@ -235,14 +235,20 @@ public class CodenvyBuilderProcess implements IProcess {
             }
         }
 
+        /**
+         * Appends builder logs to output stream.
+         * 
+         * @return {@code true} if logs have been appended, {@code false} otherwise.
+         */
         private boolean appendLogsToOutputStream() {
             final String fullLogs = builderService.logs(project, taskId).trim();
             final String logsDiff = fullLogs.substring(outputStream.getContents().length());
 
             if (!logsDiff.isEmpty()) {
                 outputStream.append(logsDiff);
+                return true;
             }
-            return logsDiff.isEmpty();
+            return false;
         }
     }
 }
