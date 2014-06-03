@@ -18,12 +18,13 @@ package com.codenvy.eclipse.core.launcher;
 
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
 import static com.codenvy.eclipse.core.model.RunnerStatus.Status.CANCELLED;
-import static com.codenvy.eclipse.core.model.RunnerStatus.Status.RUNNING;
 import static com.codenvy.eclipse.core.model.RunnerStatus.Status.STOPPED;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -61,10 +62,11 @@ public class CodenvyRunnerProcess implements IProcess {
     private volatile RunnerStatus.Status    status;
     private long                            processId;
     private final ScheduledExecutorService  executorService;
-    private volatile Link                   webLink;
+    private Link                            webLink;
     private final StringBufferStreamMonitor outputStream;
     private final StringBufferStreamMonitor errorStream;
     private int                             exitValue;
+    private final Object                    webLinkLock;
 
     /**
      * Constructs an instance of {@link CodenvyRunnerProcess}.
@@ -83,6 +85,7 @@ public class CodenvyRunnerProcess implements IProcess {
         this.outputStream = new StringBufferStreamMonitor();
         this.errorStream = new StringBufferStreamMonitor();
         this.exitValue = 0;
+        this.webLinkLock = new Object();
 
         this.attributes.put(ATTR_PROCESS_TYPE, getClass().getName());
         launch.addProcess(this);
@@ -92,9 +95,11 @@ public class CodenvyRunnerProcess implements IProcess {
             final RunnerStatus runnerStatus = this.runnerService.run(project);
             this.processId = runnerStatus.processId;
             this.status = runnerStatus.status;
+            synchronized (webLinkLock) {
+                this.webLink = runnerStatus.getWebLink();
+            }
 
             executorService.scheduleAtFixedRate(new CodenvyRunnerStatusThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
-            executorService.scheduleAtFixedRate(new CodenvyRunnerLogsThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
 
         } catch (APIException e) {
             terminateWithAnError(e);
@@ -200,7 +205,7 @@ public class CodenvyRunnerProcess implements IProcess {
     }
 
     public Link getWebLink() {
-        synchronized (this) {
+        synchronized (webLinkLock) {
             return webLink;
         }
     }
@@ -210,56 +215,59 @@ public class CodenvyRunnerProcess implements IProcess {
     }
 
     /**
-     * {@link Runnable} polling the runner status.
+     * {@link Runnable} polling the runner status and logs.
      * 
      * @author Kevin Pollet
      */
     class CodenvyRunnerStatusThread implements Runnable {
+        private static final String WAITING_FOR_RUNNER_MESSAGE = "Waiting for available runner";
+
         @Override
         public void run() {
             try {
 
                 final RunnerStatus runnerStatus = runnerService.status(project, processId);
                 status = runnerStatus.status;
-
-                synchronized (CodenvyRunnerProcess.this) {
+                synchronized (webLinkLock) {
                     webLink = runnerStatus.getWebLink();
                 }
 
-                if (isTerminated()) {
-                    stopProcess();
+                switch (status) {
+                    case NEW: {
+                        final String waitingString = outputStream.getContents().isEmpty() ? WAITING_FOR_RUNNER_MESSAGE : ".";
+                        outputStream.append(waitingString);
+                    }
+                        break;
+
+                    case RUNNING: {
+                        final String outputStreamContent = outputStream.getContents();
+
+                        if (outputStreamContent.matches("^" + WAITING_FOR_RUNNER_MESSAGE + "[.]*$")) {
+                            outputStream.append("\n");
+                        }
+
+                        final String logs = runnerService.logs(project, processId).trim();
+                        final BufferedReader logsReader = new BufferedReader(new StringReader(logs));
+
+                        String line;
+                        while ((line = logsReader.readLine()) != null) {
+                            if (!outputStreamContent.contains(line)) {
+                                outputStream.append(line + "\n");
+                            }
+                        }
+                    }
+                        break;
+
+                    default: {
+                        stopProcess();
+                    }
                 }
 
             } catch (APIException e) {
                 terminateWithAnError(e);
-            }
-        }
-    }
 
-    /**
-     * {@link Runnable} polling the runner logs.
-     * 
-     * @author Kevin Pollet
-     */
-    class CodenvyRunnerLogsThread implements Runnable {
-        @Override
-        public void run() {
-            if (status == RUNNING) {
-                try {
-
-                    final String fullLogs = runnerService.logs(project, processId).trim();
-                    final String logsDiff = fullLogs.substring(outputStream.getContents().length());
-
-                    if (!logsDiff.isEmpty()) {
-                        outputStream.append(logsDiff);
-
-                    } else if (!outputStream.isFlushed() && fullLogs.equals(outputStream.getContents())) {
-                        outputStream.flush();
-                    }
-
-                } catch (APIException e) {
-                    terminateWithAnError(e);
-                }
+            } catch (IOException e) {
+                // ignore we read a string
             }
         }
     }

@@ -18,7 +18,6 @@ package com.codenvy.eclipse.core.launcher;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
@@ -31,16 +30,10 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 class StringBufferStreamMonitor implements IStreamMonitor {
     private final StringBuffer         stream;
     private final Set<IStreamListener> listeners;
-    private AtomicBoolean              flushed;
 
     public StringBufferStreamMonitor() {
         this.stream = new StringBuffer();
         this.listeners = new HashSet<>();
-        this.flushed = new AtomicBoolean();
-    }
-
-    public boolean isFlushed() {
-        return flushed.get();
     }
 
     @Override
@@ -64,13 +57,7 @@ class StringBufferStreamMonitor implements IStreamMonitor {
 
     public void append(String text) {
         stream.append(text);
-        flushed.set(false);
         fireStreamAppend(text);
-    }
-
-    public void flush() {
-        flushed.set(true);
-        fireStreamAppend("\n");
     }
 
     private void fireStreamAppend(String text) {
