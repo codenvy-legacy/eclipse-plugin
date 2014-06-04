@@ -16,8 +16,6 @@
  */
 package com.codenvy.eclipse.ui.wizard.importer.pages;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Arrays.asList;
 import static org.eclipse.core.runtime.IProgressMonitor.UNKNOWN;
 import static org.eclipse.jface.viewers.CheckboxTableViewer.newCheckList;
 
@@ -28,7 +26,6 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
@@ -58,8 +55,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkingSet;
-import org.eclipse.ui.IWorkingSetManager;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -73,6 +68,8 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.WorkspaceService;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
+import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Project wizard page. In this wizard page the user selects the projects to import in Eclipse.
@@ -81,23 +78,15 @@ import com.codenvy.eclipse.ui.Images;
  * @author Stéphane Daviet
  */
 public class ProjectWizardPage extends WizardPage implements IPageChangedListener {
-    private ComboViewer                  workspaceComboViewer;
-    private CheckboxTableViewer          projectTableViewer;
-    private WorkingSetGroup              workingSetGroup;
-    private final ImportWizardSharedData importWizardSharedData;
+    private ComboViewer         workspaceComboViewer;
+    private CheckboxTableViewer projectTableViewer;
+    private WorkingSetGroup     workingSetGroup;
 
     /**
      * Constructs an instance of {@link ProjectWizardPage}.
-     * 
-     * @param importWizardSharedData data shared between wizard pages.
-     * @throws NullPointerException if importWizardSharedData is {@code null}.
      */
-    public ProjectWizardPage(ImportWizardSharedData importWizardSharedData) {
+    public ProjectWizardPage() {
         super(ProjectWizardPage.class.getSimpleName());
-
-        checkNotNull(importWizardSharedData);
-
-        this.importWizardSharedData = importWizardSharedData;
 
         setTitle("Codenvy Projects");
         setDescription("Select Codenvy projects to import");
@@ -230,7 +219,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
         if (isCurrentPage()) {
             projectTableViewer.setInput(null);
             workspaceComboViewer.setInput(null);
-            setPageComplete(!importWizardSharedData.getProjects().isEmpty());
+            setPageComplete(!getProjects().isEmpty());
             loadWorkspaces();
         }
     }
@@ -244,6 +233,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
                     final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
                     final ServiceReference<RestServiceFactory> restServiceFactoryRef =
                                                                                        context.getServiceReference(RestServiceFactory.class);
@@ -257,19 +247,21 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
                                 monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
 
-                                final String url = importWizardSharedData.getUrl().get();
-                                final String username = importWizardSharedData.getUsername().get();
-                                final WorkspaceService workspaceService = restServiceFactory.newRestServiceWithAuth(WorkspaceService.class,
-                                                                                                                    url, username);
-                                final List<Workspace> workspaces = workspaceService.getAllWorkspaces();
-                                final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
-                                for (Workspace workspace : workspaces) {
-                                    workspaceRefs.add(workspaceService.getWorkspaceByName(workspace.workspaceRef.name));
-                                }
-
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
                                     public void run() {
+                                        final String platformURL = wizard.getAuthenticationWizardPage().getURL();
+                                        final String username = wizard.getAuthenticationWizardPage().getUsername();
+                                        final WorkspaceService workspaceService =
+                                                                                  restServiceFactory.newRestServiceWithAuth(WorkspaceService.class,
+                                                                                                                            platformURL,
+                                                                                                                            username);
+                                        final List<Workspace> workspaces = workspaceService.getAllWorkspaces();
+                                        final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
+                                        for (Workspace workspace : workspaces) {
+                                            workspaceRefs.add(workspaceService.getWorkspaceByName(workspace.workspaceRef.name));
+                                        }
+
                                         workspaceComboViewer.setInput(workspaceRefs.toArray());
                                         if (!workspaces.isEmpty()) {
                                             workspaceComboViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
@@ -302,6 +294,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
                     final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
                     final ServiceReference<RestServiceFactory> restServiceFactoryRef =
                                                                                        context.getServiceReference(RestServiceFactory.class);
@@ -315,29 +308,16 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
                                 monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
 
-                                final String url = importWizardSharedData.getUrl().get();
-                                final String username = importWizardSharedData.getUsername().get();
-                                final ProjectService projectService =
-                                                                      restServiceFactory.newRestServiceWithAuth(ProjectService.class, url,
-                                                                                                                username);
-                                final List<Project> projects = projectService.getWorkspaceProjects(workspaceRef.id);
-
                                 Display.getDefault().syncExec(new Runnable() {
                                     @Override
                                     public void run() {
-
-                                        final String codenvyWorkspaceWorkingSetName = "codenvy-ws-" + workspaceRef.name;
-                                        final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
-                                        final List<IWorkingSet> workingSets = new ArrayList<>(asList(workingSetManager.getWorkingSets()));
-
-                                        IWorkingSet codenvyWorkspaceWorkingSet =
-                                                                                 workingSetManager.getWorkingSet(codenvyWorkspaceWorkingSetName);
-                                        if (codenvyWorkspaceWorkingSet == null) {
-                                            codenvyWorkspaceWorkingSet =
-                                                                         workingSetManager.createWorkingSet(codenvyWorkspaceWorkingSetName,
-                                                                                                            new IAdaptable[0]);
-                                            workingSets.add(0, codenvyWorkspaceWorkingSet);
-                                        }
+                                        final String platformURL = wizard.getAuthenticationWizardPage().getURL();
+                                        final String username = wizard.getAuthenticationWizardPage().getUsername();
+                                        final ProjectService projectService =
+                                                                              restServiceFactory.newRestServiceWithAuth(ProjectService.class,
+                                                                                                                        platformURL,
+                                                                                                                        username);
+                                        final List<Project> projects = projectService.getWorkspaceProjects(workspaceRef.id);
 
                                         projectTableViewer.setInput(projects);
 
@@ -377,22 +357,29 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                 projectTableViewer.setChecked(oneCheckedElement, false);
             }
         }
-
-        // updates the shared data
-        final List<Project> checkedProjects = new ArrayList<>();
-        for (Object oneProject : projectTableViewer.getCheckedElements()) {
-            checkedProjects.add((Project)oneProject);
-        }
-        importWizardSharedData.setProjects(checkedProjects);
     }
 
     /**
-     * Get selected working set.
+     * Returns the selected working sets.
      * 
      * @return the selected working sets
      */
-    public IWorkingSet[] getWorkingSets() {
-        return workingSetGroup.getSelectedWorkingSets();
+    public List<IWorkingSet> getWorkingSets() {
+        final List<IWorkingSet> selectedWorkingSets = ImmutableList.copyOf(workingSetGroup.getSelectedWorkingSets());
+        return selectedWorkingSets;
+    }
+
+    /**
+     * Returns the selected Codenvy projects.
+     * 
+     * @return the selected Codenvy projects never {@code null}.
+     */
+    public List<Project> getProjects() {
+        final List<Project> selectedProjects = new ArrayList<>();
+        for (Object oneProject : projectTableViewer.getCheckedElements()) {
+            selectedProjects.add((Project)oneProject);
+        }
+        return selectedProjects;
     }
 
     /**

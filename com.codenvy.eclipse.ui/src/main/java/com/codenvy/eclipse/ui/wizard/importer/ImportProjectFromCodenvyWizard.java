@@ -49,7 +49,6 @@ import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
 import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
-import com.codenvy.eclipse.ui.wizard.importer.pages.ImportWizardSharedData;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
 
 /**
@@ -61,15 +60,13 @@ import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
 public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWizard, INewWizard {
     private final AuthenticationWizardPage authenticationWizardPage;
     private final ProjectWizardPage        projectWizardPage;
-    private final ImportWizardSharedData   importWizardSharedData;
 
     /**
      * Default constructor.
      */
     public ImportProjectFromCodenvyWizard() {
-        this.importWizardSharedData = new ImportWizardSharedData();
-        this.authenticationWizardPage = new AuthenticationWizardPage(importWizardSharedData);
-        this.projectWizardPage = new ProjectWizardPage(importWizardSharedData);
+        this.authenticationWizardPage = new AuthenticationWizardPage();
+        this.projectWizardPage = new ProjectWizardPage();
 
         setNeedsProgressMonitor(true);
     }
@@ -112,7 +109,10 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
     @Override
     public boolean performFinish() {
-        final IWorkingSet[] workingSets = projectWizardPage.getWorkingSets();
+        final String platformURL = authenticationWizardPage.getURL();
+        final String username = authenticationWizardPage.getUsername();
+        final List<IWorkingSet> workingSets = projectWizardPage.getWorkingSets();
+        final List<Project> projects = projectWizardPage.getProjects();
 
         final Job importProjectsJob = new Job("Import projects from Codenvy") {
 
@@ -128,22 +128,20 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
                         try {
 
-                            final List<Project> projectsToImport = importWizardSharedData.getProjects();
-                            monitor.beginTask("Importing projects", projectsToImport.size());
+                            monitor.beginTask("Importing projects", projects.size());
 
-                            final String url = importWizardSharedData.getUrl().get();
-                            final String username = importWizardSharedData.getUsername().get();
                             final List<IProject> importedProjects = new ArrayList<>();
                             final ProjectService projectService =
-                                                                  restServiceFactory.newRestServiceWithAuth(ProjectService.class, url,
+                                                                  restServiceFactory.newRestServiceWithAuth(ProjectService.class,
+                                                                                                            platformURL,
                                                                                                             username);
 
-                            for (Project oneProject : projectsToImport) {
+                            for (Project oneProject : projects) {
                                 final ZipInputStream zipInputStream = projectService.exportResources(oneProject, null);
                                 final IProject newProject =
                                                             EclipseProjectHelper.createIProjectFromZipStream(zipInputStream,
                                                                                                              new CodenvyMetaProject(
-                                                                                                                                    url,
+                                                                                                                                    platformURL,
                                                                                                                                     username,
                                                                                                                                     oneProject.name,
                                                                                                                                     oneProject.workspaceId),
@@ -155,7 +153,8 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
                             final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
                             for (IAdaptable importedProject : importedProjects) {
-                                workingSetManager.addToWorkingSets(importedProject, workingSets);
+                                workingSetManager.addToWorkingSets(importedProject,
+                                                                   workingSets.toArray(new IWorkingSet[workingSets.size()]));
                             }
                         } finally {
                             context.ungetService(restServiceFactoryRef);
@@ -173,6 +172,10 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
         importProjectsJob.schedule();
 
         return true;
+    }
+
+    public AuthenticationWizardPage getAuthenticationWizardPage() {
+        return authenticationWizardPage;
     }
 
     public ProjectWizardPage getProjectWizardPage() {

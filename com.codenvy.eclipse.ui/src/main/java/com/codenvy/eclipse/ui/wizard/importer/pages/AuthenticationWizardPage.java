@@ -18,9 +18,7 @@ package com.codenvy.eclipse.ui.wizard.importer.pages;
 
 import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
 import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
-import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.ws.rs.ProcessingException;
@@ -50,7 +48,6 @@ import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.model.Credentials;
-import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
@@ -58,7 +55,6 @@ import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;
 import com.codenvy.eclipse.ui.widgets.ComboAutoCompleteField;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
-import com.google.common.base.Optional;
 import com.google.common.collect.ObjectArrays;
 
 /**
@@ -69,27 +65,19 @@ import com.google.common.collect.ObjectArrays;
  */
 public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
     @SuppressWarnings("unused")
-    private ComboAutoCompleteField       urlProposals;
-    private Combo                        urls;
+    private ComboAutoCompleteField urlProposals;
+    private Combo                  urls;
     @SuppressWarnings("unused")
-    private ComboAutoCompleteField       usernameProposals;
-    private Combo                        usernames;
-    private Text                         password;
-    private Button                       storeUserCredentials;
-    private final ImportWizardSharedData importWizardSharedData;
+    private ComboAutoCompleteField usernameProposals;
+    private Combo                  usernames;
+    private Text                   password;
+    private Button                 storeUserCredentials;
 
     /**
      * Constructs an instance of {@link AuthenticationWizardPage}.
-     * 
-     * @param importWizardSharedData data shared between wizard pages.
-     * @throws NullPointerException if importWizardSharedData is {@code null}.
      */
-    public AuthenticationWizardPage(ImportWizardSharedData importWizardSharedData) {
+    public AuthenticationWizardPage() {
         super(AuthenticationWizardPage.class.getSimpleName());
-
-        checkNotNull(importWizardSharedData);
-
-        this.importWizardSharedData = importWizardSharedData;
 
         setTitle("Codenvy Authentication");
         setDescription("Authenticate with your Codenvy account");
@@ -176,9 +164,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                                                                                                               urls.getText());
                         authenticationService.login(new Credentials(usernames.getText(), password.getText()),
                                                     storeUserCredentials.getSelection());
-                        importWizardSharedData.setUsername(Optional.fromNullable(usernames.getText()));
-                        importWizardSharedData.setUrl(Optional.fromNullable(urls.getText()));
-                        importWizardSharedData.setProjects(new ArrayList<Project>());
 
                         // We add the new location to preferences
                         IPreferenceStore codenvyPreferenceStore = CodenvyUIPlugin.getDefault()
@@ -209,6 +194,24 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                 }
             }
         }
+    }
+
+    /**
+     * Returns the Codenvy platform url entered.
+     * 
+     * @return the Codenvy platform url never {@code null}.
+     */
+    public String getURL() {
+        return urls.getText();
+    }
+
+    /**
+     * Returns the username entered.
+     * 
+     * @return the username never {@code null}.
+     */
+    public String getUsername() {
+        return usernames.getText();
     }
 
     private void autoFillUsernames() {
