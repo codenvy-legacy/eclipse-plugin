@@ -16,23 +16,28 @@
  */
 package com.codenvy.eclipse.ui.test;
 
+import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.allOf;
+import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.widgetOfType;
+import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withMnemonic;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
+
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
+import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
+import org.eclipse.swtbot.swt.finder.waits.Conditions;
 import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotCheckBox;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.actions.ActionFactory;
-import org.junit.BeforeClass;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
+import org.junit.After;
 
 /**
  * SWTBot base test class.
@@ -40,36 +45,55 @@ import org.junit.BeforeClass;
  * @author Kevin Pollet
  */
 public class SWTBotBaseTest {
-    public static final String          RESOURCE_PERSPECTIVE_ID = "org.eclipse.ui.resourcePerspective";
-    public static final SWTWorkbenchBot bot                  = new SWTWorkbenchBot();
+    public static final SWTWorkbenchBot bot = new SWTWorkbenchBot();
 
-    @BeforeClass
-    public static void beforeClass() {
-        // turn off automatic building by default
-        final SWTBotShell shell = openEclipsePreferences();
-        shell.bot()
-             .tree()
-             .expandNode("General")
-             .select("Workspace");
+    public SWTBotBaseTest() {
+        final IEclipsePreferences resourcesPreferences = InstanceScope.INSTANCE.getNode(ResourcesPlugin.PI_RESOURCES);
+        resourcesPreferences.putBoolean(ResourcesPlugin.PREF_AUTO_BUILDING, false);
+        resourcesPreferences.putBoolean(ResourcesPlugin.PREF_AUTO_REFRESH, false);
+    }
 
-        final SWTBotCheckBox buildAuto = bot.checkBox("Build automatically");
-        if (buildAuto.isChecked()) {
-            buildAuto.click();
+    @SuppressWarnings("unchecked")
+    @After
+    public void clearWorkspace() throws Exception {
+        openNavigatorView();
+
+        final SWTBotView navigatorView = bot.viewByTitle("Navigator");
+        navigatorView.setFocus();
+
+        final SWTBotTree tree = navigatorView.bot().tree();
+
+        ArrayList<String> projectsToDelete = new ArrayList<>();
+        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+            if ("RemoteSystemsTempFiles".equals(project.getName())) {
+                continue;
+            }
+            projectsToDelete.add(project.getName());
         }
+        if (!projectsToDelete.isEmpty()) {
+            tree.select(projectsToDelete.toArray(new String[projectsToDelete.size()]));
 
-        shell.bot()
-             .button("Apply")
-             .click();
+            bot.menu("Edit").menu("Delete").click();
 
-        shell.bot()
-             .button("OK")
-             .click();
+            // the project deletion confirmation dialog
+            SWTBotShell shell = bot.shell("Delete Resources");
+            shell.activate();
+            bot.checkBox("Delete project contents on disk (cannot be undone)").select();
+            bot.button("OK").click();
+            try {
+                bot.waitUntilWidgetAppears(Conditions.waitForWidget(allOf(widgetOfType(Button.class), withMnemonic("Continue"))));
+                bot.button("Continue").click();
+            } catch (WidgetNotFoundException e) {
+                // Nothing to do, no confirmation page, just go on.
+            }
+            bot.waitUntil(Conditions.shellCloses(shell));
+        }
     }
 
     public SWTBotShell openAuthenticationWizardPage() {
         bot.menu("File")
-              .menu("Import...")
-              .click();
+           .menu("Import...")
+           .click();
 
         final SWTBotShell shell = bot.shell("Import");
 
@@ -87,9 +111,9 @@ public class SWTBotBaseTest {
 
     public void openNavigatorView() {
         bot.menu("Window")
-              .menu("Show View")
-              .menu("Other...")
-              .click();
+           .menu("Show View")
+           .menu("Other...")
+           .click();
 
         bot.waitUntilWidgetAppears(shellIsActive("Show View"));
 
@@ -108,8 +132,8 @@ public class SWTBotBaseTest {
 
     public SWTBotShell openProjectWizardPage() {
         bot.menu("File")
-              .menu("Import...")
-              .click();
+           .menu("Import...")
+           .click();
 
         final SWTBotShell shell = bot.shell("Import");
 
@@ -164,34 +188,11 @@ public class SWTBotBaseTest {
         }
 
         bot.table(0)
-              .getTableItem(projectName)
-              .check();
+           .getTableItem(projectName)
+           .check();
 
         bot.button("Finish")
-              .click();
-    }
-
-    public void deleteProject(String projectName) throws CoreException {
-        final IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-        if (project.exists()) {
-            project.delete(true, new NullProgressMonitor());
-        }
-    }
-
-    private static SWTBotShell openEclipsePreferences() {
-        final IWorkbench workbench = PlatformUI.getWorkbench();
-
-        bot.perspectiveById(RESOURCE_PERSPECTIVE_ID)
-              .activate();
-
-        workbench.getDisplay().asyncExec(new Runnable() {
-            public void run() {
-                final IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
-                ActionFactory.PREFERENCES.create(workbenchWindow).run();
-            }
-        });
-
-        return bot.shell("Preferences");
+           .click();
     }
 
     class TableHasRows extends DefaultCondition {

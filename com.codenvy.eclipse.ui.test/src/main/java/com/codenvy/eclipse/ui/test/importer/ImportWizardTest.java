@@ -100,7 +100,5 @@ public class ImportWizardTest extends SWTBotBaseTest {
         final SWTBotTreeItem treeNode = tree.getTreeItem(MOCK_PROJECT_NAME);
 
         Assert.assertTrue(treeNode.getText().equals(MOCK_PROJECT_NAME));
-
-        deleteProject(MOCK_PROJECT_NAME);
     }
 }

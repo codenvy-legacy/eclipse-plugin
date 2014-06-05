@@ -183,8 +183,6 @@ public class ProjectWizardPageTest extends SWTBotBaseTest {
             Assert.assertTrue(oneProjectRow.isGrayed() == MOCK_PROJECT_NAME.equals(projectTable.cell(i, 0)));
         }
 
-        deleteProject(MOCK_PROJECT_NAME);
-
         shell.close();
     }
 }
