@@ -40,7 +40,7 @@ import com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess;
  * @author Kevin Pollet
  */
 public class RunOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
-    private static final Pattern serverStartedPattern = Pattern.compile("(.)* Server startup (.)*");
+    private static final Pattern serverStartedPattern = Pattern.compile("(.)*(Server startup|Started connect web server)(.)*");
 
     private IConsole             console;
 
