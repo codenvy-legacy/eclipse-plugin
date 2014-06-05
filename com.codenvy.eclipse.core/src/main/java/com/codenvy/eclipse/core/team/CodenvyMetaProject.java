@@ -39,26 +39,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Stéphane Daviet
  */
 public class CodenvyMetaProject {
+    private static final String                                      CODENVY_FOLDER_NAME     = ".codenvy";
+    private static final String                                      CODENVY_TEAM_FILE_NAME  = "team";
     private static final ConcurrentMap<IProject, CodenvyMetaProject> repositoryProviderCache = new ConcurrentHashMap<>();
 
-    public static CodenvyMetaProject create(IProject project, CodenvyMetaProject providerMetaData) {
-        final CodenvyMetaProject currentProviderMetaData = repositoryProviderCache.putIfAbsent(project, providerMetaData);
-        if (currentProviderMetaData == null) {
-            final IFile providerMetaDataFile = project.getFolder(".codenvy").getFile("team");
-            if (!providerMetaDataFile.exists()) {
-                final ObjectMapper mapper = new ObjectMapper();
-                try {
+    public static void create(IProject project, CodenvyMetaProject providerMetaData) {
+        repositoryProviderCache.put(project, providerMetaData);
 
-                    final byte[] providerMetaDataBytes = mapper.writeValueAsBytes(providerMetaData);
-                    providerMetaDataFile.create(new ByteArrayInputStream(providerMetaDataBytes), true, new NullProgressMonitor());
+        final IFile providerMetaDataFile = project.getFolder(CODENVY_FOLDER_NAME).getFile(CODENVY_TEAM_FILE_NAME);
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
 
-                } catch (JsonProcessingException | CoreException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            final byte[] providerMetaDataBytes = mapper.writeValueAsBytes(providerMetaData);
+            providerMetaDataFile.create(new ByteArrayInputStream(providerMetaDataBytes), true, new NullProgressMonitor());
+
+        } catch (JsonProcessingException | CoreException e) {
+            throw new RuntimeException(e);
         }
-
-        return currentProviderMetaData;
     }
 
     public static CodenvyMetaProject get(IProject project) {
@@ -66,7 +63,7 @@ public class CodenvyMetaProject {
 
         CodenvyMetaProject providerMetaData = repositoryProviderCache.get(project);
         if (providerMetaData == null) {
-            final IFile providerMetaDataFile = project.getFolder(".codenvy").getFile("team");
+            final IFile providerMetaDataFile = project.getFolder(CODENVY_FOLDER_NAME).getFile(CODENVY_TEAM_FILE_NAME);
             if (providerMetaDataFile.exists()) {
                 final ObjectMapper mapper = new ObjectMapper();
                 try {
@@ -90,7 +87,7 @@ public class CodenvyMetaProject {
     public static void delete(IProject project) {
         final CodenvyMetaProject currentProviderMetaData = repositoryProviderCache.get(project);
         if (currentProviderMetaData != null) {
-            final IFile providerMetaDataFile = project.getFolder(".codenvy").getFile("team");
+            final IFile providerMetaDataFile = project.getFolder(CODENVY_FOLDER_NAME).getFile(CODENVY_TEAM_FILE_NAME);
             try {
 
                 providerMetaDataFile.delete(true, new NullProgressMonitor());

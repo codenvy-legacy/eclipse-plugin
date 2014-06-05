@@ -234,7 +234,7 @@ public class CodenvyNature implements IProjectNature {
 
                 try {
 
-                    projectType = Enum.valueOf(ProjectType.class, value);
+                    projectType = Enum.valueOf(ProjectType.class, value.toUpperCase());
 
                 } catch (NullPointerException | IllegalArgumentException e) {
                     projectType = UNKNOWN;
