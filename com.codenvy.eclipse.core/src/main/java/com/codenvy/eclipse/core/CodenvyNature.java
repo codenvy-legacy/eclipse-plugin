@@ -84,7 +84,7 @@ public class CodenvyNature implements IProjectNature {
     @Override
     public void configure() throws CoreException {
         EclipseProjectHelper.checkCodenvyProjectLayout(codenvyProject);
-        
+
         final IFile codenvyDesciptorFile = codenvyProject.getFolder(".codenvy").getFile("project");
         if (codenvyDesciptorFile.exists()) {
             final Job job = new Job("Configure project") {
@@ -199,10 +199,14 @@ public class CodenvyNature implements IProjectNature {
      */
     public static class CodenvyProjectDescriptor {
         public final ProjectType         type;
+        public final String              description;
         public final Map<String, String> properties;
 
-        public CodenvyProjectDescriptor(@JsonProperty("type") ProjectType type, @JsonProperty("properties") List<Property> properties) {
+        public CodenvyProjectDescriptor(@JsonProperty("type") ProjectType type,
+                                        @JsonProperty("description") String description,
+                                        @JsonProperty("properties") List<Property> properties) {
             this.type = type;
+            this.description = description;
             this.properties = new HashMap<>();
 
             if (properties != null) {
