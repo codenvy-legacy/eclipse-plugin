@@ -24,6 +24,9 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.debug.core.DebugEvent;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.ui.console.IConsole;
 import org.eclipse.debug.ui.console.IConsoleLineTracker;
 import org.eclipse.jface.text.BadLocationException;
@@ -31,6 +34,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
 
 import com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess;
 
@@ -43,6 +47,11 @@ public class RunOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
     private static final Pattern serverStartedPattern = Pattern.compile("(.)*(Server startup|Started connect web server)(.)*");
 
     private IConsole             console;
+    private final DebugPlugin    debugPlugin;
+
+    public RunOnCodenvyConsoleLineTracker() {
+        this.debugPlugin = DebugPlugin.getDefault();
+    }
 
     @Override
     public void init(IConsole console) {
@@ -56,17 +65,30 @@ public class RunOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
 
             if (matcher.find()) {
                 final IWorkbench workbench = PlatformUI.getWorkbench();
-                final CodenvyRunnerProcess codenvyRunnerProcess = (CodenvyRunnerProcess)console.getProcess();
+                final CodenvyRunnerProcess runnerProcess = (CodenvyRunnerProcess)console.getProcess();
 
                 workbench.getDisplay().syncExec(new Runnable() {
                     @Override
                     public void run() {
                         try {
 
-                            if (codenvyRunnerProcess.getWebLink() != null) {
-                                workbench.getBrowserSupport()
-                                         .createBrowser(NAVIGATION_BAR | LOCATION_BAR, null, null, null)
-                                         .openURL(new URL(codenvyRunnerProcess.getWebLink().href));
+                            if (runnerProcess.getWebLink() != null) {
+                                final IWebBrowser browser = workbench.getBrowserSupport()
+                                                                     .createBrowser(NAVIGATION_BAR | LOCATION_BAR, null, null, null);
+
+                                browser.openURL(new URL(runnerProcess.getWebLink().href));
+
+                                debugPlugin.addDebugEventListener(new IDebugEventSetListener() {
+                                    @Override
+                                    public void handleDebugEvents(DebugEvent[] events) {
+                                        for (DebugEvent oneEvent : events) {
+                                            if (oneEvent.getKind() == DebugEvent.TERMINATE && runnerProcess.equals(oneEvent.getSource())) {
+                                                browser.close();
+                                                debugPlugin.removeDebugEventListener(this);
+                                            }
+                                        }
+                                    }
+                                });
                             }
 
                         } catch (PartInitException | MalformedURLException e) {

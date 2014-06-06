@@ -18,6 +18,7 @@ package com.codenvy.eclipse.core.launcher;
 
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
 import static com.codenvy.eclipse.core.model.RunnerStatus.Status.CANCELLED;
+import static com.codenvy.eclipse.core.model.RunnerStatus.Status.FAILED;
 import static com.codenvy.eclipse.core.model.RunnerStatus.Status.STOPPED;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
@@ -121,7 +122,7 @@ public class CodenvyRunnerProcess implements IProcess {
 
     @Override
     public boolean isTerminated() {
-        return status == STOPPED || status == CANCELLED;
+        return status == STOPPED || status == CANCELLED || status == FAILED;
     }
 
     @Override
@@ -141,7 +142,7 @@ public class CodenvyRunnerProcess implements IProcess {
     private void terminateWithAnError(APIException exception) {
         errorStream.append("Error: " + exception.getMessage());
         exitValue = exception.getStatus();
-        status = CANCELLED;
+        status = FAILED;
 
         stopProcess();
     }

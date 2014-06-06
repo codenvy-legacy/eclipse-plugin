@@ -43,12 +43,12 @@ public class RunnerStatus {
 
     @JsonCreator
     public RunnerStatus(@JsonProperty("stopTime") long stopTime,
-                               @JsonProperty("debugHost") String debugHost,
-                               @JsonProperty("debugPort") long debugPort,
-                               @JsonProperty("processId") long processId,
-                               @JsonProperty("startTime") long startTime,
-                               @JsonProperty("status") Status status,
-                               @JsonProperty("links") List<Link> links) {
+                        @JsonProperty("debugHost") String debugHost,
+                        @JsonProperty("debugPort") long debugPort,
+                        @JsonProperty("processId") long processId,
+                        @JsonProperty("startTime") long startTime,
+                        @JsonProperty("status") Status status,
+                        @JsonProperty("links") List<Link> links) {
 
         this.stopTime = stopTime;
         this.debugHost = debugHost;
@@ -83,6 +83,7 @@ public class RunnerStatus {
         NEW,
         RUNNING,
         CANCELLED,
+        FAILED,
         STOPPED
     }
 }
