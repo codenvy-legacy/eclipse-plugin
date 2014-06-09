@@ -28,11 +28,11 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.ext.Provider;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
-
+import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
+import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.core.services.TokenProvider;
+import com.codenvy.eclipse.core.utils.ServiceHelper;
+import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 
 /**
  * Automatically reauthenticate user for the stored URL using the password retrieved through
@@ -67,14 +67,20 @@ public class TokenRenewalFilter implements ClientRequestFilter {
 
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
-        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        try {
 
-        final ServiceReference<TokenProvider> tokenProviderRef = context.getServiceReference(TokenProvider.class);
-        if (tokenProviderRef != null) {
-            TokenProvider tokenProvider = context.getService(tokenProviderRef);
-            if (tokenProvider != null) {
-                tokenProvider.renewToken(url, username);
-            }
+            ServiceHelper.forService(TokenProvider.class)
+                         .invoke(new ServiceInvoker<TokenProvider, Void>() {
+                             @Override
+                             public Void run(TokenProvider service) {
+                                 service.renewToken(url, username);
+                                 return null;
+                             }
+                         });
+
+        } catch (ServiceUnavailableException e) {
+            // TODO do something if service is unavailable
+            throw new RuntimeException(e);
         }
     }
 }

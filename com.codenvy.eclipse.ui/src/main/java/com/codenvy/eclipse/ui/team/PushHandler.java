@@ -16,6 +16,8 @@
  */
 package com.codenvy.eclipse.ui.team;
 
+import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.updateCodenvyProjectResource;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -27,17 +29,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
 import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
-import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
+import com.codenvy.eclipse.core.utils.ServiceHelper;
+import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 
 /**
  * Handler pushing resources to Codenvy.
@@ -51,52 +51,61 @@ public class PushHandler extends AbstractResourceHandler {
             final IProject project = resources.get(0).getProject();
             final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(project);
             final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
-            final BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
-            final ServiceReference<RestServiceFactory> serviceReference = bundleContext.getServiceReference(RestServiceFactory.class);
 
             try {
 
-                if (serviceReference != null) {
+                ServiceHelper.forService(RestServiceFactory.class)
+                             .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
+                                 @Override
+                                 public Void run(RestServiceFactory factory) {
+                                     final ProjectService projectService =
+                                                                           factory.newRestServiceWithAuth(ProjectService.class,
+                                                                                                          metaProject.url,
+                                                                                                          metaProject.username);
 
-                    final RestServiceFactory restServiceFactory = bundleContext.getService(serviceReference);
-                    if (restServiceFactory != null) {
-                        final ProjectService projectService =
-                                                              restServiceFactory.newRestServiceWithAuth(ProjectService.class,
-                                                                                                        metaProject.url,
-                                                                                                        metaProject.username);
-                        final IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+                                     try {
 
-                        progressService.run(true, false, new IRunnableWithProgress() {
-                            @Override
-                            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                                monitor.beginTask("Update resources", resources.size());
+                                         PlatformUI.getWorkbench()
+                                                   .getProgressService()
+                                                   .run(true, false, new IRunnableWithProgress() {
+                                                       @Override
+                                                       public void run(IProgressMonitor monitor) throws InvocationTargetException,
+                                                                                                InterruptedException {
 
-                                try {
+                                                           monitor.beginTask("Update resources", resources.size());
 
-                                    for (IResource oneResource : resources) {
-                                        final Project codenvyProject =
-                                                                              new Project.Builder().withName(metaProject.projectName)
-                                                                                                          .withWorkspaceId(metaProject.workspaceId)
-                                                                                                          .build();
+                                                           try {
 
-                                        EclipseProjectHelper.updateCodenvyProjectResource(codenvyProject, oneResource, projectService,
-                                                                                          monitor);
+                                                               for (IResource oneResource : resources) {
+                                                                   final Project codenvyProject =
+                                                                                                  new Project.Builder().withName(metaProject.projectName)
+                                                                                                                       .withWorkspaceId(metaProject.workspaceId)
+                                                                                                                       .build();
 
-                                        monitor.worked(1);
-                                    }
+                                                                   updateCodenvyProjectResource(codenvyProject, oneResource,
+                                                                                                projectService, monitor);
 
-                                } finally {
-                                    monitor.done();
-                                }
-                            }
-                        });
-                    }
-                }
+                                                                   monitor.worked(1);
+                                                               }
 
-            } catch (InvocationTargetException | InterruptedException e) {
+                                                           } finally {
+                                                               monitor.done();
+                                                           }
+                                                       }
+                                                   });
+
+
+                                     } catch (InvocationTargetException | InterruptedException e) {
+                                         throw new RuntimeException(e);
+                                     }
+
+                                     return null;
+                                 }
+                             });
+
+            } catch (ServiceUnavailableException e) {
+                // TODO do something if service is unavailable
                 throw new RuntimeException(e);
-            } finally {
-                bundleContext.ungetService(serviceReference);
             }
         }
 

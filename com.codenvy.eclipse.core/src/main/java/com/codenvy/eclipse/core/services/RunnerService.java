@@ -25,7 +25,6 @@ import com.codenvy.eclipse.core.model.RunnerStatus;
  * 
  * @author Kevin Pollet
  */
-// TODO is CodenvyProject parameter always needed?
 public interface RunnerService extends RestServiceWithAuth {
     /**
      * Runs the given project with a codenvy runner.

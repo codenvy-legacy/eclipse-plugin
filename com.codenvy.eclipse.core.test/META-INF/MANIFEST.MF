@@ -8,6 +8,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Comment: import org.junit.runner see https://bugs.eclipse.org/bugs/show_bug.cgi?id=369266
 Import-Package: com.codenvy.eclipse.core;version="1.0.0.qualifier",
+ com.codenvy.eclipse.core.exceptions;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.model;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.services;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.utils;version="1.0.0.qualifier",

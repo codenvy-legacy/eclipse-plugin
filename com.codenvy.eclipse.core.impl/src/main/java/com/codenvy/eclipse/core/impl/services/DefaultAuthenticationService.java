@@ -23,16 +23,15 @@ import static javax.ws.rs.core.Response.Status.OK;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
-
 import com.codenvy.eclipse.core.exceptions.AuthenticationException;
+import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
 import com.codenvy.eclipse.core.model.Credentials;
 import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.AbstractRestService;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.SecureStorageService;
+import com.codenvy.eclipse.core.utils.ServiceHelper;
+import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 
 /**
  * The Codenvy authentication client service.
@@ -58,7 +57,7 @@ public class DefaultAuthenticationService extends AbstractRestService implements
     }
 
     @Override
-    public Token login(Credentials credentials, boolean storeCredentials) {
+    public Token login(final Credentials credentials, boolean storeCredentials) {
         checkNotNull(credentials);
 
         final Response response = getWebTarget().path("login")
@@ -69,22 +68,23 @@ public class DefaultAuthenticationService extends AbstractRestService implements
             throw new AuthenticationException("Authentication failed : Wrong username or password");
         }
 
-        Token token = response.readEntity(Token.class);
+        final Token token = response.readEntity(Token.class);
 
         if (storeCredentials) {
-            final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-            final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
-                                                                                          context.getServiceReference(SecureStorageService.class);
-            if (codenvySecureStorageServiceRef != null) {
-                try {
-                    final SecureStorageService codenvySecureStorageService =
-                                                                             context.getService(codenvySecureStorageServiceRef);
-                    if (codenvySecureStorageService != null) {
-                        codenvySecureStorageService.storeCredentials(getUrl(), credentials, token);
-                    }
-                } finally {
-                    context.ungetService(codenvySecureStorageServiceRef);
-                }
+            try {
+
+                ServiceHelper.forService(SecureStorageService.class)
+                             .invoke(new ServiceInvoker<SecureStorageService, Void>() {
+                                 @Override
+                                 public Void run(SecureStorageService service) {
+                                     service.storeCredentials(getUrl(), credentials, token);
+                                     return null;
+                                 }
+                             });
+
+            } catch (ServiceUnavailableException e) {
+                // TODO do something if service is unavailable
+                throw new RuntimeException(e);
             }
         }
 

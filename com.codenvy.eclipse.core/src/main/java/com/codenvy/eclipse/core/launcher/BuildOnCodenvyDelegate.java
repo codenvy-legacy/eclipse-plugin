@@ -28,15 +28,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 
 import com.codenvy.eclipse.core.CodenvyPlugin;
+import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
 import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.services.BuilderService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
+import com.codenvy.eclipse.core.utils.ServiceHelper;
+import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 
 /**
  * The build on codenvy delegate.
@@ -44,11 +44,9 @@ import com.codenvy.eclipse.core.team.CodenvyMetaProject;
  * @author Kevin Pollet
  */
 // TODO push project modifications before run
-// TODO use secure storage to retrieve credentials
-// TODO downloads the artifacts
 public final class BuildOnCodenvyDelegate implements ILaunchConfigurationDelegate {
     @Override
-    public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+    public void launch(ILaunchConfiguration configuration, String mode, final ILaunch launch, IProgressMonitor monitor) throws CoreException {
         // this delegate handle only the run mode
         if (RUN_MODE.equalsIgnoreCase(mode)) {
             final String projectName = configuration.getAttribute(CODENVY_PROJECT_NAME_ATTRIBUTE_NAME, (String)null);
@@ -65,27 +63,27 @@ public final class BuildOnCodenvyDelegate implements ILaunchConfigurationDelegat
 
             final CodenvyMetaProject metaProject = CodenvyMetaProject.get(project);
             final Project codenvyProject = new Project.Builder().withName(metaProject.projectName)
-                                                                              .withWorkspaceId(metaProject.workspaceId)
-                                                                              .build();
+                                                                .withWorkspaceId(metaProject.workspaceId)
+                                                                .build();
 
+            try {
 
-            final BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
-            final ServiceReference<RestServiceFactory> serviceRef = bundleContext.getServiceReference(RestServiceFactory.class);
-            if (serviceRef != null) {
-                try {
+                ServiceHelper.forService(RestServiceFactory.class)
+                             .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
+                                 @Override
+                                 public Void run(RestServiceFactory service) {
+                                     final BuilderService builderService =
+                                                                           service.newRestServiceWithAuth(BuilderService.class,
+                                                                                                          metaProject.url,
+                                                                                                          metaProject.username);
+                                     new CodenvyBuilderProcess(launch, builderService, codenvyProject);
+                                     return null;
+                                 }
+                             });
 
-                    final RestServiceFactory service = bundleContext.getService(serviceRef);
-                    if (service != null) {
-                        final BuilderService builderService =
-                                                              service.newRestServiceWithAuth(BuilderService.class, metaProject.url,
-                                                                                             metaProject.username);
-                        new CodenvyBuilderProcess(launch, builderService, codenvyProject);
-                        return;
-                    }
-
-                } finally {
-                    bundleContext.ungetService(serviceRef);
-                }
+            } catch (ServiceUnavailableException e) {
+                // TODO do something if service is unavailable
+                throw new RuntimeException(e);
             }
         }
     }

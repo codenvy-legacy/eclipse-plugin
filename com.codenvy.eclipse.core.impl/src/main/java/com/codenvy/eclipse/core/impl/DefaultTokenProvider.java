@@ -16,70 +16,83 @@
  */
 package com.codenvy.eclipse.core.impl;
 
-import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
+import static com.codenvy.eclipse.core.utils.StringHelper.isEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
-
+import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
 import com.codenvy.eclipse.core.model.Token;
 import com.codenvy.eclipse.core.services.AuthenticationService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.SecureStorageService;
 import com.codenvy.eclipse.core.services.TokenProvider;
+import com.codenvy.eclipse.core.utils.ServiceHelper;
+import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 
 /**
  * @author Stéphane Daviet
  */
 public class DefaultTokenProvider implements TokenProvider {
     @Override
-    public Token getToken(String url, String username) {
+    public Token getToken(final String url, final String username) {
         checkNotNull(url);
-        checkArgument(!isNullOrEmpty(url));
+        checkArgument(!isEmpty(url));
         checkNotNull(username);
-        checkArgument(!isNullOrEmpty(username));
+        checkArgument(!isEmpty(username));
 
+        try {
 
-        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+            return ServiceHelper.forService(SecureStorageService.class)
+                                .invoke(new ServiceInvoker<SecureStorageService, Token>() {
+                                    @Override
+                                    public Token run(SecureStorageService service) {
+                                        return service.getToken(url, username);
+                                    }
+                                });
 
-        final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
-                                                                                      context.getServiceReference(SecureStorageService.class);
-        if (codenvySecureStorageServiceRef != null) {
-            final SecureStorageService codenvySecureStorageService =
-                                                                     context.getService(codenvySecureStorageServiceRef);
-            return codenvySecureStorageService.getToken(url, username);
+        } catch (ServiceUnavailableException e) {
+            // TODO do something if service is unavailable
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
-    public Token renewToken(String url, String username) {
+    public Token renewToken(final String url, final String username) {
         checkNotNull(url);
-        checkArgument(!isNullOrEmpty(url));
+        checkArgument(!isEmpty(url));
         checkNotNull(username);
-        checkArgument(!isNullOrEmpty(username));
+        checkArgument(!isEmpty(username));
 
-        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        try {
 
-        final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
-                                                                                      context.getServiceReference(SecureStorageService.class);
-        if (codenvySecureStorageServiceRef != null) {
-            final SecureStorageService codenvySecureStorageService =
-                                                                     context.getService(codenvySecureStorageServiceRef);
+            return ServiceHelper.forService(SecureStorageService.class)
+                                .invoke(new ServiceInvoker<SecureStorageService, Token>() {
+                                    @Override
+                                    public Token run(final SecureStorageService secureStorageService) {
+                                        try {
 
-            final ServiceReference<RestServiceFactory> restServiceFactoryRef =
-                                                                               context.getServiceReference(RestServiceFactory.class);
-            if (restServiceFactoryRef != null) {
-                final RestServiceFactory restServiceFactory =
-                                                              context.getService(restServiceFactoryRef);
-                AuthenticationService authenticationService =
-                                                              restServiceFactory.newRestService(AuthenticationService.class,
-                                                                                                url);
-                return authenticationService.login(codenvySecureStorageService.getCredentials(url, username));
-            }
+                                            return ServiceHelper.forService(RestServiceFactory.class)
+                                                                .invoke(new ServiceInvoker<RestServiceFactory, Token>() {
+                                                                    @Override
+                                                                    public Token run(RestServiceFactory factory) {
+                                                                        final AuthenticationService authenticationService =
+                                                                                                                            factory.newRestService(AuthenticationService.class,
+                                                                                                                                                   url);
+                                                                        return authenticationService.login(secureStorageService.getCredentials(url,
+                                                                                                                                               username));
+                                                                    }
+                                                                });
+
+                                        } catch (ServiceUnavailableException e) {
+                                            // TODO do something if service is unavailable
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                });
+
+        } catch (ServiceUnavailableException e) {
+            // TODO do something if service is unavailable
+            throw new RuntimeException(e);
         }
-        return null;
     }
 }

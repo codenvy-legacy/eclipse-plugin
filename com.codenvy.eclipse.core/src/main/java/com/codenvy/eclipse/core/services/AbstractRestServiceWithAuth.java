@@ -22,12 +22,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.ws.rs.client.WebTarget;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
-
 import com.codenvy.eclipse.core.TokenRenewalFilter;
+import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
 import com.codenvy.eclipse.core.model.Token;
+import com.codenvy.eclipse.core.utils.ServiceHelper;
+import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 
 /**
  * Abstract rest service with authentication implementation.
@@ -46,7 +45,7 @@ public class AbstractRestServiceWithAuth extends AbstractRestService {
      * 
      * @param url the Codenvy platform url.
      * @param username the username.
-     * @param rootPath the rest service root path
+     * @param rootPath the rest service root path.
      * @throws NullPointerException if url, rootPath or codenvyToken parameter is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@linkplain String}.
      */
@@ -67,22 +66,20 @@ public class AbstractRestServiceWithAuth extends AbstractRestService {
      * @return the {@link Token} or {@code null} is none is stored for URL and username.
      */
     public Token getCodenvyToken() {
-        final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        try {
 
-        final ServiceReference<SecureStorageService> codenvySecureStorageServiceRef =
-                                                                                      context.getServiceReference(SecureStorageService.class);
-        if (codenvySecureStorageServiceRef != null) {
-            try {
-                final SecureStorageService codenvySecureStorageService =
-                                                                         context.getService(codenvySecureStorageServiceRef);
-                if (codenvySecureStorageService != null) {
-                    return codenvySecureStorageService.getToken(getUrl(), getUsername());
-                }
-            } finally {
-                context.ungetService(codenvySecureStorageServiceRef);
-            }
+            return ServiceHelper.forService(SecureStorageService.class)
+                                .invoke(new ServiceInvoker<SecureStorageService, Token>() {
+                                    @Override
+                                    public Token run(SecureStorageService service) {
+                                        return service.getToken(getUrl(), getUsername());
+                                    }
+                                });
+
+        } catch (ServiceUnavailableException e) {
+            // TODO do something if service is unavailable
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override

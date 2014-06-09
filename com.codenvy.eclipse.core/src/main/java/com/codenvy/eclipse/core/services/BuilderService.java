@@ -25,7 +25,6 @@ import com.codenvy.eclipse.core.model.Project;
  * 
  * @author Kevin Pollet
  */
-// TODO is CodenvyProject parameter always needed?
 public interface BuilderService extends RestServiceWithAuth {
     /**
      * Builds the given {@link Project} on codenvy.

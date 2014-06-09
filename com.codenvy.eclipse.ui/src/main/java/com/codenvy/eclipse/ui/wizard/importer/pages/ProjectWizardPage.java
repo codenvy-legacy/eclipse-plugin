@@ -56,16 +56,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 
+import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
 import com.codenvy.eclipse.core.model.Project;
 import com.codenvy.eclipse.core.model.Workspace;
 import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.services.ProjectService;
 import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.WorkspaceService;
+import com.codenvy.eclipse.core.utils.ServiceHelper;
+import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
@@ -234,46 +234,48 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
-                    final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-                    final ServiceReference<RestServiceFactory> restServiceFactoryRef =
-                                                                                       context.getServiceReference(RestServiceFactory.class);
 
-                    if (restServiceFactoryRef != null) {
-                        final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
+                    monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
 
-                        if (restServiceFactory != null) {
+                    try {
 
-                            try {
+                        ServiceHelper.forService(RestServiceFactory.class)
+                                     .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
+                                         @Override
+                                         public Void run(final RestServiceFactory factory) {
 
-                                monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
+                                             Display.getDefault().syncExec(new Runnable() {
+                                                 @Override
+                                                 public void run() {
+                                                     final String platformURL = wizard.getAuthenticationWizardPage().getURL();
+                                                     final String username = wizard.getAuthenticationWizardPage().getUsername();
+                                                     final WorkspaceService workspaceService =
+                                                                                               factory.newRestServiceWithAuth(WorkspaceService.class,
+                                                                                                                              platformURL,
+                                                                                                                              username);
+                                                     final List<Workspace> workspaces = workspaceService.getAllWorkspaces();
+                                                     final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
+                                                     for (Workspace workspace : workspaces) {
+                                                         workspaceRefs.add(workspaceService.getWorkspaceByName(workspace.workspaceRef.name));
+                                                     }
 
-                                Display.getDefault().syncExec(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        final String platformURL = wizard.getAuthenticationWizardPage().getURL();
-                                        final String username = wizard.getAuthenticationWizardPage().getUsername();
-                                        final WorkspaceService workspaceService =
-                                                                                  restServiceFactory.newRestServiceWithAuth(WorkspaceService.class,
-                                                                                                                            platformURL,
-                                                                                                                            username);
-                                        final List<Workspace> workspaces = workspaceService.getAllWorkspaces();
-                                        final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
-                                        for (Workspace workspace : workspaces) {
-                                            workspaceRefs.add(workspaceService.getWorkspaceByName(workspace.workspaceRef.name));
-                                        }
+                                                     workspaceComboViewer.setInput(workspaceRefs.toArray());
+                                                     if (!workspaces.isEmpty()) {
+                                                         workspaceComboViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
+                                                     }
+                                                 }
+                                             });
 
-                                        workspaceComboViewer.setInput(workspaceRefs.toArray());
-                                        if (!workspaces.isEmpty()) {
-                                            workspaceComboViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
-                                        }
-                                    }
-                                });
+                                             return null;
+                                         }
+                                     });
 
-                            } finally {
-                                context.ungetService(restServiceFactoryRef);
-                                monitor.done();
-                            }
-                        }
+                    } catch (ServiceUnavailableException e) {
+                        // TODO do something if service is unavailable
+                        throw new RuntimeException(e);
+
+                    } finally {
+                        monitor.done();
                     }
                 }
             });
@@ -295,47 +297,49 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
-                    final BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-                    final ServiceReference<RestServiceFactory> restServiceFactoryRef =
-                                                                                       context.getServiceReference(RestServiceFactory.class);
 
-                    if (restServiceFactoryRef != null) {
-                        final RestServiceFactory restServiceFactory = context.getService(restServiceFactoryRef);
+                    monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
 
-                        if (restServiceFactory != null) {
+                    try {
 
-                            try {
+                        ServiceHelper.forService(RestServiceFactory.class)
+                                     .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
+                                         @Override
+                                         public Void run(final RestServiceFactory factory) {
 
-                                monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
+                                             Display.getDefault().syncExec(new Runnable() {
+                                                 @Override
+                                                 public void run() {
+                                                     final String platformURL = wizard.getAuthenticationWizardPage().getURL();
+                                                     final String username = wizard.getAuthenticationWizardPage().getUsername();
+                                                     final ProjectService projectService =
+                                                                                           factory.newRestServiceWithAuth(ProjectService.class,
+                                                                                                                          platformURL,
+                                                                                                                          username);
+                                                     final List<Project> projects = projectService.getWorkspaceProjects(workspaceRef.id);
 
-                                Display.getDefault().syncExec(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        final String platformURL = wizard.getAuthenticationWizardPage().getURL();
-                                        final String username = wizard.getAuthenticationWizardPage().getUsername();
-                                        final ProjectService projectService =
-                                                                              restServiceFactory.newRestServiceWithAuth(ProjectService.class,
-                                                                                                                        platformURL,
-                                                                                                                        username);
-                                        final List<Project> projects = projectService.getWorkspaceProjects(workspaceRef.id);
+                                                     projectTableViewer.setInput(projects);
 
-                                        projectTableViewer.setInput(projects);
+                                                     // existing projects should be grayed
+                                                     final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+                                                     for (Project oneProject : projects) {
+                                                         final IProject workspaceProject = workspaceRoot.getProject(oneProject.name);
+                                                         projectTableViewer.setGrayed(oneProject, workspaceProject.exists());
+                                                     }
+                                                     projectTableViewer.refresh();
+                                                 }
+                                             });
 
-                                        // existing projects should be grayed
-                                        final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-                                        for (Project oneProject : projects) {
-                                            final IProject workspaceProject = workspaceRoot.getProject(oneProject.name);
-                                            projectTableViewer.setGrayed(oneProject, workspaceProject.exists());
-                                        }
-                                        projectTableViewer.refresh();
-                                    }
-                                });
+                                             return null;
+                                         }
+                                     });
 
-                            } finally {
-                                context.ungetService(restServiceFactoryRef);
-                                monitor.done();
-                            }
-                        }
+                    } catch (ServiceUnavailableException e) {
+                        // TODO do something if service is unavailable
+                        throw new RuntimeException(e);
+
+                    } finally {
+                        monitor.done();
                     }
                 }
             });
