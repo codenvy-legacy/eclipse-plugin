@@ -91,7 +91,7 @@ public class SWTBotBaseTest {
     }
 
     public void focusMainWindow() {
-        SWTBotShell mainWindow = bot.shell("Resource - ");
+        SWTBotShell mainWindow = bot.shell("Resource - Eclipse Platform");
         mainWindow.activate();
     }
 

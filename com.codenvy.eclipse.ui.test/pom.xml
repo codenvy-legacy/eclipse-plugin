@@ -44,14 +44,10 @@
 					<useUIHarness>true</useUIHarness>
 					<useUIThread>false</useUIThread>
 					<showEclipseLog>true</showEclipseLog>
+					<product>org.eclipse.platform.ide</product>
 					<dependencies>
 						<dependency>
-							<artifactId>org.eclipse.equinox.ds</artifactId>
-							<type>p2-installable-unit</type>
-						</dependency>
-						<dependency>
-							<!-- Add this to get a delete dialog with checkbox -->
-							<artifactId>org.eclipse.ltk.ui.refactoring</artifactId>
+							<artifactId>org.eclipse.platform.ide</artifactId>
 							<type>p2-installable-unit</type>
 						</dependency>
 						<dependency>
