@@ -91,7 +91,8 @@ public class SWTBotBaseTest {
     }
 
     public void focusMainWindow() {
-        bot.shell("Resource - Eclipse Platform").activate();
+        SWTBotShell mainWindow = bot.shell("Resource - ");
+        mainWindow.activate();
     }
 
     public SWTBotShell openAuthenticationWizardPage() {
