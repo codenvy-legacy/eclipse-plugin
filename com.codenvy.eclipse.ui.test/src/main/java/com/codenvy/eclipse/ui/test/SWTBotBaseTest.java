@@ -76,8 +76,8 @@ public class SWTBotBaseTest {
             bot.menu("Edit").menu("Delete").click();
 
             // the project deletion confirmation dialog
+            bot.waitUntilWidgetAppears(shellIsActive("Delete Resources"));
             SWTBotShell shell = bot.shell("Delete Resources");
-            shell.activate();
             bot.checkBox("Delete project contents on disk (cannot be undone)").select();
             bot.button("OK").click();
             try {
@@ -90,12 +90,19 @@ public class SWTBotBaseTest {
         }
     }
 
+    public void focusMainWindow() {
+        bot.shell("Resource - Eclipse Platform").activate();
+    }
+
     public SWTBotShell openAuthenticationWizardPage() {
+        focusMainWindow();
+
         bot.menu("File")
            .menu("Import...")
            .click();
 
         final SWTBotShell shell = bot.shell("Import");
+        shell.activate();
 
         shell.bot()
              .tree()
@@ -110,6 +117,8 @@ public class SWTBotBaseTest {
     }
 
     public void openNavigatorView() {
+        focusMainWindow();
+
         bot.menu("Window")
            .menu("Show View")
            .menu("Other...")
@@ -118,6 +127,7 @@ public class SWTBotBaseTest {
         bot.waitUntilWidgetAppears(shellIsActive("Show View"));
 
         final SWTBotShell shell = bot.shell("Show View");
+        shell.activate();
 
         shell.bot()
              .tree()
@@ -131,11 +141,14 @@ public class SWTBotBaseTest {
     }
 
     public SWTBotShell openProjectWizardPage() {
+        focusMainWindow();
+
         bot.menu("File")
            .menu("Import...")
            .click();
 
         final SWTBotShell shell = bot.shell("Import");
+        shell.activate();
 
         shell.bot()
              .tree()
@@ -172,6 +185,8 @@ public class SWTBotBaseTest {
     }
 
     public void importProject(String workspaceName, String projectName) {
+        focusMainWindow();
+
         openProjectWizardPage();
 
         final SWTBotCombo workspaceCombo = bot.comboBox(0);
