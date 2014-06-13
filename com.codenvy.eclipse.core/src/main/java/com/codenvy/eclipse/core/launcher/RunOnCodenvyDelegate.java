@@ -30,13 +30,11 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.services.RestServiceFactory;
-import com.codenvy.eclipse.core.services.RunnerService;
+import com.codenvy.eclipse.core.client.Codenvy;
+import com.codenvy.eclipse.core.client.model.Project;
+import com.codenvy.eclipse.core.client.security.RestCredentialsProvider;
+import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
-import com.codenvy.eclipse.core.utils.ServiceHelper;
-import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 
 /**
  * The run on codenvy delegate.
@@ -66,25 +64,11 @@ public final class RunOnCodenvyDelegate implements ILaunchConfigurationDelegate 
                                                                 .withWorkspaceId(metaProject.workspaceId)
                                                                 .build();
 
-            try {
+            final Codenvy codenvy =
+                                    new Codenvy.Builder(metaProject.url, metaProject.username, new RestCredentialsProvider(),
+                                                        SecureStorageDataStoreFactory.INSTANCE).build();
 
-                ServiceHelper.forService(RestServiceFactory.class)
-                             .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
-                                 @Override
-                                 public Void run(RestServiceFactory service) {
-                                     final RunnerService runnerService =
-                                                                         service.newRestServiceWithAuth(RunnerService.class,
-                                                                                                        metaProject.url,
-                                                                                                        metaProject.username);
-                                     new CodenvyRunnerProcess(launch, runnerService, codenvyProject);
-                                     return null;
-                                 }
-                             });
-
-            } catch (ServiceUnavailableException e) {
-                // TODO do something if service is unavailable
-                throw new RuntimeException(e);
-            }
+            new CodenvyRunnerProcess(launch, codenvy, codenvyProject);
         }
     }
 }

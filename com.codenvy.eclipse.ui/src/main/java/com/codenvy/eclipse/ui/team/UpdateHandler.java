@@ -29,10 +29,10 @@ import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 
-import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.services.ProjectService;
-import com.codenvy.eclipse.core.services.RestServiceFactory;
+import com.codenvy.eclipse.core.client.ProjectClient;
+import com.codenvy.eclipse.core.client.exceptions.ServiceUnavailableException;
+import com.codenvy.eclipse.core.client.model.Project;
+import com.codenvy.eclipse.core.spi.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
@@ -59,8 +59,8 @@ public class UpdateHandler extends AbstractResourceHandler {
                                  @Override
                                  public Void run(RestServiceFactory factory) {
                                      final IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-                                     final ProjectService projectService =
-                                                                           factory.newRestServiceWithAuth(ProjectService.class,
+                                     final ProjectClient projectService =
+                                                                           factory.newRestServiceWithAuth(ProjectClient.class,
                                                                                                           metaProject.url,
                                                                                                           metaProject.username);
                                      try {

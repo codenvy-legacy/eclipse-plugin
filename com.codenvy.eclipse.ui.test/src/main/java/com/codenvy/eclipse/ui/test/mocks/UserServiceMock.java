@@ -16,15 +16,15 @@
  */
 package com.codenvy.eclipse.ui.test.mocks;
 
-import com.codenvy.eclipse.core.model.User;
-import com.codenvy.eclipse.core.services.UserService;
+import com.codenvy.eclipse.core.client.UserClient;
+import com.codenvy.eclipse.core.client.model.User;
 
 /**
- * {@link UserService} mock.
+ * {@link UserClient} mock.
  * 
  * @author Kevin Pollet
  */
-public class UserServiceMock implements UserService {
+public class UserServiceMock implements UserClient {
     public static final String MOCK_USER_ID  = "user-codenvy-id";
     public static final String MOCK_USERNAME = "johndoe";
 
@@ -32,7 +32,7 @@ public class UserServiceMock implements UserService {
     }
 
     @Override
-    public User getCurrentUser() {
+    public User current() {
         return new User(MOCK_USER_ID, "<none>", "johndoe");
     }
 }

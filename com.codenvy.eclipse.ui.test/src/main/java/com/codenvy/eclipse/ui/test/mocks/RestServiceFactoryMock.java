@@ -23,13 +23,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.codenvy.eclipse.core.services.AuthenticationService;
-import com.codenvy.eclipse.core.services.ProjectService;
+import com.codenvy.eclipse.core.client.ProjectClient;
+import com.codenvy.eclipse.core.client.UserClient;
+import com.codenvy.eclipse.core.client.WorkspaceClient;
 import com.codenvy.eclipse.core.services.RestService;
-import com.codenvy.eclipse.core.services.RestServiceFactory;
 import com.codenvy.eclipse.core.services.RestServiceWithAuth;
-import com.codenvy.eclipse.core.services.UserService;
-import com.codenvy.eclipse.core.services.WorkspaceService;
+import com.codenvy.eclipse.core.services.security.AuthenticationService;
+import com.codenvy.eclipse.core.spi.RestServiceFactory;
 
 /**
  * {@link RestServiceFactory} mock.
@@ -46,9 +46,9 @@ public class RestServiceFactoryMock implements RestServiceFactory {
         this.restServiceBindings.put(AuthenticationService.class, AuthenticationServiceMock.class);
 
         this.restServiceWithAuthBindings = new HashMap<>();
-        this.restServiceWithAuthBindings.put(WorkspaceService.class, WorkspaceServiceMock.class);
-        this.restServiceWithAuthBindings.put(UserService.class, UserServiceMock.class);
-        this.restServiceWithAuthBindings.put(ProjectService.class, ProjectServiceMock.class);
+        this.restServiceWithAuthBindings.put(WorkspaceClient.class, WorkspaceServiceMock.class);
+        this.restServiceWithAuthBindings.put(UserClient.class, UserServiceMock.class);
+        this.restServiceWithAuthBindings.put(ProjectClient.class, ProjectServiceMock.class);
     }
 
     @Override

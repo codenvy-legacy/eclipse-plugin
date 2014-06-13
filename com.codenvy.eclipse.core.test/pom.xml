@@ -185,10 +185,6 @@
 							<type>p2-installable-unit</type>
 						</dependency>
 						<dependency>
-							<artifactId>com.codenvy.eclipse.core.impl</artifactId>
-							<type>p2-installable-unit</type>
-						</dependency>
-						<dependency>
 							<artifactId>com.codenvy.eclipse.lib</artifactId>
 							<type>p2-installable-unit</type>
 						</dependency>

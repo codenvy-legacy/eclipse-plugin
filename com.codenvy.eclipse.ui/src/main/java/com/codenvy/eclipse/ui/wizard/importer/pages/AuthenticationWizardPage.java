@@ -42,12 +42,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.codenvy.eclipse.core.exceptions.AuthenticationException;
-import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
-import com.codenvy.eclipse.core.model.Credentials;
-import com.codenvy.eclipse.core.services.AuthenticationService;
-import com.codenvy.eclipse.core.services.RestServiceFactory;
-import com.codenvy.eclipse.core.services.SecureStorageService;
+import com.codenvy.eclipse.core.client.exceptions.AuthenticationException;
+import com.codenvy.eclipse.core.client.exceptions.ServiceUnavailableException;
+import com.codenvy.eclipse.core.client.model.Credentials;
+import com.codenvy.eclipse.core.services.security.AuthenticationService;
+import com.codenvy.eclipse.core.services.security.SecureStorageService;
+import com.codenvy.eclipse.core.spi.RestServiceFactory;
 import com.codenvy.eclipse.core.utils.ServiceHelper;
 import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;

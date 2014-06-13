@@ -22,8 +22,8 @@ import static org.eclipse.core.resources.IResource.ROOT;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.services.ProjectService;
+import com.codenvy.eclipse.core.client.ProjectClient;
+import com.codenvy.eclipse.core.client.model.Project;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyMetaResource;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
@@ -51,7 +51,7 @@ public class CodenvyMetaResourceMock implements CodenvyMetaResource {
                 final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
 
                 if (metaProject != null) {
-                    final ProjectService projectService =
+                    final ProjectClient projectService =
                                                           new ProjectServiceMock(metaProject.url, metaProject.username);
                     final Project codenvyProject = new Project.Builder().withName(metaProject.projectName)
                                                                         .withWorkspaceId(metaProject.workspaceId)
@@ -59,7 +59,7 @@ public class CodenvyMetaResourceMock implements CodenvyMetaResource {
 
                     this.tracked =
                                    resource.getType() == PROJECT ? true
-                                       : projectService.isResourceInProject(codenvyProject, resource.getProjectRelativePath().toString());
+                                       : projectService.isResource(codenvyProject, resource.getProjectRelativePath().toString());
                 }
             }
         }

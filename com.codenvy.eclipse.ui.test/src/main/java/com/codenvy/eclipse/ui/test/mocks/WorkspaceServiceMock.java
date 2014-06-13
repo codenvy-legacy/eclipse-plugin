@@ -19,17 +19,17 @@ package com.codenvy.eclipse.ui.test.mocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codenvy.eclipse.core.model.Workspace;
-import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
-import com.codenvy.eclipse.core.services.WorkspaceService;
+import com.codenvy.eclipse.core.client.WorkspaceClient;
+import com.codenvy.eclipse.core.client.model.Workspace;
+import com.codenvy.eclipse.core.client.model.Workspace.WorkspaceRef;
 
 /**
- * {@link WorkspaceService} mock.
+ * {@link WorkspaceClient} mock.
  * 
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class WorkspaceServiceMock implements WorkspaceService {
+public class WorkspaceServiceMock implements WorkspaceClient {
     public static final String    MOCK_WORKSPACE_ID   = "ws1-id";
     public static final String    MOCK_WORKSPACE_NAME = "ws1";
 
@@ -44,12 +44,12 @@ public class WorkspaceServiceMock implements WorkspaceService {
     }
 
     @Override
-    public List<Workspace> getAllWorkspaces() {
+    public List<Workspace> all() {
         return workspaces;
     }
 
     @Override
-    public WorkspaceRef getWorkspaceByName(String name) {
+    public WorkspaceRef withName(String name) {
         for (Workspace workspace : workspaces) {
             if (workspace.workspaceRef.name.equals(name)) {
                 return workspace.workspaceRef;
@@ -59,7 +59,7 @@ public class WorkspaceServiceMock implements WorkspaceService {
     }
 
     @Override
-    public WorkspaceRef newWorkspace(WorkspaceRef workspaceRef) {
+    public WorkspaceRef create(WorkspaceRef workspaceRef) {
         throw new UnsupportedOperationException();
     }
 }

@@ -26,15 +26,15 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.services.ProjectService;
+import com.codenvy.eclipse.core.client.ProjectClient;
+import com.codenvy.eclipse.core.client.model.Project;
 
 /**
- * {@link ProjectService} mock.
+ * {@link ProjectClient} mock.
  * 
  * @author Kevin Pollet
  */
-public class ProjectServiceMock implements ProjectService {
+public class ProjectServiceMock implements ProjectClient {
     public static final String  MOCK_PROJECT_NAME        = "prj1";
     public static final String  MOCK_PROJECT_TYPE_NAME   = "maven";
     public static final String  MOCK_PROJECT_DESCRIPTION = "prj1-description";
@@ -83,7 +83,7 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public Project newProject(Project project) {
+    public Project create(Project project) {
         throw new UnsupportedOperationException();
     }
 
@@ -101,7 +101,7 @@ public class ProjectServiceMock implements ProjectService {
     }
 
     @Override
-    public boolean isResourceInProject(Project project, String resourcePath) {
+    public boolean isResource(Project project, String resourcePath) {
         if (MOCK_WORKSPACE_ID.equals(project.workspaceId) && MOCK_PROJECT_NAME.equals(project.name)) {
 
             final InputStream in = getClass().getResourceAsStream("/prj1.zip");

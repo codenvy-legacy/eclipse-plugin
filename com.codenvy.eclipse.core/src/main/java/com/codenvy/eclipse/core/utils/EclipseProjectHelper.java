@@ -41,8 +41,9 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.eclipse.core.CodenvyNature;
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.services.ProjectService;
+import com.codenvy.eclipse.core.client.Codenvy;
+import com.codenvy.eclipse.core.client.ProjectClient;
+import com.codenvy.eclipse.core.client.model.Project;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 
@@ -109,13 +110,13 @@ public final class EclipseProjectHelper {
      * 
      * @param codenvyProject the {@link Project}.
      * @param resource the {@link IResource} to update in Codenvy.
-     * @param projectService the {@link ProjectService} instance.
+     * @param projectService the {@link ProjectClient} instance.
      * @param monitor the {@link IProgressMonitor} or {@code null} if none.
      * @throws NullPointerException if codenvyProject, resource or projectService is {@code null}.
      */
     public static void updateCodenvyProjectResource(Project codenvyProject,
                                                     IResource resource,
-                                                    ProjectService projectService,
+                                                    ProjectClient projectService,
                                                     IProgressMonitor monitor) {
         checkNotNull(codenvyProject);
         checkNotNull(resource);
@@ -169,34 +170,40 @@ public final class EclipseProjectHelper {
      * 
      * @param codenvyProject the {@link Project}.
      * @param resource the {@link IResource} to update in Codenvy.
-     * @param projectService the {@link ProjectService} instance.
+     * @param codeny the {@link Codenvy} client instance.
      * @param monitor the {@link IProgressMonitor} or {@code null} if none.
-     * @throws NullPointerException if stream, file or monitor parameter is {@code null}.
+     * @throws NullPointerException if codenvyProject, resource or codenvy parameter is {@code null}.
      */
     public static void updateIResource(Project codenvyProject,
                                        IResource resource,
-                                       ProjectService projectService,
+                                       Codenvy codenvy,
                                        IProgressMonitor monitor) {
         checkNotNull(codenvyProject);
         checkNotNull(resource);
-        checkNotNull(projectService);
+        checkNotNull(codenvy);
 
         final SubMonitor subMonitor = SubMonitor.convert(monitor, "Update " + resource.getName(), 1);
 
         try {
 
+            final String resourceRelativePath = resource.getProjectRelativePath().toString();
+
             switch (resource.getType()) {
                 case IResource.FILE: {
-                    final InputStream stream = projectService.getFile(codenvyProject, resource.getProjectRelativePath().toString());
+                    final InputStream stream = codenvy.project()
+                                                      .getFile(codenvyProject, resourceRelativePath)
+                                                      .execute();
+
                     ((IFile)resource).setContents(stream, true, true, monitor);
                 }
                     break;
 
                 case IResource.FOLDER:
                 case IResource.PROJECT: {
-                    final ZipInputStream stream =
-                                                  projectService.exportResources(codenvyProject, resource.getProjectRelativePath()
-                                                                                                         .toString());
+                    final ZipInputStream stream = codenvy.project()
+                                                         .exportResources(codenvyProject, resourceRelativePath)
+                                                         .execute();
+
                     createOrUpdateResourcesFromZip(stream, (IContainer)resource, subMonitor);
                 }
                     break;

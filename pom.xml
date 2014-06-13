@@ -34,7 +34,6 @@
 	
 	<modules>
 		<module>com.codenvy.eclipse.core</module>
-		<module>com.codenvy.eclipse.core.impl</module>
 		<module>com.codenvy.eclipse.ui</module>
 		<module>com.codenvy.eclipse.feature</module>
 		<module>com.codenvy.eclipse.update</module>

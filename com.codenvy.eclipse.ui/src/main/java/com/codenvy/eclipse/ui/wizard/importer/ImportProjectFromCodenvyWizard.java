@@ -40,10 +40,10 @@ import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
 
-import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.services.ProjectService;
-import com.codenvy.eclipse.core.services.RestServiceFactory;
+import com.codenvy.eclipse.core.client.ProjectClient;
+import com.codenvy.eclipse.core.client.exceptions.ServiceUnavailableException;
+import com.codenvy.eclipse.core.client.model.Project;
+import com.codenvy.eclipse.core.spi.RestServiceFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.utils.ServiceHelper;
 import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
@@ -129,8 +129,8 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                                                   @Override
                                                   public Void run(RestServiceFactory factory) {
                                                       final List<IProject> importedProjects = new ArrayList<>();
-                                                      final ProjectService projectService =
-                                                                                            factory.newRestServiceWithAuth(ProjectService.class,
+                                                      final ProjectClient projectService =
+                                                                                            factory.newRestServiceWithAuth(ProjectClient.class,
                                                                                                                            platformURL,
                                                                                                                            username);
 

@@ -17,9 +17,9 @@
 package com.codenvy.eclipse.core.launcher;
 
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
-import static com.codenvy.eclipse.core.model.RunnerStatus.Status.CANCELLED;
-import static com.codenvy.eclipse.core.model.RunnerStatus.Status.FAILED;
-import static com.codenvy.eclipse.core.model.RunnerStatus.Status.STOPPED;
+import static com.codenvy.eclipse.core.client.model.RunnerStatus.Status.CANCELLED;
+import static com.codenvy.eclipse.core.client.model.RunnerStatus.Status.FAILED;
+import static com.codenvy.eclipse.core.client.model.RunnerStatus.Status.STOPPED;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
@@ -41,11 +41,11 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
-import com.codenvy.eclipse.core.exceptions.APIException;
-import com.codenvy.eclipse.core.model.Link;
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.model.RunnerStatus;
-import com.codenvy.eclipse.core.services.RunnerService;
+import com.codenvy.eclipse.core.client.Codenvy;
+import com.codenvy.eclipse.core.client.exceptions.APIException;
+import com.codenvy.eclipse.core.client.model.Link;
+import com.codenvy.eclipse.core.client.model.Project;
+import com.codenvy.eclipse.core.client.model.RunnerStatus;
 
 /**
  * The codenvy runner process.
@@ -57,7 +57,7 @@ public class CodenvyRunnerProcess implements IProcess {
     private static final TimeUnit           TICK_TIME_UNIT = MILLISECONDS;
 
     private final ILaunch                   launch;
-    private final RunnerService             runnerService;
+    private final Codenvy                   codenvy;
     private final Project                   project;
     private final Map<String, String>       attributes;
     private volatile RunnerStatus.Status    status;
@@ -73,13 +73,13 @@ public class CodenvyRunnerProcess implements IProcess {
      * Constructs an instance of {@link CodenvyRunnerProcess}.
      * 
      * @param launch the {@link ILaunch} object.
-     * @param runnerService the {@link RunnerService}.
+     * @param codenvy the {@link Codenvy} client API.
      * @param project the {@link Project} to run.
      * @throws NullPointerException if launch, runnerService or project parameter is {@code null}.
      */
-    public CodenvyRunnerProcess(ILaunch launch, RunnerService runnerService, Project project) {
+    public CodenvyRunnerProcess(ILaunch launch, Codenvy codenvy, Project project) {
         this.launch = launch;
-        this.runnerService = runnerService;
+        this.codenvy = codenvy;
         this.project = project;
         this.attributes = new HashMap<>();
         this.executorService = Executors.newScheduledThreadPool(4);
@@ -93,7 +93,10 @@ public class CodenvyRunnerProcess implements IProcess {
 
         try {
 
-            final RunnerStatus runnerStatus = this.runnerService.run(project);
+            final RunnerStatus runnerStatus = codenvy.runner()
+                                                     .run(project)
+                                                     .execute();
+
             this.processId = runnerStatus.processId;
             this.status = runnerStatus.status;
             synchronized (webLinkLock) {
@@ -129,9 +132,11 @@ public class CodenvyRunnerProcess implements IProcess {
     public void terminate() throws DebugException {
         try {
 
-            runnerService.stop(project, processId);
-            status = STOPPED;
+            codenvy.runner()
+                   .stop(project, processId)
+                   .execute();
 
+            status = STOPPED;
             stopProcess();
 
         } catch (APIException e) {
@@ -227,7 +232,10 @@ public class CodenvyRunnerProcess implements IProcess {
         public void run() {
             try {
 
-                final RunnerStatus runnerStatus = runnerService.status(project, processId);
+                final RunnerStatus runnerStatus = codenvy.runner()
+                                                         .status(project, processId)
+                                                         .execute();
+
                 status = runnerStatus.status;
                 synchronized (webLinkLock) {
                     webLink = runnerStatus.getWebLink();
@@ -247,7 +255,11 @@ public class CodenvyRunnerProcess implements IProcess {
                             outputStream.append("\n");
                         }
 
-                        final String logs = runnerService.logs(project, processId).trim();
+                        final String logs = codenvy.runner()
+                                                   .logs(project, processId)
+                                                   .execute()
+                                                   .trim();
+
                         final BufferedReader logsReader = new BufferedReader(new StringReader(logs));
 
                         String line;

@@ -17,10 +17,10 @@
 package com.codenvy.eclipse.core.launcher;
 
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
-import static com.codenvy.eclipse.core.model.BuilderStatus.Status.CANCELLED;
-import static com.codenvy.eclipse.core.model.BuilderStatus.Status.FAILED;
-import static com.codenvy.eclipse.core.model.BuilderStatus.Status.IN_PROGRESS;
-import static com.codenvy.eclipse.core.model.BuilderStatus.Status.SUCCESSFUL;
+import static com.codenvy.eclipse.core.client.model.BuilderStatus.Status.CANCELLED;
+import static com.codenvy.eclipse.core.client.model.BuilderStatus.Status.FAILED;
+import static com.codenvy.eclipse.core.client.model.BuilderStatus.Status.IN_PROGRESS;
+import static com.codenvy.eclipse.core.client.model.BuilderStatus.Status.SUCCESSFUL;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
@@ -40,11 +40,11 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
-import com.codenvy.eclipse.core.exceptions.APIException;
-import com.codenvy.eclipse.core.model.BuilderStatus;
-import com.codenvy.eclipse.core.model.Link;
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.services.BuilderService;
+import com.codenvy.eclipse.core.client.Codenvy;
+import com.codenvy.eclipse.core.client.exceptions.APIException;
+import com.codenvy.eclipse.core.client.model.BuilderStatus;
+import com.codenvy.eclipse.core.client.model.Link;
+import com.codenvy.eclipse.core.client.model.Project;
 
 /**
  * The codenvy builder process.
@@ -56,7 +56,7 @@ public class CodenvyBuilderProcess implements IProcess {
     private static final TimeUnit           TICK_TIME_UNIT = MILLISECONDS;
 
     private final ILaunch                   launch;
-    private final BuilderService            builderService;
+    private final Codenvy                   codenvy;
     private final Project                   project;
     private final Map<String, String>       attributes;
     private long                            taskId;
@@ -70,13 +70,13 @@ public class CodenvyBuilderProcess implements IProcess {
      * Constructs an instance of {@link CodenvyBuilderProcess}.
      * 
      * @param launch the {@link ILaunch} object.
-     * @param builderService the {@link BuilderService}.
+     * @param codenvy the {@link Codenvy} client API.
      * @param project the {@link Project} to run.
      * @throws NullPointerException if launch, builderService or project parameter is {@code null}.
      */
-    public CodenvyBuilderProcess(ILaunch launch, BuilderService builderService, Project project) {
+    public CodenvyBuilderProcess(ILaunch launch, Codenvy codenvy, Project project) {
         this.launch = launch;
-        this.builderService = builderService;
+        this.codenvy = codenvy;
         this.project = project;
         this.attributes = new HashMap<>();
         this.executorService = Executors.newScheduledThreadPool(4);
@@ -89,7 +89,10 @@ public class CodenvyBuilderProcess implements IProcess {
 
         try {
 
-            final BuilderStatus builderStatus = builderService.build(project);
+            final BuilderStatus builderStatus = codenvy.builder()
+                                                       .build(project)
+                                                       .execute();
+
             this.taskId = builderStatus.taskId;
             this.status = builderStatus.status;
 
@@ -122,7 +125,10 @@ public class CodenvyBuilderProcess implements IProcess {
     public void terminate() throws DebugException {
         try {
 
-            builderService.cancel(project, taskId);
+            codenvy.builder()
+                   .cancel(project, taskId)
+                   .execute();
+
             status = CANCELLED;
 
             stopProcess();
@@ -212,7 +218,10 @@ public class CodenvyBuilderProcess implements IProcess {
         public void run() {
             try {
 
-                final BuilderStatus builderStatus = builderService.status(project, taskId);
+                final BuilderStatus builderStatus = codenvy.builder()
+                                                           .status(project, taskId)
+                                                           .execute();
+
                 final Link downloadLink = builderStatus.getDownloadLink();
                 boolean isLogsAppended = false;
 
@@ -241,7 +250,11 @@ public class CodenvyBuilderProcess implements IProcess {
          * @return {@code true} if logs have been appended, {@code false} otherwise.
          */
         private boolean appendLogsToOutputStream() {
-            final String fullLogs = builderService.logs(project, taskId).trim();
+            final String fullLogs = codenvy.builder()
+                                           .logs(project, taskId)
+                                           .execute()
+                                           .trim();
+
             final String logsDiff = fullLogs.substring(outputStream.getContents().length());
 
             if (!logsDiff.isEmpty()) {

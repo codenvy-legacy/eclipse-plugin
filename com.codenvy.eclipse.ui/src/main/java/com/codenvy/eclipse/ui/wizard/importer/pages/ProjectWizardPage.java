@@ -57,13 +57,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
 
-import com.codenvy.eclipse.core.exceptions.ServiceUnavailableException;
-import com.codenvy.eclipse.core.model.Project;
-import com.codenvy.eclipse.core.model.Workspace;
-import com.codenvy.eclipse.core.model.Workspace.WorkspaceRef;
-import com.codenvy.eclipse.core.services.ProjectService;
-import com.codenvy.eclipse.core.services.RestServiceFactory;
-import com.codenvy.eclipse.core.services.WorkspaceService;
+import com.codenvy.eclipse.core.client.ProjectClient;
+import com.codenvy.eclipse.core.client.WorkspaceClient;
+import com.codenvy.eclipse.core.client.exceptions.ServiceUnavailableException;
+import com.codenvy.eclipse.core.client.model.Project;
+import com.codenvy.eclipse.core.client.model.Workspace;
+import com.codenvy.eclipse.core.client.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.spi.RestServiceFactory;
 import com.codenvy.eclipse.core.utils.ServiceHelper;
 import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
@@ -249,14 +249,14 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                                  public void run() {
                                                      final String platformURL = wizard.getAuthenticationWizardPage().getURL();
                                                      final String username = wizard.getAuthenticationWizardPage().getUsername();
-                                                     final WorkspaceService workspaceService =
-                                                                                               factory.newRestServiceWithAuth(WorkspaceService.class,
+                                                     final WorkspaceClient workspaceService =
+                                                                                               factory.newRestServiceWithAuth(WorkspaceClient.class,
                                                                                                                               platformURL,
                                                                                                                               username);
-                                                     final List<Workspace> workspaces = workspaceService.getAllWorkspaces();
+                                                     final List<Workspace> workspaces = workspaceService.all();
                                                      final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
                                                      for (Workspace workspace : workspaces) {
-                                                         workspaceRefs.add(workspaceService.getWorkspaceByName(workspace.workspaceRef.name));
+                                                         workspaceRefs.add(workspaceService.withName(workspace.workspaceRef.name));
                                                      }
 
                                                      workspaceComboViewer.setInput(workspaceRefs.toArray());
@@ -312,8 +312,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                                  public void run() {
                                                      final String platformURL = wizard.getAuthenticationWizardPage().getURL();
                                                      final String username = wizard.getAuthenticationWizardPage().getUsername();
-                                                     final ProjectService projectService =
-                                                                                           factory.newRestServiceWithAuth(ProjectService.class,
+                                                     final ProjectClient projectService =
+                                                                                           factory.newRestServiceWithAuth(ProjectClient.class,
                                                                                                                           platformURL,
                                                                                                                           username);
                                                      final List<Project> projects = projectService.getWorkspaceProjects(workspaceRef.id);
