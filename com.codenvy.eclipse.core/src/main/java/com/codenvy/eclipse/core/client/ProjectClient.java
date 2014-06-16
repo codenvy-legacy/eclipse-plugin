@@ -86,7 +86,7 @@ public class ProjectClient extends AbstractClient {
                                                  .buildGet();
 
         return new SimpleAPIRequest<>(request, new GenericType<List<Project>>() {
-        });
+        }, getCredentialsProvider(), getUsername());
     }
 
     /**
@@ -106,7 +106,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(json(project));
 
-        return new SimpleAPIRequest<>(request, Project.class);
+        return new SimpleAPIRequest<>(request, Project.class, getCredentialsProvider(), getUsername());
     }
 
     /**
@@ -128,12 +128,13 @@ public class ProjectClient extends AbstractClient {
                                                  .request()
                                                  .buildGet();
 
-        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, InputStream.class), new Adaptor<ZipInputStream, InputStream>() {
-            @Override
-            public ZipInputStream adapt(InputStream response) {
-                return new ZipInputStream(response);
-            }
-        });
+        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, InputStream.class, getCredentialsProvider(), getUsername()),
+                                       new Adaptor<ZipInputStream, InputStream>() {
+                                           @Override
+                                           public ZipInputStream adapt(InputStream response) {
+                                               return new ZipInputStream(response);
+                                           }
+                                       });
     }
 
     /**
@@ -159,7 +160,7 @@ public class ProjectClient extends AbstractClient {
                                                  .request()
                                                  .buildPut(text(fileInputStream));
 
-        return new SimpleAPIRequest<>(request, Void.class);
+        return new SimpleAPIRequest<>(request, Void.class, getCredentialsProvider(), getUsername());
     }
 
     /**
@@ -184,7 +185,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept(MediaType.APPLICATION_JSON_TYPE)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, InputStream.class);
+        return new SimpleAPIRequest<>(request, InputStream.class, getCredentialsProvider(), getUsername());
     }
 
     /**
@@ -209,11 +210,12 @@ public class ProjectClient extends AbstractClient {
                                                  .request()
                                                  .build(HEAD);
 
-        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, Response.class), new Adaptor<Boolean, Response>() {
-            @Override
-            public Boolean adapt(Response response) {
-                return response.getStatus() == Status.OK.getStatusCode();
-            }
-        });
+        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, Response.class, getCredentialsProvider(), getUsername()),
+                                       new Adaptor<Boolean, Response>() {
+                                           @Override
+                                           public Boolean adapt(Response response) {
+                                               return response.getStatus() == Status.OK.getStatusCode();
+                                           }
+                                       });
     }
 }

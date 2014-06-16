@@ -62,6 +62,6 @@ public class UserClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<User>(request, User.class);
+        return new SimpleAPIRequest<User>(request, User.class, getCredentialsProvider(), getUsername());
     }
 }

@@ -23,6 +23,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.codenvy.eclipse.core.client.CredentialsProvider;
 import com.codenvy.eclipse.core.client.exceptions.APIException;
 
 /**
@@ -32,18 +33,23 @@ import com.codenvy.eclipse.core.client.exceptions.APIException;
  * @param <T> the {@linkplain java.lang.reflect.Type Type} of the {@link Response} body.
  */
 public class SimpleAPIRequest<T> implements APIRequest<T> {
-    private final Class<T>       entityType;
-    private final GenericType<T> genericEntityType;
-    private final Invocation     request;
+    private final String              username;
+    private final Class<T>            entityType;
+    private final GenericType<T>      genericEntityType;
+    private final Invocation          request;
+    private final CredentialsProvider credentialsProvider;
 
     /**
      * Constructs an instance of {@link SimpleAPIRequest}.
      * 
      * @param request the request to invoke.
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
+     * @param credentialsProvider the {@link CredentialsProvider} instance.
+     * @param username the user name.
+     * @throws NullPointerException if request, entityType, credentialsProvider or username parameter is {@code null}.
      */
-    public SimpleAPIRequest(Invocation request, Class<T> entityType) {
-        this(request, entityType, null);
+    public SimpleAPIRequest(Invocation request, Class<T> entityType, CredentialsProvider credentialsProvider, String username) {
+        this(request, entityType, null, credentialsProvider, username);
     }
 
     /**
@@ -51,9 +57,12 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
      * 
      * @param request the request to invoke.
      * @param genericEntityType the request response entity {@link GenericType}.
+     * @param credentialsProvider the {@link CredentialsProvider} instance.
+     * @param username the user name.
+     * @throws NullPointerException if request, genericEntityType, credentialsProvider or username parameter is {@code null}.
      */
-    public SimpleAPIRequest(Invocation request, GenericType<T> genericEntityType) {
-        this(request, null, genericEntityType);
+    public SimpleAPIRequest(Invocation request, GenericType<T> genericEntityType, CredentialsProvider credentialsProvider, String username) {
+        this(request, null, genericEntityType, credentialsProvider, username);
     }
 
     /**
@@ -62,28 +71,43 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
      * @param request the request to invoke.
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
      * @param genericEntityType the request response entity {@link GenericType}.
-     * @throws NullPointerException if request parameter, entityType or genericEntityType is {@code null}.
+     * @param credentialsProvider the {@link CredentialsProvider} instance.
+     * @param username the username.
+     * @throws NullPointerException if request, entityType, genericEntityType, credentialsProvider or username parameter is {@code null}.
      */
-    private SimpleAPIRequest(Invocation request, Class<T> entityType, GenericType<T> genericEntityType) {
+    private SimpleAPIRequest(Invocation request,
+                             Class<T> entityType,
+                             GenericType<T> genericEntityType,
+                             CredentialsProvider credentialsProvider,
+                             String username) {
+
         checkNotNull(request);
         checkNotNull(entityType != null || genericEntityType != null);
+        checkNotNull(credentialsProvider);
+        checkNotNull(username);
 
         this.request = request;
         this.entityType = entityType;
         this.genericEntityType = genericEntityType;
+        this.credentialsProvider = credentialsProvider;
+        this.username = username;
     }
 
     @Override
     public T execute() throws APIException {
+        Response response = request.invoke();
+
+        // refresh authentication token if needed
+        if (response.getStatus() == Status.UNAUTHORIZED.getStatusCode()) {
+            credentialsProvider.refreshToken(username);
+            response = request.invoke();
+        }
+
+        // read response
         if (genericEntityType != null) {
-            return readEntity(request.invoke(), genericEntityType);
+            return readEntity(response, genericEntityType);
         }
-
-        if (entityType.equals(Response.class)) {
-            return entityType.cast(request.invoke());
-        }
-
-        return readEntity(request.invoke(), entityType);
+        return entityType.equals(Response.class) ? entityType.cast(response) : readEntity(response, entityType);
     }
 
     /**

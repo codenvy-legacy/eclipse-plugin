@@ -105,7 +105,7 @@ public class CredentialsProvider {
      * @return the {@link Token}.
      */
     public Token refreshToken(String username) {
-        // TODO
-        return null;
+        final StoredCredentials storedCredentials = dataStore.get(username);
+        return storedCredentials != null ? authorize(new Credentials(username, storedCredentials.password)) : null;
     }
 }

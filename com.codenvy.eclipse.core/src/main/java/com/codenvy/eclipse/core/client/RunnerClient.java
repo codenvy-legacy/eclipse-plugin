@@ -71,7 +71,7 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON_TYPE)
                                                  .buildPost(null);
 
-        return new SimpleAPIRequest<>(request, RunnerStatus.class);
+        return new SimpleAPIRequest<>(request, RunnerStatus.class, getCredentialsProvider(), getUsername());
     }
 
     /**
@@ -93,7 +93,7 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON_TYPE)
                                                  .buildPost(null);
 
-        return new SimpleAPIRequest<>(request, RunnerStatus.class);
+        return new SimpleAPIRequest<>(request, RunnerStatus.class, getCredentialsProvider(), getUsername());
     }
 
     /**
@@ -115,7 +115,7 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON_TYPE)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, RunnerStatus.class);
+        return new SimpleAPIRequest<>(request, RunnerStatus.class, getCredentialsProvider(), getUsername());
     }
 
     /**
@@ -137,6 +137,6 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(TEXT_PLAIN_TYPE)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, String.class);
+        return new SimpleAPIRequest<>(request, String.class, getCredentialsProvider(), getUsername());
     }
 }

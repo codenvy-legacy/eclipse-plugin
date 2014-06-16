@@ -74,7 +74,7 @@ public class WorkspaceClient extends AbstractClient {
                                                  .buildGet();
 
         return new SimpleAPIRequest<>(request, new GenericType<List<Workspace>>() {
-        });
+        }, getCredentialsProvider(), getUsername());
     }
 
     /**
@@ -95,7 +95,7 @@ public class WorkspaceClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, WorkspaceRef.class);
+        return new SimpleAPIRequest<>(request, WorkspaceRef.class, getCredentialsProvider(), getUsername());
     }
 
     /**
@@ -113,7 +113,7 @@ public class WorkspaceClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON_TYPE)
                                                  .build(POST, json(workspaceRef));
 
-        return new SimpleAPIRequest<>(request, WorkspaceRef.class);
+        return new SimpleAPIRequest<>(request, WorkspaceRef.class, getCredentialsProvider(), getUsername());
 
     }
 }

@@ -90,6 +90,24 @@ public class AbstractClient {
     }
 
     /**
+     * Returns the {@link CredentialsProvider} used to authenticate.
+     * 
+     * @return the {@link CredentialsProvider} used for authentication.
+     */
+    public CredentialsProvider getCredentialsProvider() {
+        return credentialsProvider;
+    }
+
+    /**
+     * Returns the username.
+     * 
+     * @return the username.
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
      * Filter used to inject {@link Token} in client request.
      * 
      * @author Kevin Pollet
