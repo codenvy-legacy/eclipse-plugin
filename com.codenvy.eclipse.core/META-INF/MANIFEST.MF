@@ -10,6 +10,7 @@ Export-Package: com.codenvy.eclipse.core;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.client;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.client.exceptions;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.client.model;version="1.0.0.qualifier",
+ com.codenvy.eclipse.core.client.request;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.client.security;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.client.store;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.client.store.secure;version="1.0.0.qualifier",
@@ -38,4 +39,5 @@ Import-Package: com.fasterxml.jackson.annotation;version="2.3.2",
  org.eclipse.m2e.core.project,
  org.eclipse.team.core,
  org.osgi.framework;version="1.7.0"
+Bundle-Activator: com.codenvy.eclipse.core.CodenvyPlugin
 

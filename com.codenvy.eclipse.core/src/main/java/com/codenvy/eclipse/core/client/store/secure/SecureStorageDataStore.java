@@ -16,8 +16,6 @@
  */
 package com.codenvy.eclipse.core.client.store.secure;
 
-import static com.codenvy.eclipse.core.utils.SecureStorageHelper.CODENVY_PASSWORD_KEY_NAME;
-import static com.codenvy.eclipse.core.utils.SecureStorageHelper.CODENVY_TOKEN_KEY_NAME;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.equinox.security.storage.ISecurePreferences;
@@ -33,6 +31,10 @@ import com.codenvy.eclipse.core.client.store.StoredCredentials;
  * @author Kevin Pollet
  */
 public class SecureStorageDataStore implements DataStore<String, StoredCredentials> {
+    public static final String       CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
+    public static final String       CODENVY_PASSWORD_KEY_NAME            = "password";
+    public static final String       CODENVY_TOKEN_KEY_NAME               = "token";
+
     private final ISecurePreferences urlNode;
 
     /**

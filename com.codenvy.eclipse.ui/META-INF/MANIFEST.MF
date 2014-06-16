@@ -7,8 +7,13 @@ Bundle-Name: Codenvy Eclipse Plugin :: UI
 Bundle-Vendor: Codenvy
 Bundle-Activator: com.codenvy.eclipse.ui.CodenvyUIPlugin
 Bundle-ActivationPolicy: lazy
-Import-Package: com.codenvy.eclipse.core.client.exceptions;version="1.0.0.qualifier",
+Import-Package: com.codenvy.eclipse.core.client;version="1.0.0.qualifier",
+ com.codenvy.eclipse.core.client.exceptions;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.client.model;version="1.0.0.qualifier",
+ com.codenvy.eclipse.core.client.request;version="1.0.0.qualifier",
+ com.codenvy.eclipse.core.client.security;version="1.0.0.qualifier",
+ com.codenvy.eclipse.core.client.store;version="1.0.0.qualifier",
+ com.codenvy.eclipse.core.client.store.secure;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.launcher;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.team;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.utils;version="1.0.0.qualifier",
@@ -23,6 +28,7 @@ Import-Package: com.codenvy.eclipse.core.client.exceptions;version="1.0.0.qualif
  org.eclipse.debug.core,
  org.eclipse.debug.ui,
  org.eclipse.debug.ui.console,
+ org.eclipse.equinox.security.storage;version="1.0.0",
  org.eclipse.jface.dialogs,
  org.eclipse.jface.fieldassist,
  org.eclipse.jface.operation,

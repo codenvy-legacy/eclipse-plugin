@@ -40,13 +40,11 @@ import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
 
-import com.codenvy.eclipse.core.client.ProjectClient;
-import com.codenvy.eclipse.core.client.exceptions.ServiceUnavailableException;
+import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.spi.RestServiceFactory;
+import com.codenvy.eclipse.core.client.security.RestCredentialsProvider;
+import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
-import com.codenvy.eclipse.core.utils.ServiceHelper;
-import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
 
@@ -122,52 +120,31 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                          public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                              monitor.beginTask("Importing projects", projects.size());
 
-                             try {
+                             final Codenvy codenvy =
+                                                     new Codenvy.Builder(platformURL, username, new RestCredentialsProvider(),
+                                                                         SecureStorageDataStoreFactory.INSTANCE).build();
 
-                                 ServiceHelper.forService(RestServiceFactory.class)
-                                              .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
-                                                  @Override
-                                                  public Void run(RestServiceFactory factory) {
-                                                      final List<IProject> importedProjects = new ArrayList<>();
-                                                      final ProjectClient projectService =
-                                                                                            factory.newRestServiceWithAuth(ProjectClient.class,
-                                                                                                                           platformURL,
-                                                                                                                           username);
+                             final List<IProject> importedProjects = new ArrayList<>();
+                             for (Project oneProject : projects) {
+                                 final ZipInputStream zipInputStream = codenvy.project()
+                                                                              .exportResources(oneProject, null)
+                                                                              .execute();
 
-                                                      for (Project oneProject : projects) {
-                                                          final ZipInputStream zipInputStream =
-                                                                                                projectService.exportResources(oneProject,
-                                                                                                                               null);
-                                                          final IProject newProject =
-                                                                                      createIProjectFromZipStream(zipInputStream,
-                                                                                                                  new CodenvyMetaProject(
-                                                                                                                                         platformURL,
-                                                                                                                                         username,
-                                                                                                                                         oneProject.name,
-                                                                                                                                         oneProject.workspaceId),
-                                                                                                                  monitor);
-                                                          importedProjects.add(newProject);
+                                 final IProject newProject = createIProjectFromZipStream(zipInputStream,
+                                                                                         new CodenvyMetaProject(
+                                                                                                                platformURL,
+                                                                                                                username,
+                                                                                                                oneProject.name,
+                                                                                                                oneProject.workspaceId),
+                                                                                         monitor);
+                                 importedProjects.add(newProject);
+                                 monitor.worked(1);
+                             }
 
-                                                          monitor.worked(1);
-                                                      }
-
-                                                      final IWorkingSetManager workingSetManager = workbench.getWorkingSetManager();
-                                                      for (IAdaptable importedProject : importedProjects) {
-                                                          workingSetManager.addToWorkingSets(importedProject,
-                                                                                             workingSets.toArray(new IWorkingSet[workingSets.size()]));
-                                                      }
-
-                                                      return null;
-                                                  }
-
-                                              });
-
-                             } catch (ServiceUnavailableException e) {
-                                 // TODO do something if service is unavailable
-                                 throw new RuntimeException(e);
-
-                             } finally {
-                                 monitor.done();
+                             final IWorkingSetManager workingSetManager = workbench.getWorkingSetManager();
+                             for (IAdaptable importedProject : importedProjects) {
+                                 workingSetManager.addToWorkingSets(importedProject,
+                                                                    workingSets.toArray(new IWorkingSet[workingSets.size()]));
                              }
                          }
                      });

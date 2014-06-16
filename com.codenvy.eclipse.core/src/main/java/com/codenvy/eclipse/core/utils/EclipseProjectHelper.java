@@ -42,7 +42,6 @@ import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.client.Codenvy;
-import com.codenvy.eclipse.core.client.ProjectClient;
 import com.codenvy.eclipse.core.client.model.Project;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
@@ -106,21 +105,21 @@ public final class EclipseProjectHelper {
     }
 
     /**
-     * Updates the given resource in the given codenvy project.
+     * Updates the given resource in the given Codenvy project.
      * 
      * @param codenvyProject the {@link Project}.
      * @param resource the {@link IResource} to update in Codenvy.
-     * @param projectService the {@link ProjectClient} instance.
+     * @param codenvy the {@link Codenvy} client API.
      * @param monitor the {@link IProgressMonitor} or {@code null} if none.
-     * @throws NullPointerException if codenvyProject, resource or projectService is {@code null}.
+     * @throws NullPointerException if codenvyProject, resource or codenvy parameter is {@code null}.
      */
     public static void updateCodenvyProjectResource(Project codenvyProject,
                                                     IResource resource,
-                                                    ProjectClient projectService,
+                                                    Codenvy codenvy,
                                                     IProgressMonitor monitor) {
         checkNotNull(codenvyProject);
         checkNotNull(resource);
-        checkNotNull(projectService);
+        checkNotNull(codenvy);
 
         final SubMonitor subMonitor = SubMonitor.convert(monitor);
         subMonitor.setWorkRemaining(1000);
@@ -130,27 +129,28 @@ public final class EclipseProjectHelper {
             switch (resource.getType()) {
                 case IResource.FILE: {
                     final IFile file = (IFile)resource;
-
                     try {
 
-                        projectService.updateFile(codenvyProject, file.getProjectRelativePath().toString(), file.getContents());
-
-                        subMonitor.worked(1);
+                        codenvy.project()
+                               .updateFile(codenvyProject, file.getProjectRelativePath().toString(), file.getContents())
+                               .execute();
 
                     } catch (CoreException e) {
                         throw new RuntimeException(e);
                     }
+
+                    subMonitor.worked(1);
+
                 }
                     break;
 
                 case IResource.PROJECT:
                 case IResource.FOLDER: {
                     final IContainer container = (IContainer)resource;
-
                     try {
 
                         for (IResource oneResource : container.members()) {
-                            updateCodenvyProjectResource(codenvyProject, oneResource, projectService, monitor);
+                            updateCodenvyProjectResource(codenvyProject, oneResource, codenvy, monitor);
                         }
 
                     } catch (CoreException e) {
@@ -166,11 +166,11 @@ public final class EclipseProjectHelper {
     }
 
     /**
-     * Updates the given {@link IResource} from codenvy (no resource are deleted).
+     * Updates the given {@link IResource} from Codenvy (no resource are deleted).
      * 
      * @param codenvyProject the {@link Project}.
      * @param resource the {@link IResource} to update in Codenvy.
-     * @param codeny the {@link Codenvy} client instance.
+     * @param codeny the {@link Codenvy} client API.
      * @param monitor the {@link IProgressMonitor} or {@code null} if none.
      * @throws NullPointerException if codenvyProject, resource or codenvy parameter is {@code null}.
      */

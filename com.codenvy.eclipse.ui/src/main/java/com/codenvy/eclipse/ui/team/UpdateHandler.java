@@ -16,6 +16,8 @@
  */
 package com.codenvy.eclipse.ui.team;
 
+import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.updateIResource;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -27,17 +29,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 
-import com.codenvy.eclipse.core.client.ProjectClient;
-import com.codenvy.eclipse.core.client.exceptions.ServiceUnavailableException;
+import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.spi.RestServiceFactory;
+import com.codenvy.eclipse.core.client.security.RestCredentialsProvider;
+import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
-import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
-import com.codenvy.eclipse.core.utils.ServiceHelper;
-import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 
 /**
  * Handler updating resources from Codenvy.
@@ -54,53 +52,35 @@ public class UpdateHandler extends AbstractResourceHandler {
 
             try {
 
-                ServiceHelper.forService(RestServiceFactory.class)
-                             .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
-                                 @Override
-                                 public Void run(RestServiceFactory factory) {
-                                     final IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-                                     final ProjectClient projectService =
-                                                                           factory.newRestServiceWithAuth(ProjectClient.class,
-                                                                                                          metaProject.url,
-                                                                                                          metaProject.username);
-                                     try {
+                PlatformUI.getWorkbench()
+                          .getProgressService().run(true, false, new IRunnableWithProgress() {
+                              @Override
+                              public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                                  monitor.beginTask("Update resources", resources.size());
 
-                                         progressService.run(true, false, new IRunnableWithProgress() {
-                                             @Override
-                                             public void run(IProgressMonitor monitor) throws InvocationTargetException,
-                                                                                      InterruptedException {
-                                                 monitor.beginTask("Update resources", resources.size());
+                                  try {
 
-                                                 try {
+                                      for (IResource oneResource : resources) {
+                                          final Project codenvyProject = new Project.Builder().withName(metaProject.projectName)
+                                                                                              .withWorkspaceId(metaProject.workspaceId)
+                                                                                              .build();
 
-                                                     for (IResource oneResource : resources) {
-                                                         final Project codenvyProject =
-                                                                                        new Project.Builder().withName(metaProject.projectName)
-                                                                                                             .withWorkspaceId(metaProject.workspaceId)
-                                                                                                             .build();
+                                          final Codenvy codenvy =
+                                                                  new Codenvy.Builder(metaProject.url, metaProject.username,
+                                                                                      new RestCredentialsProvider(),
+                                                                                      SecureStorageDataStoreFactory.INSTANCE).build();
 
-                                                         EclipseProjectHelper.updateIResource(codenvyProject, oneResource, projectService,
-                                                                                              monitor);
+                                          updateIResource(codenvyProject, oneResource, codenvy, monitor);
+                                          monitor.worked(1);
+                                      }
 
-                                                         monitor.worked(1);
-                                                     }
+                                  } finally {
+                                      monitor.done();
+                                  }
+                              }
+                          });
 
-                                                 } finally {
-                                                     monitor.done();
-                                                 }
-                                             }
-                                         });
-
-                                     } catch (InterruptedException | InvocationTargetException e) {
-                                         throw new RuntimeException(e);
-                                     }
-
-                                     return null;
-                                 }
-                             });
-
-            } catch (ServiceUnavailableException e) {
-                // TODO do something if service is unavailable
+            } catch (InterruptedException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }

@@ -20,8 +20,6 @@ import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
 import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
 import static java.util.Arrays.asList;
 
-import javax.ws.rs.ProcessingException;
-
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -42,16 +40,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.codenvy.eclipse.core.client.exceptions.AuthenticationException;
-import com.codenvy.eclipse.core.client.exceptions.ServiceUnavailableException;
-import com.codenvy.eclipse.core.client.model.Credentials;
-import com.codenvy.eclipse.core.services.security.AuthenticationService;
-import com.codenvy.eclipse.core.services.security.SecureStorageService;
-import com.codenvy.eclipse.core.spi.RestServiceFactory;
-import com.codenvy.eclipse.core.utils.ServiceHelper;
-import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;
+import com.codenvy.eclipse.ui.utils.SecureStorageHelper;
 import com.codenvy.eclipse.ui.widgets.ComboAutoCompleteField;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.collect.ObjectArrays;
@@ -147,58 +138,20 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         final IWizardPage targetPage = (IWizardPage)event.getTargetPage();
 
         if (isCurrentPage() && wizard.getProjectWizardPage().getName().equals(targetPage.getName())) {
-            try {
+            // We add the new location to preferences
+            final IPreferenceStore codenvyPreferenceStore = CodenvyUIPlugin.getDefault().getPreferenceStore();
+            final String[] locations =
+                                       CodenvyPreferencesInitializer.parseString(codenvyPreferenceStore.getString(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME));
 
-                ServiceHelper.forService(RestServiceFactory.class)
-                             .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
-                                 @Override
-                                 public Void run(RestServiceFactory factory) {
-                                     try {
-
-                                         final AuthenticationService authenticationService =
-                                                                                             factory.newRestService(AuthenticationService.class,
-                                                                                                                    urls.getText());
-
-                                         authenticationService.login(new Credentials(usernames.getText(), password.getText()),
-                                                                     storeUserCredentials.getSelection());
-
-                                         // We add the new location to preferences
-                                         final IPreferenceStore codenvyPreferenceStore = CodenvyUIPlugin.getDefault().getPreferenceStore();
-                                         final String[] locations =
-                                                                    CodenvyPreferencesInitializer.parseString(codenvyPreferenceStore.getString(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME));
-
-                                         if (!asList(locations).contains(urls.getText())) {
-                                             codenvyPreferenceStore.setValue(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME,
-                                                                             CodenvyPreferencesInitializer.createList(ObjectArrays.concat(urls.getText(),
-                                                                                                                                          locations
-                                                                                                                                  )));
-                                         }
-
-                                         setErrorMessage(null);
-
-                                     } catch (AuthenticationException e) {
-                                         event.doit = false;
-                                         setErrorMessage("Authentication failed: wrong Username and/or Password.");
-
-                                     } catch (ProcessingException e) {
-                                         event.doit = false;
-                                         setErrorMessage("Authentication failed: wrong URL.");
-
-                                     }
-
-                                     return null;
-                                 }
-                             });
-
-            } catch (ServiceUnavailableException e) {
-                // TODO do something if service is unavailable
-                throw new RuntimeException(e);
+            if (!asList(locations).contains(urls.getText())) {
+                codenvyPreferenceStore.setValue(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME,
+                                                CodenvyPreferencesInitializer.createList(ObjectArrays.concat(urls.getText(), locations)));
             }
         }
     }
 
     /**
-     * Returns the Codenvy platform url entered.
+     * Returns the Codenvy platform url.
      * 
      * @return the Codenvy platform url never {@code null}.
      */
@@ -207,7 +160,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
     }
 
     /**
-     * Returns the username entered.
+     * Returns the user name.
      * 
      * @return the username never {@code null}.
      */
@@ -215,54 +168,35 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         return usernames.getText();
     }
 
+    /**
+     * Returns the user password.
+     * 
+     * @return the password never {@code null}.
+     */
+    public String getPassword() {
+        return password.getText();
+    }
+
     private void autoFillUsernames() {
         if (!isNullOrEmpty(urls.getText())) {
-            try {
+            final String currentUsername = usernames.getText();
+            usernames.removeAll();
 
-                ServiceHelper.forService(SecureStorageService.class)
-                             .invoke(new ServiceInvoker<SecureStorageService, Void>() {
-                                 @Override
-                                 public Void run(SecureStorageService service) {
-                                     final String currentUsername = usernames.getText();
-                                     usernames.removeAll();
-
-                                     for (String oneUsername : service.getUsernamesForURL(urls.getText())) {
-                                         if (!currentUsername.equals(oneUsername)) {
-                                             usernames.add(oneUsername);
-                                         }
-                                     }
-
-                                     usernames.setText(currentUsername);
-                                     return null;
-                                 }
-                             });
-
-            } catch (ServiceUnavailableException e) {
-                // TODO do something if service is unavailable
-                throw new RuntimeException(e);
+            for (String oneUsername : SecureStorageHelper.getUsernamesForURL(urls.getText())) {
+                if (!currentUsername.equals(oneUsername)) {
+                    usernames.add(oneUsername);
+                }
             }
+
+            usernames.setText(currentUsername);
         }
     }
 
     private void autoFillPassword() {
         if (!isNullOrEmpty(usernames.getText())) {
-            try {
-
-                ServiceHelper.forService(SecureStorageService.class)
-                             .invoke(new ServiceInvoker<SecureStorageService, Void>() {
-                                 @Override
-                                 public Void run(SecureStorageService service) {
-                                     final String storedPassword = service.getPassword(urls.getText(), usernames.getText());
-                                     if (storedPassword != null && !storedPassword.isEmpty()) {
-                                         password.setText(storedPassword);
-                                     }
-                                     return null;
-                                 }
-                             });
-
-            } catch (ServiceUnavailableException e) {
-                // TODO do something if service is unavailable
-                throw new RuntimeException(e);
+            final String storedPassword = SecureStorageHelper.getPassword(urls.getText(), usernames.getText());
+            if (storedPassword != null && !storedPassword.isEmpty()) {
+                password.setText(storedPassword);
             }
         }
     }

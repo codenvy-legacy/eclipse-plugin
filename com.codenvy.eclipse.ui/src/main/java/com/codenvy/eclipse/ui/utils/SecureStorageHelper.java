@@ -14,8 +14,10 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.utils;
+package com.codenvy.eclipse.ui.utils;
 
+import static com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStore.CODENVY_PASSWORD_KEY_NAME;
+import static com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStore.CODENVY_PREFERENCE_STORAGE_NODE_NAME;
 import static com.codenvy.eclipse.core.utils.StringHelper.isEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -27,18 +29,15 @@ import java.util.List;
 
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
 
 /**
- * Helper providing helper methods to work with Eclipse secure storage.
+ * Helper providing methods to work with Eclipse secure storage.
  * 
  * @author Stéphane Daviet
  * @author Kevin Pollet
  */
 public final class SecureStorageHelper {
-    public static final String CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
-    public static final String CODENVY_PASSWORD_KEY_NAME            = "password";
-    public static final String CODENVY_TOKEN_KEY_NAME               = "token";
-
     /**
      * Gets all Codenvy usernames associated with the given Codenvy URL.
      * 
@@ -63,6 +62,45 @@ public final class SecureStorageHelper {
         }
 
         return usernames;
+    }
+
+    /**
+     * Gets the Codenvy password corresponding to the given URL and username.
+     * 
+     * @param url the Codenvy URL.
+     * @param username the Codenvy username.
+     * @return the Codenvy password or {@code null} if not found.
+     * @throws NullPointerException if url or username parameter is {@code null}.
+     * @throws IllegalArgumentException if url or username is an empty {@code String}.
+     */
+    public static String getPassword(String url, String username) {
+        checkNotNull(url);
+        checkArgument(!isEmpty(url));
+        checkNotNull(username);
+        checkArgument(!isEmpty(username));
+
+        try {
+
+            final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+            checkNotNull(root);
+
+            if (root.nodeExists(CODENVY_PREFERENCE_STORAGE_NODE_NAME)) {
+                final ISecurePreferences codenvyNode = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME);
+
+                if (codenvyNode.nodeExists(encodeSlashes(url))) {
+                    final ISecurePreferences urlNode = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME).node(encodeSlashes(url));
+
+                    if (urlNode.nodeExists(username)) {
+                        return urlNode.node(username).get(CODENVY_PASSWORD_KEY_NAME, null);
+                    }
+                }
+            }
+
+            return null;
+
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

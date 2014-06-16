@@ -57,15 +57,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
 
-import com.codenvy.eclipse.core.client.ProjectClient;
-import com.codenvy.eclipse.core.client.WorkspaceClient;
-import com.codenvy.eclipse.core.client.exceptions.ServiceUnavailableException;
+import com.codenvy.eclipse.core.client.Codenvy;
+import com.codenvy.eclipse.core.client.model.Credentials;
 import com.codenvy.eclipse.core.client.model.Project;
 import com.codenvy.eclipse.core.client.model.Workspace;
 import com.codenvy.eclipse.core.client.model.Workspace.WorkspaceRef;
-import com.codenvy.eclipse.core.spi.RestServiceFactory;
-import com.codenvy.eclipse.core.utils.ServiceHelper;
-import com.codenvy.eclipse.core.utils.ServiceHelper.ServiceInvoker;
+import com.codenvy.eclipse.core.client.security.RestCredentialsProvider;
+import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
@@ -232,47 +230,43 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
 
-                    monitor.beginTask("Fetch workspaces from Codenvy", UNKNOWN);
-
                     try {
+                        Display.getDefault().syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                final String platformURL = wizard.getAuthenticationWizardPage().getURL();
+                                final String username = wizard.getAuthenticationWizardPage().getUsername();
+                                final String password = wizard.getAuthenticationWizardPage().getPassword();
 
-                        ServiceHelper.forService(RestServiceFactory.class)
-                                     .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
-                                         @Override
-                                         public Void run(final RestServiceFactory factory) {
+                                final Codenvy codenvy =
+                                                        new Codenvy.Builder(platformURL, username, new RestCredentialsProvider(),
+                                                                            SecureStorageDataStoreFactory.INSTANCE)
+                                                                                                                   .withCredentials(new Credentials(
+                                                                                                                                                    username,
+                                                                                                                                                    password))
+                                                                                                                   .build();
 
-                                             Display.getDefault().syncExec(new Runnable() {
-                                                 @Override
-                                                 public void run() {
-                                                     final String platformURL = wizard.getAuthenticationWizardPage().getURL();
-                                                     final String username = wizard.getAuthenticationWizardPage().getUsername();
-                                                     final WorkspaceClient workspaceService =
-                                                                                               factory.newRestServiceWithAuth(WorkspaceClient.class,
-                                                                                                                              platformURL,
-                                                                                                                              username);
-                                                     final List<Workspace> workspaces = workspaceService.all();
-                                                     final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
-                                                     for (Workspace workspace : workspaces) {
-                                                         workspaceRefs.add(workspaceService.withName(workspace.workspaceRef.name));
-                                                     }
+                                final List<Workspace> workspaces = codenvy.workspace()
+                                                                          .all()
+                                                                          .execute();
 
-                                                     workspaceComboViewer.setInput(workspaceRefs.toArray());
-                                                     if (!workspaces.isEmpty()) {
-                                                         workspaceComboViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
-                                                     }
-                                                 }
-                                             });
+                                monitor.beginTask("Fetch workspaces from Codenvy", workspaces.size());
 
-                                             return null;
-                                         }
-                                     });
+                                final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
+                                for (Workspace workspace : workspaces) {
+                                    workspaceRefs.add(codenvy.workspace().withName(workspace.workspaceRef.name).execute());
+                                    monitor.worked(1);
+                                }
 
-                    } catch (ServiceUnavailableException e) {
-                        // TODO do something if service is unavailable
-                        throw new RuntimeException(e);
+                                workspaceComboViewer.setInput(workspaceRefs.toArray());
+                                if (!workspaces.isEmpty()) {
+                                    workspaceComboViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
+                                }
+                            }
+                        });
 
                     } finally {
                         monitor.done();
@@ -298,45 +292,40 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
 
-                    monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
-
                     try {
 
-                        ServiceHelper.forService(RestServiceFactory.class)
-                                     .invoke(new ServiceInvoker<RestServiceFactory, Void>() {
-                                         @Override
-                                         public Void run(final RestServiceFactory factory) {
+                        monitor.beginTask("Fetch workspace projects from Codenvy", UNKNOWN);
 
-                                             Display.getDefault().syncExec(new Runnable() {
-                                                 @Override
-                                                 public void run() {
-                                                     final String platformURL = wizard.getAuthenticationWizardPage().getURL();
-                                                     final String username = wizard.getAuthenticationWizardPage().getUsername();
-                                                     final ProjectClient projectService =
-                                                                                           factory.newRestServiceWithAuth(ProjectClient.class,
-                                                                                                                          platformURL,
-                                                                                                                          username);
-                                                     final List<Project> projects = projectService.getWorkspaceProjects(workspaceRef.id);
+                        Display.getDefault().syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                final String platformURL = wizard.getAuthenticationWizardPage().getURL();
+                                final String username = wizard.getAuthenticationWizardPage().getUsername();
+                                final String password = wizard.getAuthenticationWizardPage().getPassword();
 
-                                                     projectTableViewer.setInput(projects);
+                                final Codenvy codenvy =
+                                                        new Codenvy.Builder(platformURL, username, new RestCredentialsProvider(),
+                                                                            SecureStorageDataStoreFactory.INSTANCE)
+                                                                                                                   .withCredentials(new Credentials(
+                                                                                                                                                    username,
+                                                                                                                                                    password))
+                                                                                                                   .build();
 
-                                                     // existing projects should be grayed
-                                                     final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-                                                     for (Project oneProject : projects) {
-                                                         final IProject workspaceProject = workspaceRoot.getProject(oneProject.name);
-                                                         projectTableViewer.setGrayed(oneProject, workspaceProject.exists());
-                                                     }
-                                                     projectTableViewer.refresh();
-                                                 }
-                                             });
+                                final List<Project> projects = codenvy.project()
+                                                                      .getWorkspaceProjects(workspaceRef.id)
+                                                                      .execute();
 
-                                             return null;
-                                         }
-                                     });
+                                projectTableViewer.setInput(projects);
 
-                    } catch (ServiceUnavailableException e) {
-                        // TODO do something if service is unavailable
-                        throw new RuntimeException(e);
+                                final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+                                for (Project oneProject : projects) {
+                                    final IProject workspaceProject = workspaceRoot.getProject(oneProject.name);
+                                    projectTableViewer.setGrayed(oneProject, workspaceProject.exists());
+                                }
+
+                                projectTableViewer.refresh();
+                            }
+                        });
 
                     } finally {
                         monitor.done();
