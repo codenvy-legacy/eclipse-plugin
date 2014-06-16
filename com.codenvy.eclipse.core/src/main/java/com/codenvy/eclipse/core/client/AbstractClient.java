@@ -32,7 +32,6 @@ import javax.ws.rs.ext.Provider;
 import com.codenvy.eclipse.core.client.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.client.model.Credentials;
 import com.codenvy.eclipse.core.client.model.Token;
-import com.codenvy.eclipse.core.client.security.CredentialsProvider;
 import com.codenvy.eclipse.core.client.store.DataStoreFactory;
 import com.codenvy.eclipse.core.client.store.StoredCredentials;
 

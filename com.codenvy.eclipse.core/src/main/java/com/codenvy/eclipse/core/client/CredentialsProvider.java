@@ -14,8 +14,9 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.client.security;
+package com.codenvy.eclipse.core.client;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.client.Entity.json;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -25,17 +26,28 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
-import com.codenvy.eclipse.core.client.Context;
 import com.codenvy.eclipse.core.client.model.Credentials;
 import com.codenvy.eclipse.core.client.model.Token;
 import com.codenvy.eclipse.core.client.store.StoredCredentials;
 
-public class RestCredentialsProvider implements CredentialsProvider {
-    private Context   context;
-    private WebTarget webTarget;
+/**
+ * This class provides the user credentials to the API.
+ * 
+ * @author Kevin Pollet
+ */
+public class CredentialsProvider {
+    private final Context   context;
+    private final WebTarget webTarget;
 
-    @Override
-    public void initialize(Context context) {
+    /**
+     * Constructs an instance of {@link CredentialsProvider}.
+     * 
+     * @param context the API call {@link Context}.
+     * @throws NullPointerException if context parameter is {@code null}.
+     */
+    public CredentialsProvider(Context context) {
+        checkNotNull(context);
+
         this.context = context;
 
         final UriBuilder uriBuilder = UriBuilder.fromUri(context.getUrl())
@@ -43,11 +55,17 @@ public class RestCredentialsProvider implements CredentialsProvider {
                                                 .path("auth")
                                                 .path("login");
 
-        this.webTarget = ClientBuilder.newClient().target(uriBuilder);
-
+        this.webTarget = ClientBuilder.newClient()
+                                      .target(uriBuilder);
     }
 
-    @Override
+    /**
+     * Authorises the user with the following {@link Credentials} on Codenvy.
+     * 
+     * @param credentials the user {@link Credentials}.
+     * @return the authentication {@link Token}.
+     * @throws NullPointerException if credentials parameter is {@code null}.
+     */
     public Token authorize(Credentials credentials) {
         final Response response = webTarget.request()
                                            .accept(MediaType.APPLICATION_JSON_TYPE)
@@ -56,13 +74,23 @@ public class RestCredentialsProvider implements CredentialsProvider {
         return response.getStatus() == Status.OK.getStatusCode() ? response.readEntity(Token.class) : null;
     }
 
-    @Override
+    /**
+     * Retrieves the Codenvy API {@link Token} for the given user.
+     * 
+     * @param username the user name.
+     * @return the {@link Token}.
+     */
     public Token getToken(String username) {
         final StoredCredentials credentials = context.loadStoredCredentials(username);
         return credentials == null ? null : credentials.token;
     }
 
-    @Override
+    /**
+     * Refresh the the Codenvy API {@link Token} for the given user.
+     * 
+     * @param username the user name.
+     * @return the {@link Token}.
+     */
     public Token refreshToken(String username) {
         // TODO
         return null;

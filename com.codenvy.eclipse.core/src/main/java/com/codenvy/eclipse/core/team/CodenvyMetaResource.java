@@ -24,7 +24,6 @@ import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.security.RestCredentialsProvider;
 import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 
 /**
@@ -54,8 +53,9 @@ public class CodenvyMetaResource {
                                                                         .build();
 
                     final Codenvy codenvy =
-                                            new Codenvy.Builder(metaProject.url, metaProject.username, new RestCredentialsProvider(),
+                                            new Codenvy.Builder(metaProject.url, metaProject.username,
                                                                 SecureStorageDataStoreFactory.INSTANCE).build();
+
                     this.tracked =
                                    resource.getType() == PROJECT ? true : codenvy.project()
                                                                                  .isResource(codenvyProject,

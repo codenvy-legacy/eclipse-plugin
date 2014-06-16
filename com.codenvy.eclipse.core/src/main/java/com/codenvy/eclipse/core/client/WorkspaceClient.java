@@ -35,7 +35,6 @@ import com.codenvy.eclipse.core.client.model.Workspace;
 import com.codenvy.eclipse.core.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.client.request.APIRequest;
 import com.codenvy.eclipse.core.client.request.SimpleAPIRequest;
-import com.codenvy.eclipse.core.client.security.CredentialsProvider;
 import com.codenvy.eclipse.core.client.store.DataStoreFactory;
 import com.codenvy.eclipse.core.client.store.StoredCredentials;
 

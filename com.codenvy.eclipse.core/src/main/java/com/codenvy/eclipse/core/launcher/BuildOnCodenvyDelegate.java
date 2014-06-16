@@ -32,7 +32,6 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.security.RestCredentialsProvider;
 import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 
@@ -65,9 +64,7 @@ public final class BuildOnCodenvyDelegate implements ILaunchConfigurationDelegat
                                                                 .build();
 
             final Codenvy codenvy =
-                                    new Codenvy.Builder(metaProject.url, metaProject.username, new RestCredentialsProvider(),
-                                                        SecureStorageDataStoreFactory.INSTANCE)
-                                                                                               .build();
+                                    new Codenvy.Builder(metaProject.url, metaProject.username, SecureStorageDataStoreFactory.INSTANCE).build();
 
             new CodenvyBuilderProcess(launch, codenvy, codenvyProject);
         }

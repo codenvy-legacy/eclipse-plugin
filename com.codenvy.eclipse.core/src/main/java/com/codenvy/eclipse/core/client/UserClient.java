@@ -25,7 +25,6 @@ import com.codenvy.eclipse.core.client.model.Credentials;
 import com.codenvy.eclipse.core.client.model.User;
 import com.codenvy.eclipse.core.client.request.APIRequest;
 import com.codenvy.eclipse.core.client.request.SimpleAPIRequest;
-import com.codenvy.eclipse.core.client.security.CredentialsProvider;
 import com.codenvy.eclipse.core.client.store.DataStoreFactory;
 import com.codenvy.eclipse.core.client.store.StoredCredentials;
 

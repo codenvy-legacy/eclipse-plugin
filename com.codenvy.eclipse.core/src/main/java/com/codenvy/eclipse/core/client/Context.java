@@ -22,7 +22,7 @@ import com.codenvy.eclipse.core.client.store.DataStore;
 import com.codenvy.eclipse.core.client.store.StoredCredentials;
 
 /**
- * Context class used to provide context to {@linkplain com.codenvy.eclipse.core.client.security.CredentialsProvider CredentialsProvider}
+ * Context class used to provide context to {@linkplain com.codenvy.eclipse.core.client.CredentialsProvider CredentialsProvider}
  * 
  * @author Kevin Pollet
  */

@@ -42,7 +42,6 @@ import org.eclipse.ui.PlatformUI;
 
 import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.security.RestCredentialsProvider;
 import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
@@ -121,8 +120,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                              monitor.beginTask("Importing projects", projects.size());
 
                              final Codenvy codenvy =
-                                                     new Codenvy.Builder(platformURL, username, new RestCredentialsProvider(),
-                                                                         SecureStorageDataStoreFactory.INSTANCE).build();
+                                                     new Codenvy.Builder(platformURL, username, SecureStorageDataStoreFactory.INSTANCE).build();
 
                              final List<IProject> importedProjects = new ArrayList<>();
                              for (Project oneProject : projects) {

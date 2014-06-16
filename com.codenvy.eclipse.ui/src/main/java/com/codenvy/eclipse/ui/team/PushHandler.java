@@ -32,7 +32,6 @@ import org.eclipse.ui.PlatformUI;
 
 import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.security.RestCredentialsProvider;
 import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
@@ -64,7 +63,6 @@ public class PushHandler extends AbstractResourceHandler {
 
                                       final Codenvy codenvy =
                                                               new Codenvy.Builder(metaProject.url, metaProject.username,
-                                                                                  new RestCredentialsProvider(),
                                                                                   SecureStorageDataStoreFactory.INSTANCE).build();
 
                                       for (IResource oneResource : resources) {

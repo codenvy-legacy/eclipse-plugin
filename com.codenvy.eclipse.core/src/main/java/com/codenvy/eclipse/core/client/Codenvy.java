@@ -19,7 +19,6 @@ package com.codenvy.eclipse.core.client;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.codenvy.eclipse.core.client.model.Credentials;
-import com.codenvy.eclipse.core.client.security.CredentialsProvider;
 import com.codenvy.eclipse.core.client.store.DataStoreFactory;
 import com.codenvy.eclipse.core.client.store.StoredCredentials;
 
@@ -42,29 +41,23 @@ public class Codenvy {
      * @param url the Codenvy platform URL.
      * @param username the username.
      * @param credentials the provided user {@link Credentials} might be {@code null}.
-     * @param credentialsProvider the {@link CredentialsProvider}.
      * @param credentialsStoreFactory the {@link DataStoreFactory}.
      * @throws NullPointerException if url, username or credentialsProvider parameter is {@code null}.
      */
     private Codenvy(String url,
                     String username,
                     Credentials credentials,
-                    CredentialsProvider credentialsProvider,
                     DataStoreFactory<String, StoredCredentials> credentialsStoreFactory) {
 
         checkNotNull(url);
         checkNotNull(username);
-        checkNotNull(credentialsProvider);
 
         this.url = url;
         this.context = new Context(url, credentialsStoreFactory.getDataStore(url));
         this.username = username;
         this.credentials = credentials;
-        this.credentialsProvider = credentialsProvider;
+        this.credentialsProvider = new CredentialsProvider(context);
         this.credentialsStoreFactory = credentialsStoreFactory;
-
-        // initialize credentials provider
-        this.credentialsProvider.initialize(context);
     }
 
     /**
@@ -116,17 +109,14 @@ public class Codenvy {
         private final String                                      url;
         private final String                                      username;
         private Credentials                                       credentials;
-        private final CredentialsProvider                         credentialsProvider;
         private final DataStoreFactory<String, StoredCredentials> credentialsStoreFactory;
 
         public Builder(String url,
                        String username,
-                       CredentialsProvider credentialsProvider,
                        DataStoreFactory<String, StoredCredentials> credentialsStoreFactory) {
 
             this.url = url;
             this.username = username;
-            this.credentialsProvider = credentialsProvider;
             this.credentialsStoreFactory = credentialsStoreFactory;
         }
 
@@ -142,7 +132,7 @@ public class Codenvy {
         }
 
         public Codenvy build() {
-            return new Codenvy(url, username, credentials, credentialsProvider, credentialsStoreFactory);
+            return new Codenvy(url, username, credentials, credentialsStoreFactory);
         }
     }
 }
