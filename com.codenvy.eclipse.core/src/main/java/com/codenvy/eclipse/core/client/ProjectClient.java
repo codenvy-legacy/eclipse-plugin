@@ -41,8 +41,6 @@ import com.codenvy.eclipse.core.client.request.APIRequest;
 import com.codenvy.eclipse.core.client.request.APIRequestAdaptor;
 import com.codenvy.eclipse.core.client.request.APIRequestAdaptor.Adaptor;
 import com.codenvy.eclipse.core.client.request.SimpleAPIRequest;
-import com.codenvy.eclipse.core.client.store.DataStoreFactory;
-import com.codenvy.eclipse.core.client.store.StoredCredentials;
 
 /**
  * The Codenvy project API client.
@@ -59,16 +57,14 @@ public class ProjectClient extends AbstractClient {
      * @param username the username.
      * @param credentials the provided user {@link Credentials} might be {@code null}.
      * @param credentialsProvider the {@link CredentialsProvider}.
-     * @param credentialsStoreFactory the {@link DataStoreFactory}.
      * @throws NullPointerException if url, username or credentialsProvider parameter is {@code null}.
      */
     ProjectClient(String url,
                   String username,
                   Credentials credentials,
-                  CredentialsProvider credentialsProvider,
-                  DataStoreFactory<String, StoredCredentials> credentialsStoreFactory) {
+                  CredentialsProvider credentialsProvider) {
 
-        super(url, "project", username, credentials, credentialsProvider, credentialsStoreFactory);
+        super(url, "project", username, credentials, credentialsProvider);
     }
 
     /**

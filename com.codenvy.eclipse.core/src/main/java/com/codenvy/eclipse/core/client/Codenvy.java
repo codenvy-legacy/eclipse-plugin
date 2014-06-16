@@ -28,12 +28,10 @@ import com.codenvy.eclipse.core.client.store.StoredCredentials;
  * @author Kevin Pollet
  */
 public class Codenvy {
-    private final String                                      url;
-    private final Context                                     context;
-    private final String                                      username;
-    private final Credentials                                 credentials;
-    private final CredentialsProvider                         credentialsProvider;
-    private final DataStoreFactory<String, StoredCredentials> credentialsStoreFactory;
+    private final String              url;
+    private final String              username;
+    private final Credentials         credentials;
+    private final CredentialsProvider credentialsProvider;
 
     /**
      * Constructs an instance of {@link Codenvy} client API.
@@ -53,11 +51,9 @@ public class Codenvy {
         checkNotNull(username);
 
         this.url = url;
-        this.context = new Context(url, credentialsStoreFactory.getDataStore(url));
         this.username = username;
         this.credentials = credentials;
-        this.credentialsProvider = new CredentialsProvider(context);
-        this.credentialsStoreFactory = credentialsStoreFactory;
+        this.credentialsProvider = new CredentialsProvider(url, credentialsStoreFactory.getDataStore(url));
     }
 
     /**
@@ -66,7 +62,7 @@ public class Codenvy {
      * @return the user API client.
      */
     public UserClient user() {
-        return new UserClient(url, username, credentials, credentialsProvider, credentialsStoreFactory);
+        return new UserClient(url, username, credentials, credentialsProvider);
     }
 
     /**
@@ -75,7 +71,7 @@ public class Codenvy {
      * @return the builder API client.
      */
     public BuilderClient builder() {
-        return new BuilderClient(url, username, credentials, credentialsProvider, credentialsStoreFactory);
+        return new BuilderClient(url, username, credentials, credentialsProvider);
     }
 
     /**
@@ -84,7 +80,7 @@ public class Codenvy {
      * @return the runner API client.
      */
     public RunnerClient runner() {
-        return new RunnerClient(url, username, credentials, credentialsProvider, credentialsStoreFactory);
+        return new RunnerClient(url, username, credentials, credentialsProvider);
     }
 
     /**
@@ -93,7 +89,7 @@ public class Codenvy {
      * @return the project API client.
      */
     public ProjectClient project() {
-        return new ProjectClient(url, username, credentials, credentialsProvider, credentialsStoreFactory);
+        return new ProjectClient(url, username, credentials, credentialsProvider);
     }
 
     /**
@@ -102,7 +98,7 @@ public class Codenvy {
      * @return the workspace API client.
      */
     public WorkspaceClient workspace() {
-        return new WorkspaceClient(url, username, credentials, credentialsProvider, credentialsStoreFactory);
+        return new WorkspaceClient(url, username, credentials, credentialsProvider);
     }
 
     public static class Builder {

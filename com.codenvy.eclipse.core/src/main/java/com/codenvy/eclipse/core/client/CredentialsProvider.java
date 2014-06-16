@@ -16,7 +16,6 @@
  */
 package com.codenvy.eclipse.core.client;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.client.Entity.json;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -28,6 +27,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.codenvy.eclipse.core.client.model.Credentials;
 import com.codenvy.eclipse.core.client.model.Token;
+import com.codenvy.eclipse.core.client.store.DataStore;
 import com.codenvy.eclipse.core.client.store.StoredCredentials;
 
 /**
@@ -36,21 +36,21 @@ import com.codenvy.eclipse.core.client.store.StoredCredentials;
  * @author Kevin Pollet
  */
 public class CredentialsProvider {
-    private final Context   context;
-    private final WebTarget webTarget;
+    private final WebTarget                            webTarget;
+    private final DataStore<String, StoredCredentials> dataStore;
 
     /**
      * Constructs an instance of {@link CredentialsProvider}.
      * 
-     * @param context the API call {@link Context}.
-     * @throws NullPointerException if context parameter is {@code null}.
+     * @param url the Codenvy platform url.
+     * @param dataStore the {@link DataStore} used to store the user credentials, might be {@code null}.
+     * @throws NullPointerException if url parameter is {@code null}.
+     * @throws IllegalArgumentException if url parameter is an empty {@link String}.
      */
-    public CredentialsProvider(Context context) {
-        checkNotNull(context);
+    public CredentialsProvider(String url, DataStore<String, StoredCredentials> dataStore) {
+        this.dataStore = dataStore;
 
-        this.context = context;
-
-        final UriBuilder uriBuilder = UriBuilder.fromUri(context.getUrl())
+        final UriBuilder uriBuilder = UriBuilder.fromUri(url)
                                                 .path("api")
                                                 .path("auth")
                                                 .path("login");
@@ -67,21 +67,34 @@ public class CredentialsProvider {
      * @throws NullPointerException if credentials parameter is {@code null}.
      */
     public Token authorize(Credentials credentials) {
+        Token token = null;
         final Response response = webTarget.request()
                                            .accept(MediaType.APPLICATION_JSON_TYPE)
                                            .post(json(credentials));
 
-        return response.getStatus() == Status.OK.getStatusCode() ? response.readEntity(Token.class) : null;
+        if (response.getStatus() == Status.OK.getStatusCode()) {
+            token = response.readEntity(Token.class);
+
+            if (dataStore != null) {
+                dataStore.put(credentials.username, new StoredCredentials(credentials.password, token));
+            }
+        }
+
+        return token;
     }
 
     /**
-     * Retrieves the Codenvy API {@link Token} for the given user.
+     * Retrieves the stored Codenvy API {@link Token} for the given user.
      * 
      * @param username the user name.
-     * @return the {@link Token}.
+     * @return the {@link Token} or {@code null} if none.
      */
     public Token getToken(String username) {
-        final StoredCredentials credentials = context.loadStoredCredentials(username);
+        if (dataStore == null) {
+            return null;
+        }
+
+        final StoredCredentials credentials = dataStore.get(username);
         return credentials == null ? null : credentials.token;
     }
 

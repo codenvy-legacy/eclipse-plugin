@@ -33,7 +33,6 @@ import com.codenvy.eclipse.core.client.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.client.model.Credentials;
 import com.codenvy.eclipse.core.client.model.Token;
 import com.codenvy.eclipse.core.client.store.DataStoreFactory;
-import com.codenvy.eclipse.core.client.store.StoredCredentials;
 
 /**
  * Abstract client class.
@@ -41,12 +40,10 @@ import com.codenvy.eclipse.core.client.store.StoredCredentials;
  * @author Kevin Pollet
  */
 public class AbstractClient {
-    private final WebTarget                                   webTarget;
-    private final String                                      url;
-    private final String                                      username;
-    private final Credentials                                 credentials;
-    private final CredentialsProvider                         credentialsProvider;
-    private final DataStoreFactory<String, StoredCredentials> credentialsStoreFactory;
+    private final WebTarget           webTarget;
+    private final String              username;
+    private final Credentials         credentials;
+    private final CredentialsProvider credentialsProvider;
 
     /**
      * Constructs an instance of {@link AbstractClient}.
@@ -63,19 +60,16 @@ public class AbstractClient {
                    String apiName,
                    String username,
                    Credentials credentials,
-                   CredentialsProvider credentialsProvider,
-                   DataStoreFactory<String, StoredCredentials> credentialsStoreFactory) {
+                   CredentialsProvider credentialsProvider) {
 
         checkNotNull(url);
         checkNotNull(apiName);
         checkNotNull(username);
         checkNotNull(credentialsProvider);
 
-        this.url = url;
         this.username = username;
         this.credentials = credentials;
         this.credentialsProvider = credentialsProvider;
-        this.credentialsStoreFactory = credentialsStoreFactory;
 
         final UriBuilder uriBuilder = UriBuilder.fromUri(url)
                                                 .path("api")
@@ -116,9 +110,6 @@ public class AbstractClient {
                 requestContext.setUri(UriBuilder.fromUri(requestContext.getUri())
                                                 .queryParam("token", authToken.value)
                                                 .build());
-
-                credentialsStoreFactory.getDataStore(url)
-                                       .put(username, new StoredCredentials(credentials.password, authToken));
             }
         }
     }
