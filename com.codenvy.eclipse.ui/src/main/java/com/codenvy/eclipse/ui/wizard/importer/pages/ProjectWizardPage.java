@@ -57,12 +57,12 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
 
+import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Credentials;
 import com.codenvy.eclipse.core.client.model.Project;
 import com.codenvy.eclipse.core.client.model.Workspace;
 import com.codenvy.eclipse.core.client.model.Workspace.WorkspaceRef;
-import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
@@ -240,12 +240,11 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 final String username = wizard.getAuthenticationWizardPage().getUsername();
                                 final String password = wizard.getAuthenticationWizardPage().getPassword();
 
-                                final Codenvy codenvy =
-                                                        new Codenvy.Builder(platformURL, username, SecureStorageDataStoreFactory.INSTANCE)
-                                                                                                                                          .withCredentials(new Credentials(
-                                                                                                                                                                           username,
-                                                                                                                                                                           password))
-                                                                                                                                          .build();
+                                final Codenvy codenvy = CodenvyPlugin.getDefault()
+                                                                     .getCodenvyBuilder(platformURL, username)
+                                                                     .withCredentials(new Credentials(username, password))
+                                                                     .build();
+
 
                                 final List<Workspace> workspaces = codenvy.workspace()
                                                                           .all()
@@ -301,12 +300,10 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 final String username = wizard.getAuthenticationWizardPage().getUsername();
                                 final String password = wizard.getAuthenticationWizardPage().getPassword();
 
-                                final Codenvy codenvy =
-                                                        new Codenvy.Builder(platformURL, username, SecureStorageDataStoreFactory.INSTANCE)
-                                                                                                                                          .withCredentials(new Credentials(
-                                                                                                                                                                           username,
-                                                                                                                                                                           password))
-                                                                                                                                          .build();
+                                final Codenvy codenvy = CodenvyPlugin.getDefault()
+                                                                     .getCodenvyBuilder(platformURL, username)
+                                                                     .withCredentials(new Credentials(username, password))
+                                                                     .build();
 
                                 final List<Project> projects = codenvy.project()
                                                                       .getWorkspaceProjects(workspaceRef.id)

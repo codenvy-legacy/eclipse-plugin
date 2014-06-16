@@ -40,9 +40,9 @@ import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
 
+import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
@@ -119,8 +119,9 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
                          public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                              monitor.beginTask("Importing projects", projects.size());
 
-                             final Codenvy codenvy =
-                                                     new Codenvy.Builder(platformURL, username, SecureStorageDataStoreFactory.INSTANCE).build();
+                             final Codenvy codenvy = CodenvyPlugin.getDefault()
+                                                                  .getCodenvyBuilder(platformURL, username)
+                                                                  .build();
 
                              final List<IProject> importedProjects = new ArrayList<>();
                              for (Project oneProject : projects) {

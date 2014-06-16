@@ -22,9 +22,9 @@ import static org.eclipse.core.resources.IResource.ROOT;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
+import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 
 /**
  * The Codenvy resource mapping class.
@@ -52,9 +52,9 @@ public class CodenvyMetaResource {
                                                                         .withWorkspaceId(metaProject.workspaceId)
                                                                         .build();
 
-                    final Codenvy codenvy =
-                                            new Codenvy.Builder(metaProject.url, metaProject.username,
-                                                                SecureStorageDataStoreFactory.INSTANCE).build();
+                    final Codenvy codenvy = CodenvyPlugin.getDefault()
+                                                         .getCodenvyBuilder(metaProject.url, metaProject.username)
+                                                         .build();
 
                     this.tracked =
                                    resource.getType() == PROJECT ? true : codenvy.project()

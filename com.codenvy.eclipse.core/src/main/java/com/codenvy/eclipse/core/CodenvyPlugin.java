@@ -19,6 +19,9 @@ package com.codenvy.eclipse.core;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
+import com.codenvy.eclipse.core.client.Codenvy;
+import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
+
 /**
  * The activator class controls the plug-in life cycle.
  * 
@@ -48,5 +51,16 @@ public class CodenvyPlugin extends Plugin {
      */
     public static CodenvyPlugin getDefault() {
         return plugin;
+    }
+
+    /**
+     * Returns a Codenvy builder for the given url and username.
+     * 
+     * @param url the Codenvy platform url.
+     * @param username the username.
+     * @return an instance of the Codenvy API builder.
+     */
+    public Codenvy.Builder getCodenvyBuilder(String url, String username) {
+        return new Codenvy.Builder(url, username, SecureStorageDataStoreFactory.INSTANCE);
     }
 }

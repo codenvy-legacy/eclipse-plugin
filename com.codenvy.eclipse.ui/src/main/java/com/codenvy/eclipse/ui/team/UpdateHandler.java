@@ -30,9 +30,9 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.PlatformUI;
 
+import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 
@@ -64,9 +64,9 @@ public class UpdateHandler extends AbstractResourceHandler {
                                                                                               .withWorkspaceId(metaProject.workspaceId)
                                                                                               .build();
 
-                                          final Codenvy codenvy =
-                                                                  new Codenvy.Builder(metaProject.url, metaProject.username,
-                                                                                      SecureStorageDataStoreFactory.INSTANCE).build();
+                                          final Codenvy codenvy = CodenvyPlugin.getDefault()
+                                                                               .getCodenvyBuilder(metaProject.url, metaProject.username)
+                                                                               .build();
 
                                           updateIResource(codenvyProject, oneResource, codenvy, monitor);
                                           monitor.worked(1);

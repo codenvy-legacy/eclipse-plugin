@@ -32,7 +32,6 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.client.Codenvy;
 import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 
 /**
@@ -63,8 +62,9 @@ public final class RunOnCodenvyDelegate implements ILaunchConfigurationDelegate 
                                                                 .withWorkspaceId(metaProject.workspaceId)
                                                                 .build();
 
-            final Codenvy codenvy =
-                                    new Codenvy.Builder(metaProject.url, metaProject.username, SecureStorageDataStoreFactory.INSTANCE).build();
+            final Codenvy codenvy = CodenvyPlugin.getDefault()
+                                                 .getCodenvyBuilder(metaProject.url, metaProject.username)
+                                                 .build();
 
             new CodenvyRunnerProcess(launch, codenvy, codenvyProject);
         }
