@@ -68,6 +68,11 @@
 			<url>http://download.eclipse.org/releases/kepler</url>
 			<layout>p2</layout>
 		</repository>
+		  <repository>
+	    	<id>orbit</id>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</url>
+			<layout>p2</layout>
+	    </repository>
 		<repository>
 			<id>swtbot</id>
 			<url>http://download.eclipse.org/technology/swtbot/releases/latest</url>
