@@ -31,7 +31,6 @@ import com.codenvy.eclipse.core.client.store.StoredCredentials;
  * @author Kevin Pollet
  */
 public class SecureStorageDataStore implements DataStore<String, StoredCredentials> {
-    public static final String       CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
     public static final String       CODENVY_PASSWORD_KEY_NAME            = "password";
     public static final String       CODENVY_TOKEN_KEY_NAME               = "token";
 
@@ -82,7 +81,7 @@ public class SecureStorageDataStore implements DataStore<String, StoredCredentia
             final ISecurePreferences node = urlNode.node(username);
 
             node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
-            node.put(CODENVY_TOKEN_KEY_NAME, credentials.password, true);
+            node.put(CODENVY_TOKEN_KEY_NAME, credentials.token.value, true);
 
             return previousCredentials;
 

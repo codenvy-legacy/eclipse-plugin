@@ -17,10 +17,10 @@
 package com.codenvy.eclipse.core.client;
 
 import static javax.ws.rs.client.Entity.json;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
@@ -69,7 +69,7 @@ public class CredentialsProvider {
     public Token authorize(Credentials credentials) {
         Token token = null;
         final Response response = webTarget.request()
-                                           .accept(MediaType.APPLICATION_JSON_TYPE)
+                                           .accept(APPLICATION_JSON_TYPE)
                                            .post(json(credentials));
 
         if (response.getStatus() == Status.OK.getStatusCode()) {
