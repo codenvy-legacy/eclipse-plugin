@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 
 import com.codenvy.eclipse.core.client.Codenvy;
+import com.codenvy.eclipse.core.client.model.Credentials;
 import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
 
 
@@ -53,6 +54,11 @@ public abstract class RestClientBaseIT {
         REST_API_URL = System.getProperty(REST_API_URL_PROPERTY_NAME, codenvySdkProperties.getProperty(REST_API_URL_PROPERTY_NAME));
         Assert.assertNotNull(REST_API_URL);
 
-        codenvy = new Codenvy.Builder(REST_API_URL, DUMMY_USERNAME, SecureStorageDataStoreFactory.INSTANCE).build();
+        codenvy =
+                  new Codenvy.Builder(REST_API_URL, DUMMY_USERNAME, SecureStorageDataStoreFactory.INSTANCE)
+                                                                                                           .withCredentials(new Credentials(
+                                                                                                                                            DUMMY_USERNAME,
+                                                                                                                                            DUMMY_PASSWORD))
+                                                                                                           .build();
     }
 }
