@@ -32,7 +32,6 @@ import javax.ws.rs.ext.Provider;
 import com.codenvy.eclipse.core.client.exceptions.AuthenticationException;
 import com.codenvy.eclipse.core.client.model.Credentials;
 import com.codenvy.eclipse.core.client.model.Token;
-import com.codenvy.eclipse.core.client.store.DataStoreFactory;
 
 /**
  * Abstract client class.
@@ -53,7 +52,7 @@ public class AbstractClient {
      * @param username the username.
      * @param credentials the provided user {@link Credentials} might be {@code null}.
      * @param credentialsProvider the {@link CredentialsProvider}.
-     * @param credentialsStoreFactory the {@link DataStoreFactory}.
+     * @param credentialsStoreFactory the {@linkplain com.codenvy.eclipse.core.client.store.DataStoreFactory DataStoreFactory}.
      * @throws NullPointerException if url, apiName, username or credentialsProvider parameter is {@code null}.
      */
     AbstractClient(String url,
