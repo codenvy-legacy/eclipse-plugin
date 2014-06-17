@@ -118,7 +118,11 @@ public class AbstractClient {
         public void filter(ClientRequestContext requestContext) throws IOException {
             Token authToken = credentialsProvider.getToken(username);
 
-            if (authToken == null && credentials != null) {
+            if (authToken == null) {
+                if (credentials == null) {
+                    throw new AuthenticationException("No credentials provided for authentication");
+                }
+
                 authToken = credentialsProvider.authorize(credentials);
                 if (authToken == null) {
                     throw new AuthenticationException("Unable to negociate a token for authentication");
