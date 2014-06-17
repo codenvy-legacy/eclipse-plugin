@@ -124,11 +124,11 @@ public class AbstractClient {
                 if (authToken == null) {
                     throw new AuthenticationException("Unable to negociate a token for authentication");
                 }
-
-                requestContext.setUri(UriBuilder.fromUri(requestContext.getUri())
-                                                .queryParam("token", authToken.value)
-                                                .build());
             }
+
+            requestContext.setUri(UriBuilder.fromUri(requestContext.getUri())
+                                            .queryParam("token", authToken.value)
+                                            .build());
         }
     }
 }
