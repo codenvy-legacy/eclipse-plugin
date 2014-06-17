@@ -51,6 +51,10 @@
 							<type>p2-installable-unit</type>
 						</dependency>
 						<dependency>
+							<artifactId>org.hamcrest</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
+						<dependency>
 							<artifactId>com.codenvy.eclipse.ui</artifactId>
 							<type>p2-installable-unit</type>
 						</dependency>

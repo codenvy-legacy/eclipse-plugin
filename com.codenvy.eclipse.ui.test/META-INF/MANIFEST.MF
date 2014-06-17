@@ -5,25 +5,16 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Name: Codenvy Eclipse Plugin :: UI Test
 Bundle-Vendor: Codenvy
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/serviceComponents.xml
 Bundle-ManifestVersion: 2
+Bundle-ClassPath: patch.jar,
+ .
+Fragment-Host: com.codenvy.eclipse.client
 Comment: import org.junit.runner see https://bugs.eclipse.org/bugs/show_bug.cgi?id=369266
-Import-Package: com.codenvy.eclipse.client.model;version="1.0.0.qualifier",
- com.codenvy.eclipse.core.team;version="1.0.0.qualifier",
- com.fasterxml.jackson.annotation;version="2.3.2",
- com.google.common.base;version="10.0.1",
- com.google.common.collect;version="10.0.1",
- org.apache.log4j,
- org.eclipse.core.resources,
+Import-Package: org.eclipse.core.resources,
  org.eclipse.core.runtime;version="3.4.0",
- org.eclipse.core.runtime.jobs,
  org.eclipse.core.runtime.preferences;version="3.3.0",
- org.eclipse.equinox.security.storage;version="1.0.0",
- org.eclipse.jface.action,
- org.eclipse.swt,
  org.eclipse.swt.widgets,
  org.eclipse.swtbot.eclipse.finder,
- org.eclipse.swtbot.eclipse.finder.waits,
  org.eclipse.swtbot.eclipse.finder.widgets,
  org.eclipse.swtbot.swt.finder,
  org.eclipse.swtbot.swt.finder.exceptions,
@@ -33,11 +24,12 @@ Import-Package: com.codenvy.eclipse.client.model;version="1.0.0.qualifier",
  org.eclipse.swtbot.swt.finder.results,
  org.eclipse.swtbot.swt.finder.waits,
  org.eclipse.swtbot.swt.finder.widgets,
- org.eclipse.team.core,
- org.eclipse.ui,
  org.eclipse.ui.actions,
  org.hamcrest;core=split;version="1.3.0",
  org.hamcrest.core;version="1.3.0",
  org.junit;version="4.11.0",
  org.junit.runner;version="4.11.0",
+ org.mockito;version="1.9.5",
+ org.mockito.invocation;version="1.9.5",
+ org.mockito.stubbing;version="1.9.5",
  org.osgi.service.prefs;version="1.1.1"

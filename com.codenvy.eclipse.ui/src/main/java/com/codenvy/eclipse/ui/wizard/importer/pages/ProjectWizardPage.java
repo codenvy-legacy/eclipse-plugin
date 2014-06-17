@@ -245,7 +245,6 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                                                      .withCredentials(new Credentials(username, password))
                                                                      .build();
 
-
                                 final List<Workspace> workspaces = codenvy.workspace()
                                                                           .all()
                                                                           .execute();

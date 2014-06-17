@@ -6,6 +6,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Codenvy Eclipse Plugin :: Client
 Bundle-Vendor: Codenvy
 Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: patch.jar,
+ .
+Eclipse-ExtensibleAPI: true
 Import-Package: com.fasterxml.jackson.annotation;version="2.3.2",
  com.fasterxml.jackson.core;version="2.3.2",
  com.fasterxml.jackson.databind;version="2.3.2",
