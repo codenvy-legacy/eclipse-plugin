@@ -18,8 +18,8 @@ package com.codenvy.eclipse.ui.test.mocks;
 
 import static com.codenvy.eclipse.ui.test.mocks.UserServiceMock.MOCK_USERNAME;
 
-import com.codenvy.eclipse.core.client.model.Credentials;
-import com.codenvy.eclipse.core.client.model.Token;
+import com.codenvy.eclipse.client.model.Credentials;
+import com.codenvy.eclipse.client.model.Token;
 import com.codenvy.eclipse.core.services.security.AuthenticationService;
 
 /**

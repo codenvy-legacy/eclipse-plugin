@@ -40,9 +40,9 @@ import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
 
+import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.client.Codenvy;
-import com.codenvy.eclipse.core.client.model.Project;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;

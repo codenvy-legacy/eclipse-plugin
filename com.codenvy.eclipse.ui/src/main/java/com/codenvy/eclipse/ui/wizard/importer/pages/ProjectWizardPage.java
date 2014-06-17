@@ -57,12 +57,12 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
 
+import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.client.model.Credentials;
+import com.codenvy.eclipse.client.model.Project;
+import com.codenvy.eclipse.client.model.Workspace;
+import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.client.Codenvy;
-import com.codenvy.eclipse.core.client.model.Credentials;
-import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.model.Workspace;
-import com.codenvy.eclipse.core.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;

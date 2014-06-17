@@ -8,7 +8,7 @@ Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/serviceComponents.xml
 Bundle-ManifestVersion: 2
 Comment: import org.junit.runner see https://bugs.eclipse.org/bugs/show_bug.cgi?id=369266
-Import-Package: com.codenvy.eclipse.core.client.model;version="1.0.0.qualifier",
+Import-Package: com.codenvy.eclipse.client.model;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.team;version="1.0.0.qualifier",
  com.fasterxml.jackson.annotation;version="2.3.2",
  com.google.common.base;version="10.0.1",

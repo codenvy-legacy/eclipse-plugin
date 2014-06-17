@@ -16,11 +16,11 @@
  */
 package com.codenvy.eclipse.core.launcher;
 
+import static com.codenvy.eclipse.client.model.BuilderStatus.Status.CANCELLED;
+import static com.codenvy.eclipse.client.model.BuilderStatus.Status.FAILED;
+import static com.codenvy.eclipse.client.model.BuilderStatus.Status.IN_PROGRESS;
+import static com.codenvy.eclipse.client.model.BuilderStatus.Status.SUCCESSFUL;
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
-import static com.codenvy.eclipse.core.client.model.BuilderStatus.Status.CANCELLED;
-import static com.codenvy.eclipse.core.client.model.BuilderStatus.Status.FAILED;
-import static com.codenvy.eclipse.core.client.model.BuilderStatus.Status.IN_PROGRESS;
-import static com.codenvy.eclipse.core.client.model.BuilderStatus.Status.SUCCESSFUL;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
@@ -40,11 +40,11 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
-import com.codenvy.eclipse.core.client.Codenvy;
-import com.codenvy.eclipse.core.client.exceptions.APIException;
-import com.codenvy.eclipse.core.client.model.BuilderStatus;
-import com.codenvy.eclipse.core.client.model.Link;
-import com.codenvy.eclipse.core.client.model.Project;
+import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.model.BuilderStatus;
+import com.codenvy.eclipse.client.model.Link;
+import com.codenvy.eclipse.client.model.Project;
 
 /**
  * The codenvy builder process.

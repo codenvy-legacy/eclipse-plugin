@@ -34,11 +34,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.client.model.Project;
+import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
 
 /**
- * {@linkplain com.codenvy.eclipse.core.client.ProjectClient ProjectService} tests.
+ * {@linkplain com.codenvy.eclipse.client.ProjectClient ProjectService} tests.
  * 
  * @author Kevin Pollet
  * @author Stéphane Daviet
@@ -84,13 +84,6 @@ public class ProjectClientIT extends RestClientBaseIT {
     public void testGetWorkspaceProjectsWithNullWorkspaceId() {
         codenvy.project()
                .getWorkspaceProjects(null)
-               .execute();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetWorkspaceProjectsWithEmptyWorkspaceId() {
-        codenvy.project()
-               .getWorkspaceProjects("")
                .execute();
     }
 
@@ -142,13 +135,6 @@ public class ProjectClientIT extends RestClientBaseIT {
                .execute();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testUpdateFileWithEmptyFilePath() {
-        codenvy.project()
-               .updateFile(projectPrj1, "", new ByteArrayInputStream(new byte[0]))
-               .execute();
-    }
-
     @Test(expected = NullPointerException.class)
     public void testUpdateFileWithNullInputStream() {
         codenvy.project()
@@ -167,13 +153,6 @@ public class ProjectClientIT extends RestClientBaseIT {
     public void testGetFileWithNullFilePath() {
         codenvy.project()
                .getFile(projectPrj1, null)
-               .execute();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetFileWithEmptyFilePath() {
-        codenvy.project()
-               .getFile(projectPrj1, "")
                .execute();
     }
 
@@ -203,12 +182,6 @@ public class ProjectClientIT extends RestClientBaseIT {
     public void testIsResourceInProjectWithNullResourcePath() {
         codenvy.project()
                .isResource(projectPrj1, null)
-               .execute();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testIsResourceInProjectWithEmptyResourcePath() {
-        codenvy.project().isResource(projectPrj1, "")
                .execute();
     }
 

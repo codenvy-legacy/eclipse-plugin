@@ -23,9 +23,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.codenvy.eclipse.core.client.ProjectClient;
-import com.codenvy.eclipse.core.client.UserClient;
-import com.codenvy.eclipse.core.client.WorkspaceClient;
+import com.codenvy.eclipse.client.ProjectClient;
+import com.codenvy.eclipse.client.UserClient;
+import com.codenvy.eclipse.client.WorkspaceClient;
 import com.codenvy.eclipse.core.services.RestService;
 import com.codenvy.eclipse.core.services.RestServiceWithAuth;
 import com.codenvy.eclipse.core.services.security.AuthenticationService;

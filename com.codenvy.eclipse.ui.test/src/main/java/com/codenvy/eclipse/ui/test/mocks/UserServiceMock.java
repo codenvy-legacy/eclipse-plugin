@@ -16,8 +16,8 @@
  */
 package com.codenvy.eclipse.ui.test.mocks;
 
-import com.codenvy.eclipse.core.client.UserClient;
-import com.codenvy.eclipse.core.client.model.User;
+import com.codenvy.eclipse.client.UserClient;
+import com.codenvy.eclipse.client.model.User;
 
 /**
  * {@link UserClient} mock.

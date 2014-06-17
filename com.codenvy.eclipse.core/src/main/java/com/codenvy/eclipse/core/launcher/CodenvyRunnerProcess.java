@@ -16,10 +16,10 @@
  */
 package com.codenvy.eclipse.core.launcher;
 
+import static com.codenvy.eclipse.client.model.RunnerStatus.Status.CANCELLED;
+import static com.codenvy.eclipse.client.model.RunnerStatus.Status.FAILED;
+import static com.codenvy.eclipse.client.model.RunnerStatus.Status.STOPPED;
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
-import static com.codenvy.eclipse.core.client.model.RunnerStatus.Status.CANCELLED;
-import static com.codenvy.eclipse.core.client.model.RunnerStatus.Status.FAILED;
-import static com.codenvy.eclipse.core.client.model.RunnerStatus.Status.STOPPED;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
@@ -41,11 +41,11 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
-import com.codenvy.eclipse.core.client.Codenvy;
-import com.codenvy.eclipse.core.client.exceptions.APIException;
-import com.codenvy.eclipse.core.client.model.Link;
-import com.codenvy.eclipse.core.client.model.Project;
-import com.codenvy.eclipse.core.client.model.RunnerStatus;
+import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.model.Link;
+import com.codenvy.eclipse.client.model.Project;
+import com.codenvy.eclipse.client.model.RunnerStatus;
 
 /**
  * The codenvy runner process.

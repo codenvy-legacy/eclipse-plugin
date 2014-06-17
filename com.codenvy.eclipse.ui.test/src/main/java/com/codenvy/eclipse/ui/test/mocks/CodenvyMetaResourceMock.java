@@ -22,8 +22,8 @@ import static org.eclipse.core.resources.IResource.ROOT;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
-import com.codenvy.eclipse.core.client.ProjectClient;
-import com.codenvy.eclipse.core.client.model.Project;
+import com.codenvy.eclipse.client.ProjectClient;
+import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyMetaResource;
 import com.codenvy.eclipse.core.team.CodenvyProvider;

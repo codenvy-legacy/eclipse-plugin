@@ -21,11 +21,11 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.codenvy.eclipse.core.client.model.Workspace;
-import com.codenvy.eclipse.core.client.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.client.model.Workspace;
+import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
 
 /**
- * {@linkplain com.codenvy.eclipse.core.client.WorkspaceClient WorkspaceService} tests.
+ * {@linkplain com.codenvy.eclipse.client.WorkspaceClient WorkspaceService} tests.
  * 
  * @author Kevin Pollet
  * @author Stéphane Daviet
@@ -48,13 +48,6 @@ public class WorkspaceClientIT extends RestClientBaseIT {
     public void testGetWorkspaceByNameWithNullName() {
         codenvy.workspace()
                .withName(null)
-               .execute();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetWorkspaceByNameWithEmptyName() {
-        codenvy.workspace()
-               .withName("")
                .execute();
     }
 

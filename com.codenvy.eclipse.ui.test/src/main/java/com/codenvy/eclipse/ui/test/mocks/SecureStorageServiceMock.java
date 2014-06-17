@@ -19,8 +19,8 @@ package com.codenvy.eclipse.ui.test.mocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codenvy.eclipse.core.client.model.Credentials;
-import com.codenvy.eclipse.core.client.model.Token;
+import com.codenvy.eclipse.client.model.Credentials;
+import com.codenvy.eclipse.client.model.Token;
 import com.codenvy.eclipse.core.services.security.SecureStorageService;
 
 /**

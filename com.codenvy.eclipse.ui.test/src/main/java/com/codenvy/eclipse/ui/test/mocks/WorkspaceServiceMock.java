@@ -19,9 +19,9 @@ package com.codenvy.eclipse.ui.test.mocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codenvy.eclipse.core.client.WorkspaceClient;
-import com.codenvy.eclipse.core.client.model.Workspace;
-import com.codenvy.eclipse.core.client.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.client.WorkspaceClient;
+import com.codenvy.eclipse.client.model.Workspace;
+import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
 
 /**
  * {@link WorkspaceClient} mock.

@@ -29,8 +29,9 @@ import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 
 /**
  * Preferences for the Codenvy plugin. Use a {@link FieldEditorPreferencePage}, a {@link ListEditor} and an
- * {@link AbstractPreferenceInitializer} to get a as simple as possible storage mechanism backed on a classic {@link PreferenceStore}.
- * Remote repositories locations are stored as a single {@link String} joined, and then splitted.
+ * {@linkplain org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer AbstractPreferenceInitializer} to get a as simple as
+ * possible storage mechanism backed on a classic {@linkplain org.eclipse.jface.preference.PreferenceStore PreferenceStore}. Remote
+ * repositories locations are stored as a single {@link String} joined, and then splitted.
  * 
  * @see CodenvyPreferencesInitializer
  * @author Stéphane Daviet

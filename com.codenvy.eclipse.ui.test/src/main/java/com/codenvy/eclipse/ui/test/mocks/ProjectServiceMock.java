@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.codenvy.eclipse.core.client.ProjectClient;
-import com.codenvy.eclipse.core.client.model.Project;
+import com.codenvy.eclipse.client.ProjectClient;
+import com.codenvy.eclipse.client.model.Project;
 
 /**
  * {@link ProjectClient} mock.

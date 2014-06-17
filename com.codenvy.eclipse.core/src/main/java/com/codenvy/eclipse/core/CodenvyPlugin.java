@@ -19,8 +19,8 @@ package com.codenvy.eclipse.core;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
-import com.codenvy.eclipse.core.client.Codenvy;
-import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
+import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.core.store.SecureStorageDataStoreFactory;
 
 /**
  * The activator class controls the plug-in life cycle.

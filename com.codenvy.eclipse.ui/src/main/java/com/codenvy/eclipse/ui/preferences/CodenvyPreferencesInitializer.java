@@ -34,7 +34,7 @@ public class CodenvyPreferencesInitializer extends AbstractPreferenceInitializer
     private static final String LOCATION_SEPARATOR                    = ";";
 
     /**
-     * Key where the locations of remote repositories are stored in the {@link PreferenceStore} of the plugin.
+     * Key where the locations of remote repositories are stored in the {@linkplain org.eclipse.jface.preference.PreferenceStore PreferenceStore} of the plugin.
      */
     public final static String  REMOTE_REPOSITORIES_LOCATION_KEY_NAME = "remoteRepositoriesLocation";
 

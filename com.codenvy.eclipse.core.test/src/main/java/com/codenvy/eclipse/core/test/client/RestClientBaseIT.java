@@ -22,9 +22,9 @@ import java.util.Properties;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
-import com.codenvy.eclipse.core.client.Codenvy;
-import com.codenvy.eclipse.core.client.model.Credentials;
-import com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory;
+import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.client.model.Credentials;
+import com.codenvy.eclipse.core.store.SecureStorageDataStoreFactory;
 
 
 /**

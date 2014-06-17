@@ -16,8 +16,8 @@
  */
 package com.codenvy.eclipse.ui.utils;
 
-import static com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStore.CODENVY_PASSWORD_KEY_NAME;
-import static com.codenvy.eclipse.core.client.store.secure.SecureStorageDataStoreFactory.CODENVY_PREFERENCE_STORAGE_NODE_NAME;
+import static com.codenvy.eclipse.core.store.SecureStorageDataStore.CODENVY_PASSWORD_KEY_NAME;
+import static com.codenvy.eclipse.core.store.SecureStorageDataStoreFactory.CODENVY_PREFERENCE_STORAGE_NODE_NAME;
 import static com.codenvy.eclipse.core.utils.StringHelper.isEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

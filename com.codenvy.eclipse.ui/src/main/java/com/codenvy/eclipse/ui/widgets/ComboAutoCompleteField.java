@@ -45,7 +45,7 @@ public class ComboAutoCompleteField {
     }
 
     /**
-     * Get a way to set your own completion proposals, for instance after getting a {@link Job} processing result.
+     * Get a way to set your own completion proposals, for instance after getting a {@linkplain org.eclipse.core.runtime.jobs.Job Job} processing result.
      * 
      * @param proposals the proposals to add instead those of the {@link Combo}.
      */

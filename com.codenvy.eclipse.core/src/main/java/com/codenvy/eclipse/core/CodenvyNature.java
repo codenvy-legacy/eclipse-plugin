@@ -176,7 +176,7 @@ public class CodenvyNature implements IProjectNature {
     }
 
     /**
-     * Returns the mapping key in function of the {@link ProjectType}.
+     * Returns the mapping key in function of the {@linkplain com.codenvy.eclipse.core.CodenvyNature.CodenvyProjectDescriptor.ProjectType ProjectType}.
      * 
      * @param descriptor the project descriptor.
      * @return the mapping key or {@code null} if none.

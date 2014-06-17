@@ -19,10 +19,10 @@ package com.codenvy.eclipse.core.test.client;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.codenvy.eclipse.core.client.model.User;
+import com.codenvy.eclipse.client.model.User;
 
 /**
- * {@linkplain com.codenvy.eclipse.core.client.UserClient UserService} tests.
+ * {@linkplain com.codenvy.eclipse.client.UserClient UserService} tests.
  * 
  * @author Kevin Pollet
  * @author Stéphane Daviet

@@ -29,9 +29,9 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 
+import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.client.Codenvy;
-import com.codenvy.eclipse.core.client.model.Project;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 
 /**

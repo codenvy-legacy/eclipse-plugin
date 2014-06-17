@@ -22,9 +22,9 @@ import static org.eclipse.core.resources.IResource.ROOT;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
+import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.client.Codenvy;
-import com.codenvy.eclipse.core.client.model.Project;
 
 /**
  * The Codenvy resource mapping class.
