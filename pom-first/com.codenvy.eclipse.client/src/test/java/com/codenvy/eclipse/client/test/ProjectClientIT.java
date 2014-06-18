@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.test.client;
+package com.codenvy.eclipse.client.test;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

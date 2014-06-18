@@ -53,7 +53,9 @@ public class Codenvy {
         this.url = url;
         this.username = username;
         this.credentials = credentials;
-        this.credentialsProvider = new CredentialsProvider(url, credentialsStoreFactory.getDataStore(url));
+        this.credentialsProvider =
+                                   new CredentialsProvider(url, credentialsStoreFactory != null ? credentialsStoreFactory.getDataStore(url)
+                                       : null);
     }
 
     /**
