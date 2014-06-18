@@ -39,11 +39,11 @@
 		<module>com.codenvy.eclipse.update</module>
 		<module>com.codenvy.eclipse.core.test</module>
 		<module>com.codenvy.eclipse.ui.test</module>
-    	<module>com.codenvy.eclipse.client</module>
 	</modules>
 	
 	<properties>
 		<assembly-sdk.version>3.0.0-M17-SNAPSHOT</assembly-sdk.version>
+		<com.codenvy.eclipse.client.version>1.0.0-SNAPSHOT</com.codenvy.eclipse.client.version>
 		<com.codenvy.eclipse.lib.version>1.0.0-SNAPSHOT</com.codenvy.eclipse.lib.version>
 		<junit.version>4.10</junit.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,6 +51,11 @@
 	</properties>
 	
 	<dependencies>
+		<dependency>
+			<groupId>com.codenvy.eclipse</groupId>
+			<artifactId>com.codenvy.eclipse.client</artifactId>
+			<version>${com.codenvy.eclipse.client.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.codenvy.eclipse</groupId>
 			<artifactId>com.codenvy.eclipse.lib</artifactId>
