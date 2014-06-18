@@ -4,7 +4,7 @@ Eclipse Plugin for Codenvy
 Build the project
 -----------------
 
-    cd plugin-eclipse/com.codenvy.eclipse.lib 
+    cd plugin-eclipse/pom-first 
     mvn clean install
     
     cd plugin-eclipse
