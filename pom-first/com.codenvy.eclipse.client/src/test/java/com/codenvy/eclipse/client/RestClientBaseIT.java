@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.client.test;
+package com.codenvy.eclipse.client;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -27,7 +27,7 @@ import com.codenvy.eclipse.client.model.Credentials;
 
 
 /**
- * REST API base test.
+ * REST client API base test.
  * 
  * @author Kevin Pollet
  */
@@ -42,7 +42,7 @@ public abstract class RestClientBaseIT {
     protected static String       REST_API_URL;
 
     @BeforeClass
-    public static void loadRestApiUrl() {
+    public static void initRestApiUrl() {
         final Properties codenvySdkProperties = new Properties();
         try {
             codenvySdkProperties.load(RestClientBaseIT.class.getResourceAsStream("/codenvy-sdk.properties"));
@@ -54,7 +54,7 @@ public abstract class RestClientBaseIT {
         Assert.assertNotNull(REST_API_URL);
 
         codenvy = new Codenvy.Builder(REST_API_URL, DUMMY_USERNAME, null)
-                                                                         .withCredentials(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD))
-                                                                         .build();
+                             .withCredentials(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD))
+                             .build();
     }
 }

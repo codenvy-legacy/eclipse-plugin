@@ -47,7 +47,7 @@ public class CredentialsProvider {
      * @throws NullPointerException if url parameter is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@link String}.
      */
-    public CredentialsProvider(String url, DataStore<String, StoredCredentials> dataStore) {
+    CredentialsProvider(String url, DataStore<String, StoredCredentials> dataStore) {
         this.dataStore = dataStore;
 
         final UriBuilder uriBuilder = UriBuilder.fromUri(url)
@@ -68,18 +68,20 @@ public class CredentialsProvider {
      */
     public Token authorize(Credentials credentials) {
         Token token = null;
-        final Response response = webTarget.request()
-                                           .accept(APPLICATION_JSON_TYPE)
-                                           .post(json(credentials));
 
-        if (response.getStatus() == Status.OK.getStatusCode()) {
-            token = response.readEntity(Token.class);
+        if (credentials != null) {
+            final Response response = webTarget.request()
+                                               .accept(APPLICATION_JSON_TYPE)
+                                               .post(json(credentials));
 
-            if (dataStore != null) {
-                dataStore.put(credentials.username, new StoredCredentials(credentials.password, token));
+            if (response.getStatus() == Status.OK.getStatusCode()) {
+                token = response.readEntity(Token.class);
+
+                if (dataStore != null) {
+                    dataStore.put(credentials.username, new StoredCredentials(credentials.password, token));
+                }
             }
         }
-
         return token;
     }
 
@@ -105,6 +107,10 @@ public class CredentialsProvider {
      * @return the {@link Token}.
      */
     public Token refreshToken(String username) {
+        if (dataStore == null) {
+            return null;
+        }
+
         final StoredCredentials storedCredentials = dataStore.get(username);
         return storedCredentials != null ? authorize(new Credentials(username, storedCredentials.password)) : null;
     }

@@ -52,6 +52,7 @@
 		<version.maven-dependency-plugin>2.8</version.maven-dependency-plugin>
 		<version.maven-failsafe-plugin>2.17</version.maven-failsafe-plugin>
 		<version.maven-surefire-plugin>2.17</version.maven-surefire-plugin>
+		<version.mockito-all>1.8.4</version.mockito-all>
 	</properties>
 
 	<repositories>
