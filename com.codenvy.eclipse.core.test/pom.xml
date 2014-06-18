@@ -43,19 +43,6 @@
 		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-compiler-plugin</artifactId>
-				<configuration>
-					<extraClasspathElements>
-						<dependency>
-							<groupId>com.codenvy.eclipse</groupId>
-							<artifactId>com.codenvy.eclipse.lib</artifactId>
-							<version>1.0.0-SNAPSHOT</version>
-						</dependency>
-					</extraClasspathElements>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
@@ -70,7 +57,7 @@
 								<artifactItem>
 									<groupId>com.codenvy.sdk</groupId>
 									<artifactId>assembly-sdk</artifactId>
-									<version>${assembly-sdk.version}</version>
+									<version>${version.assembly-sdk}</version>
 									<type>zip</type>
 								</artifactItem>
 							</artifactItems>

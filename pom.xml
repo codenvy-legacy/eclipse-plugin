@@ -42,24 +42,27 @@
 	</modules>
 	
 	<properties>
-		<assembly-sdk.version>3.0.0-M17-SNAPSHOT</assembly-sdk.version>
-		<com.codenvy.eclipse.client.version>1.0.0-SNAPSHOT</com.codenvy.eclipse.client.version>
-		<com.codenvy.eclipse.lib.version>1.0.0-SNAPSHOT</com.codenvy.eclipse.lib.version>
-		<junit.version>4.10</junit.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tycho.version>0.20.0</tycho.version>
+		<version.assembly-sdk>3.0.0-M17-SNAPSHOT</version.assembly-sdk>
+		<version.build-helper-maven-plugin>1.8</version.build-helper-maven-plugin>
+		<version.com.codenvy.eclipse.client>1.0.0-SNAPSHOT</version.com.codenvy.eclipse.client>
+		<version.com.codenvy.eclipse.lib>1.0.0-SNAPSHOT</version.com.codenvy.eclipse.lib>
+		<version.junit>4.10</version.junit>
+		<version.maven-antrun-plugin>1.6</version.maven-antrun-plugin>
+		<version.maven-dependency-plugin>2.8</version.maven-dependency-plugin>
+		<version.tycho>0.20.0</version.tycho>
 	</properties>
 	
 	<dependencies>
 		<dependency>
 			<groupId>com.codenvy.eclipse</groupId>
 			<artifactId>com.codenvy.eclipse.client</artifactId>
-			<version>${com.codenvy.eclipse.client.version}</version>
+			<version>${version.com.codenvy.eclipse.client}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.codenvy.eclipse</groupId>
 			<artifactId>com.codenvy.eclipse.lib</artifactId>
-			<version>${com.codenvy.eclipse.lib.version}</version>
+			<version>${version.com.codenvy.eclipse.lib}</version>
 		</dependency>
 	</dependencies>
 	
@@ -92,27 +95,27 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>1.8</version>
+					<version>${version.build-helper-maven-plugin}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-compiler-plugin</artifactId>
-					<version>${tycho.version}</version>
+					<version>${version.tycho}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
-					<version>${tycho.version}</version>
+					<version>${version.tycho}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
-					<version>1.6</version>
+					<version>${version.maven-antrun-plugin}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.8</version>
+					<version>${version.maven-dependency-plugin}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -120,13 +123,13 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
-				<version>${tycho.version}</version>
+				<version>${version.tycho}</version>
 				<extensions>true</extensions>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho.version}</version>
+				<version>${version.tycho}</version>
 				<configuration>
 					<pomDependencies>consider</pomDependencies>
 					<dependency-resolution>
