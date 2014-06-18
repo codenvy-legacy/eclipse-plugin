@@ -38,7 +38,7 @@ import com.codenvy.eclipse.client.model.Token;
  * 
  * @author Kevin Pollet
  */
-public class AbstractClient {
+public abstract class AbstractClient {
     private final WebTarget           webTarget;
     private final String              username;
     private final Credentials         credentials;
