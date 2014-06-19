@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.store;
+package com.codenvy.eclipse.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -39,10 +39,10 @@ public class SecureStorageDataStore implements DataStore<String, StoredCredentia
     /**
      * Constructs an instance of {@link SecureStorageDataStore}.
      * 
-     * @param urlNode the root secure storage node.
+     * @param urlNode the root secure storage node for one Codenvy URL.
      * @throws NullPointerException if urlNode is {@code null}.
      */
-    public SecureStorageDataStore(ISecurePreferences urlNode) {
+    SecureStorageDataStore(ISecurePreferences urlNode) {
         checkNotNull(urlNode);
 
         this.urlNode = urlNode;

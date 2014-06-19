@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.store;
+package com.codenvy.eclipse.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.equinox.security.storage.EncodingUtils.encodeSlashes;
@@ -34,12 +34,13 @@ import com.codenvy.eclipse.client.store.StoredCredentials;
 public enum SecureStorageDataStoreFactory implements DataStoreFactory<String, StoredCredentials> {
     INSTANCE;
 
-    public static final String       CODENVY_PREFERENCE_STORAGE_NODE_NAME = "Codenvy";
+    public static final String       CODENVY_NODE_NAME = "Codenvy";
+
     private final ISecurePreferences codenvyNode;
 
     private SecureStorageDataStoreFactory() {
         final ISecurePreferences root = SecurePreferencesFactory.getDefault();
-        this.codenvyNode = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME);
+        this.codenvyNode = root.node(CODENVY_NODE_NAME);
     }
 
     @Override

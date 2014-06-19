@@ -16,8 +16,8 @@
  */
 package com.codenvy.eclipse.ui.utils;
 
-import static com.codenvy.eclipse.core.store.SecureStorageDataStore.CODENVY_PASSWORD_KEY_NAME;
-import static com.codenvy.eclipse.core.store.SecureStorageDataStoreFactory.CODENVY_PREFERENCE_STORAGE_NODE_NAME;
+import static com.codenvy.eclipse.core.SecureStorageDataStore.CODENVY_PASSWORD_KEY_NAME;
+import static com.codenvy.eclipse.core.SecureStorageDataStoreFactory.CODENVY_NODE_NAME;
 import static com.codenvy.eclipse.core.utils.StringHelper.isEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -54,10 +54,10 @@ public final class SecureStorageHelper {
         checkNotNull(root);
 
         final List<String> usernames = new ArrayList<>();
-        if (root.nodeExists(CODENVY_PREFERENCE_STORAGE_NODE_NAME)
-            && root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME).nodeExists(encodeSlashes(url))) {
+        if (root.nodeExists(CODENVY_NODE_NAME)
+            && root.node(CODENVY_NODE_NAME).nodeExists(encodeSlashes(url))) {
 
-            final String[] usernamesArray = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME).node(encodeSlashes(url)).childrenNames();
+            final String[] usernamesArray = root.node(CODENVY_NODE_NAME).node(encodeSlashes(url)).childrenNames();
             usernames.addAll(asList(usernamesArray));
         }
 
@@ -84,11 +84,11 @@ public final class SecureStorageHelper {
             final ISecurePreferences root = SecurePreferencesFactory.getDefault();
             checkNotNull(root);
 
-            if (root.nodeExists(CODENVY_PREFERENCE_STORAGE_NODE_NAME)) {
-                final ISecurePreferences codenvyNode = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME);
+            if (root.nodeExists(CODENVY_NODE_NAME)) {
+                final ISecurePreferences codenvyNode = root.node(CODENVY_NODE_NAME);
 
                 if (codenvyNode.nodeExists(encodeSlashes(url))) {
-                    final ISecurePreferences urlNode = root.node(CODENVY_PREFERENCE_STORAGE_NODE_NAME).node(encodeSlashes(url));
+                    final ISecurePreferences urlNode = root.node(CODENVY_NODE_NAME).node(encodeSlashes(url));
 
                     if (urlNode.nodeExists(username)) {
                         return urlNode.node(username).get(CODENVY_PASSWORD_KEY_NAME, null);
