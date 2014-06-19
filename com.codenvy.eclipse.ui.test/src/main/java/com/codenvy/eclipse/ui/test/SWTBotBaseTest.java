@@ -19,10 +19,13 @@ package com.codenvy.eclipse.ui.test;
 import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.allOf;
 import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.widgetOfType;
 import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withMnemonic;
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.waitForWidget;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -32,12 +35,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
-import org.eclipse.swtbot.swt.finder.waits.Conditions;
 import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.After;
 
@@ -58,55 +59,57 @@ public class SWTBotBaseTest {
     @SuppressWarnings("unchecked")
     @After
     public void clearWorkspace() throws Exception {
-        openNavigatorView();
-
-        final SWTBotView navigatorView = bot.viewByTitle("Navigator");
-        navigatorView.setFocus();
-
-        final SWTBotTree tree = navigatorView.bot().tree();
-
-        ArrayList<String> projectsToDelete = new ArrayList<>();
+        final List<String> projectsToDelete = new ArrayList<>();
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
             if ("RemoteSystemsTempFiles".equals(project.getName())) {
                 continue;
             }
             projectsToDelete.add(project.getName());
         }
-        if (!projectsToDelete.isEmpty()) {
-            tree.select(projectsToDelete.toArray(new String[projectsToDelete.size()]));
 
-            bot.menu("Edit").menu("Delete").click();
+        if (!projectsToDelete.isEmpty()) {
+            openNavigatorView();
+
+            final SWTBotView navigatorView = bot.viewByTitle("Navigator");
+            navigatorView.setFocus();
+
+            navigatorView.bot()
+                         .tree()
+                         .select(projectsToDelete.toArray(new String[projectsToDelete.size()]));
+
+            mainWindow().bot()
+                        .menu("Edit")
+                        .menu("Delete")
+                        .click();
 
             // the project deletion confirmation dialog
             bot.waitUntilWidgetAppears(shellIsActive("Delete Resources"));
-            SWTBotShell shell = bot.shell("Delete Resources");
-            bot.checkBox("Delete project contents on disk (cannot be undone)").select();
-            bot.button("OK").click();
+
+            final SWTBotShell shell = bot.shell("Delete Resources");
+            shell.bot()
+                 .checkBox("Delete project contents on disk (cannot be undone)")
+                 .select();
+
+            shell.bot()
+                 .button("OK")
+                 .click();
+
             try {
-                bot.waitUntilWidgetAppears(Conditions.waitForWidget(allOf(widgetOfType(Button.class), withMnemonic("Continue"))));
-                bot.button("Continue").click();
+
+                bot.waitUntilWidgetAppears(waitForWidget(allOf(widgetOfType(Button.class), withMnemonic("Continue"))));
+                bot.button("Continue")
+                   .click();
+
             } catch (WidgetNotFoundException e) {
                 // Nothing to do, no confirmation page, just go on.
             }
-            bot.waitUntil(Conditions.shellCloses(shell));
+
+            bot.waitUntil(shellCloses(shell));
         }
     }
 
-    public void focusMainWindow() {
-        SWTBotShell mainWindow = bot.shell("Resource - Eclipse Platform");
-        mainWindow.activate();
-    }
-
     public SWTBotShell openAuthenticationWizardPage() {
-        focusMainWindow();
-
-        bot.menu("File")
-           .menu("Import...")
-           .click();
-
-        final SWTBotShell shell = bot.shell("Import");
-        shell.activate();
-
+        final SWTBotShell shell = openImportWizard();
         shell.bot()
              .tree()
              .expandNode("Codenvy")
@@ -120,17 +123,16 @@ public class SWTBotBaseTest {
     }
 
     public void openNavigatorView() {
-        focusMainWindow();
-
-        bot.menu("Window")
-           .menu("Show View")
-           .menu("Other...")
-           .click();
+        mainWindow().bot()
+                    .menu("Window")
+                    .menu("Show View")
+                    .menu("Other...")
+                    .click();
 
         bot.waitUntilWidgetAppears(shellIsActive("Show View"));
 
-        final SWTBotShell shell = bot.shell("Show View");
-        shell.activate();
+        final SWTBotShell shell = bot.shell("Show View")
+                                     .activate();
 
         final SWTBotTreeItem general = shell.bot()
                                             .tree()
@@ -148,15 +150,7 @@ public class SWTBotBaseTest {
     }
 
     public SWTBotShell openProjectWizardPage() {
-        focusMainWindow();
-
-        bot.menu("File")
-           .menu("Import...")
-           .click();
-
-        final SWTBotShell shell = bot.shell("Import");
-        shell.activate();
-
+        final SWTBotShell shell = openImportWizard();
         shell.bot()
              .tree()
              .expandNode("Codenvy")
@@ -192,7 +186,7 @@ public class SWTBotBaseTest {
     }
 
     public void importProject(String workspaceName, String projectName) {
-        focusMainWindow();
+        mainWindow();
 
         openProjectWizardPage();
 
@@ -215,6 +209,23 @@ public class SWTBotBaseTest {
 
         bot.button("Finish")
            .click();
+    }
+
+    private SWTBotShell openImportWizard() {
+        mainWindow().bot()
+                    .menu("File")
+                    .menu("Import...")
+                    .click();
+
+        bot.waitUntilWidgetAppears(shellIsActive("Import"));
+
+        return bot.shell("Import")
+                  .activate();
+    }
+
+    private SWTBotShell mainWindow() {
+        return bot.shell("Resource - Eclipse Platform")
+                  .activate();
     }
 
     class TableHasRows extends DefaultCondition {
