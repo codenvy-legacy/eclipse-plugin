@@ -42,7 +42,7 @@ public abstract class RestClientBaseIT {
     protected static String       REST_API_URL;
 
     @BeforeClass
-    public static void initRestApiUrl() {
+    public static void initRestAPIURL() {
         final Properties codenvySdkProperties = new Properties();
         try {
             codenvySdkProperties.load(RestClientBaseIT.class.getResourceAsStream("/codenvy-sdk.properties"));

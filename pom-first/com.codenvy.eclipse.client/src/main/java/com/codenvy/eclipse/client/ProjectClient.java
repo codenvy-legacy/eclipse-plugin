@@ -21,6 +21,7 @@ import static javax.ws.rs.HttpMethod.HEAD;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.client.Entity.text;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.fromStatusCode;
 
 import java.io.InputStream;
 import java.util.List;
@@ -181,11 +182,11 @@ public class ProjectClient extends AbstractClient {
     }
 
     /**
-     * Returns if the given resource exists in the given codenvy project.
+     * Returns if the given resource exists in the given Codenvy project.
      * 
      * @param project the Codenvy project.
      * @param resource the resource path.
-     * @return {@code true} if the given resource exists in the codenvy project, {@code false} otherwise.
+     * @return {@code true} if the given resource exists in the Codenvy project, {@code false} otherwise.
      * @throws NullPointerException if project or resourcePath parameter is {@code null}.
      * @throws APIException if something goes wrong with the API call.
      */
@@ -204,7 +205,9 @@ public class ProjectClient extends AbstractClient {
                                        new Adaptor<Boolean, Response>() {
                                            @Override
                                            public Boolean adapt(Response response) {
-                                               return response.getStatus() == Status.OK.getStatusCode();
+                                               // TODO check if better, bad request response is sent if resourcePath is a folder
+                                               final Status status = fromStatusCode(response.getStatus());
+                                               return status == Status.OK || status == Status.BAD_REQUEST;
                                            }
                                        });
     }

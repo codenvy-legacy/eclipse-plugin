@@ -68,13 +68,20 @@ public class ProjectClientIT extends RestClientBaseIT {
 
         Assert.assertNotNull(projectPrj1);
 
-        // Add a file to the project
+
         final URI uri = UriBuilder.fromUri(REST_API_URL).path("api/project").build();
         final WebTarget webTarget = ClientBuilder.newClient().target(uri);
         webTarget.path(projectPrj1.workspaceId)
+                 .path("folder")
+                 .path(projectPrj1.name)
+                 .path("src")
+                 .request()
+                 .post(null);
+
+        webTarget.path(projectPrj1.workspaceId)
                  .path("file")
                  .path(projectPrj1.name)
-                 .queryParam("name", "file.txt")
+                 .queryParam("name", "src/file.txt")
                  .request()
                  .post(Entity.text(ProjectClientIT.class.getResourceAsStream("/file.txt")));
 
@@ -99,7 +106,7 @@ public class ProjectClientIT extends RestClientBaseIT {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testCreateProjectWithNullProject() {
+    public void testCreateWithNullProject() {
         codenvy.project()
                .create(null)
                .execute();
@@ -157,13 +164,13 @@ public class ProjectClientIT extends RestClientBaseIT {
     }
 
     @Test
-    public void testUpdateGetFile() throws IOException {
+    public void testUpdateAndGetFile() throws IOException {
         codenvy.project()
-               .updateFile(projectPrj1, "file.txt", new ByteArrayInputStream("content2".getBytes()))
+               .updateFile(projectPrj1, "src/file.txt", new ByteArrayInputStream("content2".getBytes()))
                .execute();
 
         final InputStream stream = codenvy.project()
-                                          .getFile(projectPrj1, "file.txt")
+                                          .getFile(projectPrj1, "src/file.txt")
                                           .execute();
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -172,23 +179,32 @@ public class ProjectClientIT extends RestClientBaseIT {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testIsResourceInProjectWithNullProject() {
+    public void testIsResourceWithNullProject() {
         codenvy.project()
                .isResource(null, "dummyPath")
                .execute();
     }
 
     @Test(expected = NullPointerException.class)
-    public void testIsResourceInProjectWithNullResourcePath() {
+    public void testIsResourceWithNullResourcePath() {
         codenvy.project()
                .isResource(projectPrj1, null)
                .execute();
     }
 
     @Test
-    public void testIsResourceInProject() {
+    public void testIsResourceWithFile() {
         final boolean result = codenvy.project()
-                                      .isResource(projectPrj1, "file.txt")
+                                      .isResource(projectPrj1, "src/file.txt")
+                                      .execute();
+
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testIsResourceWithFolder() {
+        final boolean result = codenvy.project()
+                                      .isResource(projectPrj1, "src")
                                       .execute();
 
         Assert.assertTrue(result);
