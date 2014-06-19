@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.core.test.utils;
+package com.codenvy.eclipse.core.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
