@@ -20,6 +20,7 @@ import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.allOf;
 import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.widgetOfType;
 import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withMnemonic;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,7 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.After;
 
 /**
@@ -130,11 +132,15 @@ public class SWTBotBaseTest {
         final SWTBotShell shell = bot.shell("Show View");
         shell.activate();
 
+        final SWTBotTreeItem general = shell.bot()
+                                            .tree()
+                                            .expandNode("General");
+
         shell.bot()
-             .tree()
-             .expandNode("General")
-             .getNode("Navigator")
-             .select();
+             .waitUntil(widgetIsEnabled(general.getNode("Navigator")));
+
+        general.getNode("Navigator")
+               .select();
 
         shell.bot()
              .button("OK")
