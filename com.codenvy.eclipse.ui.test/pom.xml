@@ -45,6 +45,9 @@
 					<useUIThread>false</useUIThread>
 					<showEclipseLog>true</showEclipseLog>
 					<product>org.eclipse.platform.ide</product>
+					<systemProperties>
+						<org.eclipse.swtbot.screenshots.dir>${project.build.directory}/screenshots</org.eclipse.swtbot.screenshots.dir>
+					</systemProperties>
 					<dependencies>
 						<dependency>
 							<artifactId>org.eclipse.platform.ide</artifactId>

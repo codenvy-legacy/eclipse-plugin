@@ -16,8 +16,5 @@
 patch.jar
 target/
 
-# SWTBot
-screenshots/
-
 # Codenvy SDK
 org.exoplatform.logreader.logpath_IS_UNDEFINED/
