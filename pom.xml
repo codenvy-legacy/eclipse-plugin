@@ -17,21 +17,21 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<artifactId>maven-parent-pom</artifactId>
 		<groupId>com.codenvy</groupId>
 		<version>3.1.1</version>
 	</parent>
-	
+
 	<groupId>com.codenvy.eclipse</groupId>
 	<artifactId>codenvy-eclipse-parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Codenvy Eclipse Plugin :: Parent</name>
-	
+
 	<modules>
 		<module>com.codenvy.eclipse.core</module>
 		<module>com.codenvy.eclipse.ui</module>
@@ -40,14 +40,14 @@
 		<module>com.codenvy.eclipse.core.test</module>
 		<module>com.codenvy.eclipse.ui.test</module>
 	</modules>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.com.codenvy.eclipse.client>1.0.0-SNAPSHOT</version.com.codenvy.eclipse.client>
 		<version.com.codenvy.eclipse.lib>1.0.0-SNAPSHOT</version.com.codenvy.eclipse.lib>
 		<version.tycho>0.20.0</version.tycho>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>com.codenvy.eclipse</groupId>
@@ -60,7 +60,7 @@
 			<version>${version.com.codenvy.eclipse.lib}</version>
 		</dependency>
 	</dependencies>
-	
+
 	<repositories>
 		<repository>
 			<id>codenvy-public-repo</id>
@@ -72,18 +72,18 @@
 			<url>http://download.eclipse.org/releases/kepler</url>
 			<layout>p2</layout>
 		</repository>
-		  <repository>
-	    	<id>orbit</id>
+		<repository>
+			<id>orbit</id>
 			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</url>
 			<layout>p2</layout>
-	    </repository>
+		</repository>
 		<repository>
 			<id>swtbot</id>
 			<url>http://download.eclipse.org/technology/swtbot/releases/latest</url>
 			<layout>p2</layout>
 		</repository>
 	</repositories>
-	
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -116,6 +116,38 @@
 							</requirement>
 						</extraRequirements>
 					</dependency-resolution>
+					<environments>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
 				</configuration>
 			</plugin>
 		</plugins>
