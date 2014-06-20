@@ -19,8 +19,8 @@ package com.codenvy.eclipse.ui.test.importer.pages;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCheckBox;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -33,41 +33,32 @@ import com.codenvy.eclipse.ui.test.SWTBotBaseTest;
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class AuthenticationWizardPageTest extends SWTBotBaseTest {
+    @Before
+    public void beforeTest() {
+        openCodenvyImportWizard();
+    }
+
     @Test
     public void testThatAllFieldsMustBeFilledToAuthenticate() {
-        final SWTBotShell shell = openAuthenticationWizardPage();
-        final SWTBotButton nextButton = shell.bot()
-                                             .button("Next >");
+        final SWTBotButton nextButton = bot.button("Next >");
 
-        shell.bot()
-             .comboBox(0)
-             .setText("http://localhost:8080");
+        bot.comboBox(0).setText("http://localhost:8080");
 
         Assert.assertFalse(nextButton.isEnabled());
 
-        shell.bot()
-             .comboBox(1)
-             .typeText("johndoe");
+        bot.comboBox(1).typeText("johndoe");
 
         Assert.assertFalse(nextButton.isEnabled());
 
-        shell.bot()
-             .text(0)
-             .typeText("secret");
+        bot.text(0).typeText("secret");
 
         Assert.assertTrue(nextButton.isEnabled());
-
-        shell.close();
     }
 
     @Test
     public void testThatStoreCredentialsIsCheckedByDefault() {
-        final SWTBotShell shell = openAuthenticationWizardPage();
-        final SWTBotCheckBox storeCrendentialsCheckBox = shell.bot()
-                                                              .checkBox(0);
+        final SWTBotCheckBox storeCrendentialsCheckBox = bot.checkBox(0);
 
         Assert.assertTrue(storeCrendentialsCheckBox.isChecked());
-
-        shell.close();
     }
 }

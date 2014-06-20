@@ -64,6 +64,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
         this.authenticationWizardPage = new AuthenticationWizardPage();
         this.projectWizardPage = new ProjectWizardPage();
 
+        setWindowTitle("Import Codenvy Projects");
         setNeedsProgressMonitor(true);
     }
 

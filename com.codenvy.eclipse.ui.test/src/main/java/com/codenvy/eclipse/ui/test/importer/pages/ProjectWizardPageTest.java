@@ -26,7 +26,6 @@ import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCheckBox;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTableItem;
 import org.junit.Assert;
@@ -44,145 +43,128 @@ import com.codenvy.eclipse.ui.test.SWTBotBaseTest;
 public class ProjectWizardPageTest extends SWTBotBaseTest {
     @Test
     public void testThatAllWorkspacesAreAvailable() {
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotCombo workspaceComboBox = shell.bot().comboBox(0);
+        openImportProjectWizardPage();
+
+        final SWTBotCombo workspaceComboBox = bot.comboBox(0);
 
         Assert.assertEquals(MOCK_WORKSPACE_NAME, workspaceComboBox.items()[0]);
         Assert.assertTrue(workspaceComboBox.itemCount() == 4);
-
-        shell.close();
     }
 
     @Test
     public void testThatWorkspaceSelectionReloadProjectTable() {
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotTable projectTable = shell.bot().table(0);
-        final SWTBotCombo workspaceComboBox = shell.bot().comboBox(0);
+        openImportProjectWizardPage();
+
+        final SWTBotTable projectTable = bot.table(0);
+        final SWTBotCombo workspaceComboBox = bot.comboBox(0);
 
         Assert.assertTrue(projectTable.rowCount() == 4);
 
         workspaceComboBox.setSelection(1);
 
         Assert.assertTrue(projectTable.rowCount() == 0);
-
-        shell.close();
     }
 
     @Test
     public void testThatProjectTableContainsAllWorkspaceProjects() {
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotTable projectTable = shell.bot().table(0);
+        openImportProjectWizardPage();
+
+        final SWTBotTable projectTable = bot.table(0);
 
         Assert.assertTrue(projectTable.rowCount() == 4);
         Assert.assertEquals(MOCK_PROJECT_NAME, projectTable.cell(0, 0));
         Assert.assertEquals(MOCK_PROJECT_TYPE_NAME, projectTable.cell(0, 1));
         Assert.assertEquals(MOCK_PROJECT_DESCRIPTION, projectTable.cell(0, 2));
-
-        shell.close();
     }
 
     @Test
     public void testThatOneProjectMustBeSelectedToFinish() {
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotButton finishButton = shell.bot().button("Finish");
-        final SWTBotTable projectTable = shell.bot().table(0);
+        openImportProjectWizardPage();
+
+        final SWTBotTable projectTable = bot.table(0);
+        final SWTBotButton finishButton = bot.button("Finish");
 
         Assert.assertFalse(finishButton.isEnabled());
 
-        projectTable.getTableItem(0)
-                    .check();
+        projectTable.getTableItem(0).check();
 
         Assert.assertTrue(finishButton.isEnabled());
-
-        shell.close();
     }
 
     @Test
     public void testThatAllProjectsAreSelectedWithSelectAll() {
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotTable projectTable = shell.bot().table(0);
+        openImportProjectWizardPage();
 
-        shell.bot()
-             .button("Select All")
-             .click();
+        final SWTBotTable projectTable = bot.table(0);
+
+        bot.button("Select All").click();
 
         for (int i = 0; i < projectTable.rowCount(); i++) {
             final SWTBotTableItem oneProjectRow = projectTable.getTableItem(i);
             Assert.assertTrue(oneProjectRow.isChecked());
         }
-
-        shell.close();
     }
 
     @Test
     public void testThatAllProjectsAreDeselectedWithDeselectAll() {
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotTable projectTable = shell.bot().table(0);
+        openImportProjectWizardPage();
+
+        final SWTBotTable projectTable = bot.table(0);
 
         for (int i = 0; i < projectTable.rowCount(); i++) {
             projectTable.getTableItem(i).check();
         }
 
-        shell.bot()
-             .button("Deselect All")
-             .click();
+        bot.button("Deselect All").click();
 
         for (int i = 0; i < projectTable.rowCount(); i++) {
             final SWTBotTableItem oneProjectRow = projectTable.getTableItem(i);
             Assert.assertFalse(oneProjectRow.isChecked());
         }
-
-        shell.close();
     }
 
     @Test
     public void testThatAddToWorkingSetCheckboxIsUncheckedByDefault() {
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotCheckBox addToWorkingSetCheckBox = shell.bot()
-                                                            .checkBox(0);
+        openImportProjectWizardPage();
+
+        final SWTBotCheckBox addToWorkingSetCheckBox = bot.checkBox(0);
 
         Assert.assertFalse(addToWorkingSetCheckBox.isChecked());
-
-        shell.close();
     }
 
     @Test
     public void testThatWorkingSetComboAndButtonAreDisabledByDefault() {
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotCombo workingSetComboBox = shell.bot().comboBox(1);
-        final SWTBotButton workingSetSelectButton = shell.bot().button("Select...");
+        openImportProjectWizardPage();
+
+        final SWTBotCombo workingSetComboBox = bot.comboBox(1);
+        final SWTBotButton workingSetSelectButton = bot.button("Select...");
 
         Assert.assertFalse(workingSetComboBox.isEnabled());
         Assert.assertFalse(workingSetSelectButton.isEnabled());
-
-        shell.close();
     }
 
     @Test
     public void testThatCheckingAddToWorkingSetSelectButtonIsEnabled() {
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotButton workingSetSelectButton = shell.bot().button("Select...");
-        final SWTBotCheckBox addToWorkingSetCheckBox = shell.bot().checkBox(0);
+        openImportProjectWizardPage();
+
+        final SWTBotButton workingSetSelectButton = bot.button("Select...");
+        final SWTBotCheckBox addToWorkingSetCheckBox = bot.checkBox(0);
 
         addToWorkingSetCheckBox.click();
 
         Assert.assertTrue(workingSetSelectButton.isEnabled());
-
-        shell.close();
     }
 
     @Test
     public void testThatAlreadyImportedProjectIsGrayedInProjectTable() throws CoreException {
-        importProject(MOCK_WORKSPACE_NAME, MOCK_PROJECT_NAME);
+        importCodenvyProject(MOCK_WORKSPACE_NAME, MOCK_PROJECT_NAME);
+        openImportProjectWizardPage();
 
-        final SWTBotShell shell = openProjectWizardPage();
-        final SWTBotTable projectTable = shell.bot().table(0);
+        final SWTBotTable projectTable = bot.table(0);
 
         for (int i = 0; i < projectTable.rowCount(); i++) {
             final SWTBotTableItem oneProjectRow = projectTable.getTableItem(i);
             Assert.assertTrue(oneProjectRow.isGrayed() == MOCK_PROJECT_NAME.equals(projectTable.cell(i, 0)));
         }
-
-        shell.close();
     }
 }

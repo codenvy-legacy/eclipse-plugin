@@ -29,6 +29,7 @@ import org.eclipse.ui.IWorkbench;
 public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizard {
 
     public ExportProjectToCodenvyWizard() {
+        setWindowTitle("Export Projects to Codenvy");
     }
 
     @Override

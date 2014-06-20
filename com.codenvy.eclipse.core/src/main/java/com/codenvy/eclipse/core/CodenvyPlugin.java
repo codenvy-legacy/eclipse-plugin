@@ -28,7 +28,12 @@ import com.codenvy.eclipse.client.Codenvy;
  */
 public class CodenvyPlugin extends Plugin {
     // the plug-in ID
-    public static final String   PLUGIN_ID = "com.codenvy.eclipse.core"; //$NON-NLS-1$
+    public static final String   PLUGIN_ID      = "com.codenvy.eclipse.core"; //$NON-NLS-1$
+
+    /**
+     * Constant identifying the job family identifier for Codenvy jobs.
+     */
+    public static final Object   FAMILY_CODENVY = new Object();
 
     // the shared instance
     private static CodenvyPlugin plugin;

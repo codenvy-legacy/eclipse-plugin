@@ -22,10 +22,6 @@ import static com.codenvy.eclipse.client.MockConstants.MOCK_WORKSPACE_NAME;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,65 +36,34 @@ import com.codenvy.eclipse.ui.test.SWTBotBaseTest;
 public class ImportWizardTest extends SWTBotBaseTest {
     @Test
     public void testThatWizardIsInNewProjectDialog() {
-        bot.menu("File")
-              .menu("New")
-              .menu("Project...")
-              .click();
+        bot.menu("File").menu("New").menu("Project...").click();
 
-        final SWTBotShell shell = bot.shell("New Project");
-        shell.activate();
-
-        bot.tree()
-              .expandNode("Codenvy")
-              .select("Projects from Codenvy");
-
-        shell.close();
+        bot.shell("New Project").activate();
+        bot.tree().expandNode("Codenvy").select("Projects from Codenvy");
     }
 
     @Test
     public void testThatWizardIsInOtherProjectDialog() {
-        bot.menu("File")
-              .menu("New")
-              .menu("Other...")
-              .click();
+        bot.menu("File").menu("New").menu("Other...").click();
 
-        final SWTBotShell shell = bot.shell("New");
-        shell.activate();
-
-        bot.tree()
-              .expandNode("Codenvy")
-              .select("Projects from Codenvy");
-
-        shell.close();
+        bot.shell("New").activate();
+        bot.tree().expandNode("Codenvy").select("Projects from Codenvy");
     }
 
     @Test
     public void testThatWizardIsInImportDialog() {
-        bot.menu("File")
-              .menu("Import...")
-              .click();
+        bot.menu("File").menu("Import...").click();
 
-        final SWTBotShell shell = bot.shell("Import");
-        shell.activate();
-
-        bot.tree()
-              .expandNode("Codenvy")
-              .select("Existing Codenvy Projects");
-
-        shell.close();
+        bot.shell("Import").activate();
+        bot.tree().expandNode("Codenvy").select("Existing Codenvy Projects");
     }
 
     @Test
     public void testThatImportedProjectIsAvailableInProjectExplorerView() throws CoreException {
-        importProject(MOCK_WORKSPACE_NAME, MOCK_PROJECT_NAME);
-        openNavigatorView();
+        importCodenvyProject(MOCK_WORKSPACE_NAME, MOCK_PROJECT_NAME);
 
-        final SWTBotView navigatorView = bot.viewByTitle("Navigator");
-        navigatorView.setFocus();
-
-        final SWTBotTree tree = navigatorView.bot().tree();
-        final SWTBotTreeItem treeNode = tree.getTreeItem(MOCK_PROJECT_NAME);
-
-        Assert.assertTrue(treeNode.getText().equals(MOCK_PROJECT_NAME));
+        final SWTBotView projectExplorerView = bot.viewByTitle("Project Explorer");
+        projectExplorerView.show();
+        projectExplorerView.bot().tree().getTreeItem(MOCK_PROJECT_NAME);
     }
 }

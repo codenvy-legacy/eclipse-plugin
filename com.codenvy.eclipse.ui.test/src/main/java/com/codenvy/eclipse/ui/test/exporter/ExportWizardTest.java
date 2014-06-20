@@ -16,11 +16,11 @@
  */
 package com.codenvy.eclipse.ui.test.exporter;
 
-import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.codenvy.eclipse.ui.test.SWTBotBaseTest;
 
 /**
  * Export wizard tests.
@@ -28,16 +28,12 @@ import org.junit.runner.RunWith;
  * @author Kevin Pollet
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
-public class ExportWizardTest {
+public class ExportWizardTest extends SWTBotBaseTest {
     @Test
     public void testThatExportProjectToCodenvyWizardIsInExportProjectDialog() {
-        final SWTWorkbenchBot bot = new SWTWorkbenchBot();
         bot.menu("File").menu("Export...").click();
 
-        final SWTBotShell shell = bot.shell("Export");
-        shell.activate();
-
+        bot.shell("Export").activate();
         bot.tree().expandNode("Codenvy").select("Codenvy project");
-        shell.close();
     }
 }

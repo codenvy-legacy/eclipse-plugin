@@ -16,31 +16,34 @@
  */
 package com.codenvy.eclipse.ui.test;
 
-import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.allOf;
-import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.widgetOfType;
-import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withMnemonic;
+import static org.eclipse.core.resources.ResourcesPlugin.PI_RESOURCES;
+import static org.eclipse.core.resources.ResourcesPlugin.PREF_AUTO_BUILDING;
+import static org.eclipse.core.resources.ResourcesPlugin.PREF_AUTO_REFRESH;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
-import static org.eclipse.swtbot.swt.finder.waits.Conditions.waitForWidget;
-import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
+import org.eclipse.swtbot.swt.finder.finders.UIThreadRunnable;
+import org.eclipse.swtbot.swt.finder.results.BoolResult;
+import org.eclipse.swtbot.swt.finder.results.VoidResult;
 import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
+import org.eclipse.ui.PlatformUI;
 import org.junit.After;
+import org.junit.Before;
+
+import com.codenvy.eclipse.core.CodenvyPlugin;
 
 /**
  * SWTBot base test class.
@@ -51,144 +54,106 @@ public class SWTBotBaseTest {
     public static final SWTWorkbenchBot bot = new SWTWorkbenchBot();
 
     public SWTBotBaseTest() {
-        final IEclipsePreferences resourcesPreferences = InstanceScope.INSTANCE.getNode(ResourcesPlugin.PI_RESOURCES);
-        resourcesPreferences.putBoolean(ResourcesPlugin.PREF_AUTO_BUILDING, false);
-        resourcesPreferences.putBoolean(ResourcesPlugin.PREF_AUTO_REFRESH, false);
+        final IEclipsePreferences resourcesPreferences = InstanceScope.INSTANCE.getNode(PI_RESOURCES);
+        resourcesPreferences.putBoolean(PREF_AUTO_BUILDING, false);
+        resourcesPreferences.putBoolean(PREF_AUTO_REFRESH, false);
     }
 
-    @SuppressWarnings("unchecked")
+    @Before
+    public void baseBeforeTest() {
+        UIThreadRunnable.syncExec(new VoidResult() {
+            @Override
+            public void run() {
+                final Shell eclipseShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+                eclipseShell.forceFocus();
+            }
+        });
+
+        try {
+
+            final SWTBotView welcomeView = bot.viewByTitle("Welcome");
+            welcomeView.close();
+
+        } catch (WidgetNotFoundException e) {
+            // ignore the exception
+        }
+    }
+
     @After
-    public void clearWorkspace() throws Exception {
-        final List<String> projectsToDelete = new ArrayList<>();
-        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
-            if ("RemoteSystemsTempFiles".equals(project.getName())) {
-                continue;
+    public void baseAfterTest() {
+        closeAllShells();
+        deleteAllProjects();
+    }
+
+    public void closeAllShells() {
+        for (SWTBotShell shell : bot.shells()) {
+            if (shell.isOpen() && !isEclipseShell(shell)) {
+                shell.close();
             }
-            projectsToDelete.add(project.getName());
-        }
-
-        if (!projectsToDelete.isEmpty()) {
-            openNavigatorView();
-
-            final SWTBotView navigatorView = bot.viewByTitle("Navigator");
-            navigatorView.setFocus();
-
-            navigatorView.bot()
-                         .tree()
-                         .select(projectsToDelete.toArray(new String[projectsToDelete.size()]));
-
-            mainWindow().bot()
-                        .menu("Edit")
-                        .menu("Delete")
-                        .click();
-
-            // the project deletion confirmation dialog
-            bot.waitUntilWidgetAppears(shellIsActive("Delete Resources"));
-
-            final SWTBotShell shell = bot.shell("Delete Resources");
-            shell.bot()
-                 .checkBox("Delete project contents on disk (cannot be undone)")
-                 .select();
-
-            shell.bot()
-                 .button("OK")
-                 .click();
-
-            try {
-
-                bot.waitUntilWidgetAppears(waitForWidget(allOf(widgetOfType(Button.class), withMnemonic("Continue"))));
-                bot.button("Continue")
-                   .click();
-
-            } catch (WidgetNotFoundException e) {
-                // Nothing to do, no confirmation page, just go on.
-            }
-
-            bot.waitUntil(shellCloses(shell));
         }
     }
 
-    public SWTBotShell openAuthenticationWizardPage() {
-        final SWTBotShell shell = openImportWizard();
-        shell.bot()
-             .tree()
-             .expandNode("Codenvy")
-             .select("Existing Codenvy Projects");
+    public void deleteAllProjects() {
+        final IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+        for (IProject oneProject : projects) {
+            deleteProject(oneProject.getName());
+        }
+    }
 
-        shell.bot()
-             .button("Next >")
-             .click();
+    public void deleteProject(String projectName) {
+        final SWTBotView projectExplorerView = bot.viewByTitle("Project Explorer");
+        projectExplorerView.show();
+        projectExplorerView.bot().tree().select(projectName);
+
+        bot.menu("Edit").menu("Delete").click();
+
+        // the project deletion confirmation dialog
+        final SWTBotShell shell = bot.shell("Delete Resources").activate();
+
+        bot.checkBox("Delete project contents on disk (cannot be undone)").select();
+        bot.button("OK").click();
+
+        bot.waitUntil(shellCloses(shell));
+    }
+
+    public SWTBotShell openCodenvyImportWizard() {
+        bot.menu("File").menu("Import...").click();
+        bot.waitUntil(shellIsActive("Import"));
+
+        bot.tree().expandNode("Codenvy").select("Existing Codenvy Projects");
+        bot.button("Next >").click();
+        bot.waitUntil(shellIsActive("Import Codenvy Projects"));
+
+        return bot.shell("Import Codenvy Projects").activate();
+    }
+
+    public SWTBotShell openCodenvyExportWizard() {
+        bot.menu("File").menu("Export...").click();
+        bot.waitUntil(shellIsActive("Export"));
+
+        bot.tree().expandNode("Codenvy").select("Codenvy project");
+        bot.button("Next >").click();
+        bot.waitUntil(shellIsActive("Export Projects to Codenvy"));
+
+        return bot.shell("Export Projects to Codenvy").activate();
+    }
+
+    public SWTBotShell openImportProjectWizardPage() {
+        final SWTBotShell shell = openCodenvyImportWizard();
+
+        bot.comboBox(0).setText("http://localhost:8080");
+        bot.comboBox(1).typeText("johndoe");
+        bot.text(0).typeText("secret");
+        bot.button("Next >").click();
+
+        bot.waitUntil(new ComboHasOptions(bot.comboBox(0)));
+        bot.waitUntil(new TableHasRows(bot.table(0)));
 
         return shell;
     }
 
-    public void openNavigatorView() {
-        mainWindow().bot()
-                    .menu("Window")
-                    .menu("Show View")
-                    .menu("Other...")
-                    .click();
-
-        bot.waitUntilWidgetAppears(shellIsActive("Show View"));
-
-        final SWTBotShell shell = bot.shell("Show View")
-                                     .activate();
-
-        final SWTBotTreeItem general = shell.bot()
-                                            .tree()
-                                            .expandNode("General");
-
-        shell.bot()
-             .waitUntil(widgetIsEnabled(general.getNode("Navigator")));
-
-        general.getNode("Navigator")
-               .select();
-
-        shell.bot()
-             .button("OK")
-             .click();
-    }
-
-    public SWTBotShell openProjectWizardPage() {
-        final SWTBotShell shell = openImportWizard();
-        shell.bot()
-             .tree()
-             .expandNode("Codenvy")
-             .select("Existing Codenvy Projects");
-
-        shell.bot()
-             .button("Next >")
-             .click();
-
-        shell.bot()
-             .comboBox(0)
-             .setText("http://localhost:8080");
-
-        shell.bot()
-             .comboBox(1)
-             .typeText("johndoe");
-
-        shell.bot()
-             .text(0)
-             .typeText("secret");
-
-        shell.bot()
-             .button("Next >")
-             .click();
-
-        shell.bot()
-             .waitUntil(new ComboHasOptions(bot.comboBox(0)));
-
-        shell.bot()
-             .waitUntil(new TableHasRows(bot.table(0)));
-
-        return shell;
-    }
-
-    public void importProject(String workspaceName, String projectName) {
-        mainWindow();
-
-        openProjectWizardPage();
+    public void importCodenvyProject(String workspaceName, String projectName) {
+        final SWTBotShell shell = openImportProjectWizardPage();
 
         final SWTBotCombo workspaceCombo = bot.comboBox(0);
         workspaceCombo.setSelection(workspaceName);
@@ -198,34 +163,30 @@ public class SWTBotBaseTest {
 
         for (int i = 0; i < projectTable.rowCount(); i++) {
             if (projectTable.cell(i, 0).equals(projectName)) {
-                projectTable.getTableItem(i)
-                            .check();
+                projectTable.getTableItem(i).check();
             }
         }
 
-        bot.table(0)
-           .getTableItem(projectName)
-           .check();
+        bot.table(0).getTableItem(projectName).check();
+        bot.button("Finish").click();
 
-        bot.button("Finish")
-           .click();
+        bot.waitUntil(shellCloses(shell));
+        try {
+
+            Job.getJobManager().join(CodenvyPlugin.FAMILY_CODENVY, null);
+
+        } catch (OperationCanceledException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private SWTBotShell openImportWizard() {
-        mainWindow().bot()
-                    .menu("File")
-                    .menu("Import...")
-                    .click();
-
-        bot.waitUntilWidgetAppears(shellIsActive("Import"));
-
-        return bot.shell("Import")
-                  .activate();
-    }
-
-    private SWTBotShell mainWindow() {
-        return bot.shell("Resource - Eclipse Platform")
-                  .activate();
+    private boolean isEclipseShell(final SWTBotShell shell) {
+        return UIThreadRunnable.syncExec(new BoolResult() {
+            public Boolean run() {
+                return PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                                 .getShell() == shell.widget;
+            }
+        });
     }
 
     class TableHasRows extends DefaultCondition {

@@ -16,6 +16,7 @@
  */
 package com.codenvy.eclipse.core;
 
+import static com.codenvy.eclipse.core.CodenvyPlugin.FAMILY_CODENVY;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 
@@ -136,6 +137,11 @@ public class CodenvyNature implements IProjectNature {
                     }
 
                     return Status.OK_STATUS;
+                }
+
+                @Override
+                public boolean belongsTo(Object family) {
+                    return FAMILY_CODENVY.equals(family);
                 }
             };
 
