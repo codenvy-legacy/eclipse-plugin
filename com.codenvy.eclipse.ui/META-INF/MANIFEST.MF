@@ -8,17 +8,14 @@ Bundle-Vendor: Codenvy
 Bundle-Activator: com.codenvy.eclipse.ui.CodenvyUIPlugin
 Bundle-ActivationPolicy: lazy
 Import-Package: com.codenvy.eclipse.client;version="1.0.0.SNAPSHOT",
- com.codenvy.eclipse.client.exceptions;version="1.0.0.SNAPSHOT",
  com.codenvy.eclipse.client.model;version="1.0.0.SNAPSHOT",
  com.codenvy.eclipse.client.request;version="1.0.0.SNAPSHOT",
- com.codenvy.eclipse.client.store;version="1.0.0.SNAPSHOT",
  com.codenvy.eclipse.core;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.launcher;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.team;version="1.0.0.qualifier",
  com.codenvy.eclipse.core.utils;version="1.0.0.qualifier",
  com.google.common.base;version="10.0.1",
  com.google.common.collect;version="10.0.1",
- javax.ws.rs;version="2.0.0",
  org.eclipse.core.commands,
  org.eclipse.core.resources,
  org.eclipse.core.runtime;version="3.4.0",
@@ -51,7 +48,6 @@ Import-Package: com.codenvy.eclipse.client;version="1.0.0.SNAPSHOT",
  org.eclipse.ui.ide,
  org.eclipse.ui.model,
  org.eclipse.ui.plugin,
- org.eclipse.ui.progress,
  org.osgi.framework;version="1.7.0"
 Comment: import org.eclipse.ui.workbench because of tycho bug to resolve org.eclipse.ui.browser package
 Require-Bundle: org.eclipse.ui.workbench;bundle-version="3.105.2"
