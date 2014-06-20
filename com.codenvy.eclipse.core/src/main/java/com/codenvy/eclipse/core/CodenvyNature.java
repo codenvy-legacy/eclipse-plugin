@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 
 import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -126,7 +127,9 @@ public class CodenvyNature implements IProjectNature {
                             codenvyProjectDescription.setNatureIds(ObjectArrays.concat(codenvyProjectDescription.getNatureIds(),
                                                                                        MAVEN_NATURE_ID));
                             codenvyProject.setDescription(codenvyProjectDescription, monitor);
-                            MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(codenvyProject, monitor);
+
+                            final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
+                            projectConfigurationManager.updateProjectConfiguration(codenvyProject, monitor);
                         }
 
                     } catch (CoreException | IOException e) {

@@ -29,4 +29,12 @@
 	<artifactId>com.codenvy.eclipse.core</artifactId>
 	<packaging>eclipse-plugin</packaging>
 	<name>Codenvy Eclipse Plugin :: Core</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.codenvy.eclipse</groupId>
+			<artifactId>com.codenvy.eclipse.client</artifactId>
+			<version>${version.com.codenvy.eclipse.client}</version>
+		</dependency>
+	</dependencies>
 </project>

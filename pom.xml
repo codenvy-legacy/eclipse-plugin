@@ -48,19 +48,6 @@
 		<version.tycho>0.20.0</version.tycho>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.codenvy.eclipse</groupId>
-			<artifactId>com.codenvy.eclipse.client</artifactId>
-			<version>${version.com.codenvy.eclipse.client}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.codenvy.eclipse</groupId>
-			<artifactId>com.codenvy.eclipse.lib</artifactId>
-			<version>${version.com.codenvy.eclipse.lib}</version>
-		</dependency>
-	</dependencies>
-
 	<repositories>
 		<repository>
 			<id>codenvy-public-repo</id>
@@ -89,7 +76,22 @@
 			<plugins>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<version>${version.tycho}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-maven-plugin</artifactId>
+					<version>${version.tycho}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
+					<version>${version.tycho}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>target-platform-configuration</artifactId>
 					<version>${version.tycho}</version>
 				</plugin>
 			</plugins>
@@ -98,13 +100,11 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
-				<version>${version.tycho}</version>
 				<extensions>true</extensions>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
-				<version>${version.tycho}</version>
 				<configuration>
 					<pomDependencies>consider</pomDependencies>
 					<dependency-resolution>

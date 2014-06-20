@@ -30,6 +30,14 @@
 	<packaging>eclipse-test-plugin</packaging>
 	<name>Codenvy Eclipse Plugin :: Core Test</name>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.codenvy.eclipse</groupId>
+			<artifactId>com.codenvy.eclipse.client</artifactId>
+			<version>${version.com.codenvy.eclipse.client}</version>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
