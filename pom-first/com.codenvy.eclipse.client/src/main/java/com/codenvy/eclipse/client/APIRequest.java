@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.client.request;
+package com.codenvy.eclipse.client;
 
 import com.codenvy.eclipse.client.exceptions.APIException;
 

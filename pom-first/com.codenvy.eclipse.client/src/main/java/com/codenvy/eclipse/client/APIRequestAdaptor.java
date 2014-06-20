@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.client.request;
+package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -38,7 +38,7 @@ public class APIRequestAdaptor<T, S> implements APIRequest<T> {
      * @param adaptor the {@link APIRequest} response adaptor.
      * @throws NullPointerException if adaptee or adaptor parameter is {@code null}.
      */
-    public APIRequestAdaptor(APIRequest<S> adaptee, Adaptor<T, S> adaptor) {
+    APIRequestAdaptor(APIRequest<S> adaptee, Adaptor<T, S> adaptor) {
         checkNotNull(adaptee);
         checkNotNull(adaptor);
 

@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.client.request;
+package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,7 +23,6 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.codenvy.eclipse.client.CredentialsProvider;
 import com.codenvy.eclipse.client.exceptions.APIException;
 
 /**
@@ -48,7 +47,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
      * @param username the user name.
      * @throws NullPointerException if request, entityType, credentialsProvider or username parameter is {@code null}.
      */
-    public SimpleAPIRequest(Invocation request, Class<T> entityType, CredentialsProvider credentialsProvider, String username) {
+    SimpleAPIRequest(Invocation request, Class<T> entityType, CredentialsProvider credentialsProvider, String username) {
         this(request, entityType, null, credentialsProvider, username);
     }
 

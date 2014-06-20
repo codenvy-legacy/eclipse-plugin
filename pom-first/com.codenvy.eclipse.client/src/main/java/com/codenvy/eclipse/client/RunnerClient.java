@@ -26,8 +26,6 @@ import com.codenvy.eclipse.client.exceptions.APIException;
 import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.client.model.RunnerStatus;
-import com.codenvy.eclipse.client.request.APIRequest;
-import com.codenvy.eclipse.client.request.SimpleAPIRequest;
 
 /**
  * The Codenvy runner API client.

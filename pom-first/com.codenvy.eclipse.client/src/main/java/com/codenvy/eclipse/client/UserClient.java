@@ -23,8 +23,6 @@ import javax.ws.rs.client.Invocation;
 import com.codenvy.eclipse.client.exceptions.APIException;
 import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.User;
-import com.codenvy.eclipse.client.request.APIRequest;
-import com.codenvy.eclipse.client.request.SimpleAPIRequest;
 
 /**
  * The Codenvy user API client.

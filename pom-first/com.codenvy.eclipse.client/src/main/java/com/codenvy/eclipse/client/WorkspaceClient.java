@@ -31,8 +31,6 @@ import com.codenvy.eclipse.client.exceptions.APIException;
 import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.Workspace;
 import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
-import com.codenvy.eclipse.client.request.APIRequest;
-import com.codenvy.eclipse.client.request.SimpleAPIRequest;
 
 /**
  * The Codenvy workspace API client.

@@ -33,13 +33,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.codenvy.eclipse.client.APIRequestAdaptor.Adaptor;
 import com.codenvy.eclipse.client.exceptions.APIException;
 import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.Project;
-import com.codenvy.eclipse.client.request.APIRequest;
-import com.codenvy.eclipse.client.request.APIRequestAdaptor;
-import com.codenvy.eclipse.client.request.APIRequestAdaptor.Adaptor;
-import com.codenvy.eclipse.client.request.SimpleAPIRequest;
 
 /**
  * The Codenvy project API client.
