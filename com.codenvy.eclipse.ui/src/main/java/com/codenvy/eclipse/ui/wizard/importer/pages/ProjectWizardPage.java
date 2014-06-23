@@ -21,6 +21,7 @@ import static org.eclipse.jface.viewers.CheckboxTableViewer.newCheckList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -56,6 +57,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
+import org.eclipse.ui.internal.WorkbenchPlugin;
+import org.eclipse.ui.internal.registry.WorkingSetDescriptor;
 
 import com.codenvy.eclipse.client.Codenvy;
 import com.codenvy.eclipse.client.model.Credentials;
@@ -66,6 +69,8 @@ import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
 import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -74,6 +79,7 @@ import com.google.common.collect.ImmutableList;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
+@SuppressWarnings("restriction")
 public class ProjectWizardPage extends WizardPage implements IPageChangedListener {
     private ComboViewer         workspaceComboViewer;
     private CheckboxTableViewer projectTableViewer;
@@ -202,11 +208,17 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             }
         });
 
-        // TODO: replace hardcoded ids once bug 245106 is fixed
-        String[] workingSetTypes = new String[]{"org.eclipse.ui.resourceWorkingSetPage", //$NON-NLS-1$
-                "org.eclipse.jdt.ui.JavaWorkingSetPage" //$NON-NLS-1$
-        };
-        workingSetGroup = new WorkingSetGroup(wizardContainer, null, workingSetTypes);
+        // TODO remove when https://bugs.eclipse.org/bugs/show_bug.cgi?id=245106 is fixed
+        final WorkingSetDescriptor[] descriptors = WorkbenchPlugin.getDefault().getWorkingSetRegistry().getWorkingSetDescriptors();
+        final List<String> workingSetTypes = FluentIterable.from(Arrays.asList(descriptors))
+                                                           .transform(new Function<WorkingSetDescriptor, String>() {
+                                                               @Override
+                                                               public String apply(WorkingSetDescriptor descriptor) {
+                                                                   return descriptor.getId();
+                                                               }
+                                                           }).toList();
+
+        workingSetGroup = new WorkingSetGroup(wizardContainer, null, workingSetTypes.toArray(new String[workingSetTypes.size()]));
 
         setControl(wizardContainer);
     }
