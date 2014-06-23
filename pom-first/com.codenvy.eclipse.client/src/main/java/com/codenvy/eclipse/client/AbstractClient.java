@@ -17,11 +17,9 @@
 package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static javax.ws.rs.Priorities.AUTHENTICATION;
 
 import java.io.IOException;
 
-import javax.annotation.Priority;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -112,7 +110,6 @@ public abstract class AbstractClient {
      * @author Kevin Pollet
      */
     @Provider
-    @Priority(AUTHENTICATION)
     private class AuthenticationFilter implements ClientRequestFilter {
         @Override
         public void filter(ClientRequestContext requestContext) throws IOException {

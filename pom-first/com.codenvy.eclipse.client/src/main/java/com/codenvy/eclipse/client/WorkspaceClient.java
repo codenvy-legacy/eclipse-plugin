@@ -17,10 +17,8 @@
 package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import java.util.List;
 
@@ -104,8 +102,8 @@ public class WorkspaceClient extends AbstractClient {
         checkNotNull(workspaceRef);
 
         final Invocation request = getWebTarget().request()
-                                                 .accept(APPLICATION_JSON_TYPE)
-                                                 .build(POST, json(workspaceRef));
+                                                 .accept(APPLICATION_JSON)
+                                                 .buildPost(json(workspaceRef));
 
         return new SimpleAPIRequest<>(request, WorkspaceRef.class, getCredentialsProvider(), getUsername());
 

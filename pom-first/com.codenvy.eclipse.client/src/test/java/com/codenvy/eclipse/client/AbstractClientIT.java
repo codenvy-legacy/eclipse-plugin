@@ -16,16 +16,13 @@
  */
 package com.codenvy.eclipse.client;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.ws.rs.ProcessingException;
-
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.codenvy.eclipse.client.exceptions.AuthenticationException;
@@ -93,7 +90,7 @@ public class AbstractClientIT extends RestClientBaseIT {
         client.getWebTarget()
               .path("current")
               .request()
-              .accept(APPLICATION_JSON_TYPE)
+              .accept(APPLICATION_JSON)
               .get();
 
         verify(credentialsProvider, times(1)).getToken(DUMMY_USERNAME);
@@ -114,14 +111,14 @@ public class AbstractClientIT extends RestClientBaseIT {
         client.getWebTarget()
               .path("current")
               .request()
-              .accept(APPLICATION_JSON_TYPE)
+              .accept(APPLICATION_JSON)
               .get();
 
         verify(credentialsProvider, times(1)).getToken(DUMMY_USERNAME);
         verify(credentialsProvider, times(1)).authorize(eq(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD)));
     }
 
-    @Test
+    @Test(expected = AuthenticationException.class)
     public void testAbstractClientAuthenticationFilterWithNoCredentialsStoredAndNoProvided() {
         final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
         when(credentialsProvider.getToken(DUMMY_USERNAME)).thenReturn(null);
@@ -129,20 +126,11 @@ public class AbstractClientIT extends RestClientBaseIT {
         final AbstractClient client = new AbstractClient(REST_API_URL, "user", DUMMY_USERNAME, null, credentialsProvider) {
         };
 
-        try {
-
-            // dummy request
-            client.getWebTarget()
-                  .path("current")
-                  .request()
-                  .accept(APPLICATION_JSON_TYPE)
-                  .get();
-
-        } catch (ProcessingException e) {
-            Assert.assertTrue(e.getCause() instanceof AuthenticationException);
-            return;
-        }
-
-        Assert.fail();
+        // dummy request
+        client.getWebTarget()
+              .path("current")
+              .request()
+              .accept(APPLICATION_JSON)
+              .get();
     }
 }

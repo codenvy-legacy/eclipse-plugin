@@ -17,7 +17,7 @@
 package com.codenvy.eclipse.client;
 
 import static javax.ws.rs.client.Entity.json;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -71,7 +71,7 @@ public class CredentialsProvider {
 
         if (credentials != null) {
             final Response response = webTarget.request()
-                                               .accept(APPLICATION_JSON_TYPE)
+                                               .accept(APPLICATION_JSON)
                                                .post(json(credentials));
 
             if (response.getStatus() == Status.OK.getStatusCode()) {

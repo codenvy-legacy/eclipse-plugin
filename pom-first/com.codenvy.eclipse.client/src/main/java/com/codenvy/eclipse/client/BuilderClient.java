@@ -17,8 +17,8 @@
 package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import javax.ws.rs.client.Invocation;
 
@@ -66,7 +66,7 @@ public class BuilderClient extends AbstractClient {
                                                  .path("build")
                                                  .queryParam("project", project.name)
                                                  .request()
-                                                 .accept(APPLICATION_JSON_TYPE)
+                                                 .accept(APPLICATION_JSON)
                                                  .buildPost(null);
 
         return new SimpleAPIRequest<>(request, BuilderStatus.class, getCredentialsProvider(), getUsername());
@@ -88,7 +88,7 @@ public class BuilderClient extends AbstractClient {
                                                  .path("status")
                                                  .path(String.valueOf(taskId))
                                                  .request()
-                                                 .accept(APPLICATION_JSON_TYPE)
+                                                 .accept(APPLICATION_JSON)
                                                  .buildGet();
 
         return new SimpleAPIRequest<>(request, BuilderStatus.class, getCredentialsProvider(), getUsername());
@@ -110,7 +110,7 @@ public class BuilderClient extends AbstractClient {
                                                  .path("logs")
                                                  .path(String.valueOf(taskId))
                                                  .request()
-                                                 .accept(TEXT_PLAIN_TYPE)
+                                                 .accept(TEXT_PLAIN)
                                                  .buildGet();
 
         return new SimpleAPIRequest<>(request, String.class, getCredentialsProvider(), getUsername());
@@ -132,7 +132,7 @@ public class BuilderClient extends AbstractClient {
                                                  .path("cancel")
                                                  .path(String.valueOf(taskId))
                                                  .request()
-                                                 .accept(APPLICATION_JSON_TYPE)
+                                                 .accept(APPLICATION_JSON)
                                                  .buildGet();
 
         return new SimpleAPIRequest<>(request, BuilderStatus.class, getCredentialsProvider(), getUsername());

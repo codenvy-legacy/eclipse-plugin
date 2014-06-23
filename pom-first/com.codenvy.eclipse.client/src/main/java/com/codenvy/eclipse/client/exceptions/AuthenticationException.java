@@ -16,12 +16,15 @@
  */
 package com.codenvy.eclipse.client.exceptions;
 
+import javax.ws.rs.ProcessingException;
+
 /**
  * Exception thrown if the user cannot be authenticated.
  * 
  * @author Kevin Pollet
  */
-public class AuthenticationException extends RuntimeException {
+@SuppressWarnings("restriction")
+public class AuthenticationException extends ProcessingException {
     private static final long serialVersionUID = -700004295566607674L;
 
     /**

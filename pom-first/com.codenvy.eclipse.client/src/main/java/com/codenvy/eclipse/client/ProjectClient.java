@@ -17,10 +17,10 @@
 package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static javax.ws.rs.HttpMethod.HEAD;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.client.Entity.text;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.fromStatusCode;
 
 import java.io.InputStream;
@@ -29,7 +29,6 @@ import java.util.zip.ZipInputStream;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -120,6 +119,7 @@ public class ProjectClient extends AbstractClient {
                                                  .path(project.name)
                                                  .path(resourcePath == null ? "" : resourcePath)
                                                  .request()
+                                                 .accept("application/zip")
                                                  .buildGet();
 
         return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, InputStream.class, getCredentialsProvider(), getUsername()),
@@ -172,7 +172,7 @@ public class ProjectClient extends AbstractClient {
                                                  .path(project.name)
                                                  .path(filePath)
                                                  .request()
-                                                 .accept(MediaType.APPLICATION_JSON_TYPE)
+                                                 .accept(TEXT_PLAIN)
                                                  .buildGet();
 
         return new SimpleAPIRequest<>(request, InputStream.class, getCredentialsProvider(), getUsername());
@@ -196,7 +196,7 @@ public class ProjectClient extends AbstractClient {
                                                  .path(project.name)
                                                  .path(resourcePath)
                                                  .request()
-                                                 .build(HEAD);
+                                                 .build("HEAD");
 
         return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, Response.class, getCredentialsProvider(), getUsername()),
                                        new Adaptor<Boolean, Response>() {
