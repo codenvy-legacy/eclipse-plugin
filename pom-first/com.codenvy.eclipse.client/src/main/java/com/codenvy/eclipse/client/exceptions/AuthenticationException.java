@@ -23,7 +23,6 @@ import javax.ws.rs.ProcessingException;
  * 
  * @author Kevin Pollet
  */
-@SuppressWarnings("restriction")
 public class AuthenticationException extends ProcessingException {
     private static final long serialVersionUID = -700004295566607674L;
 
