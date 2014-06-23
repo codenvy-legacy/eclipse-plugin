@@ -95,9 +95,12 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
     @Override
     public T execute() throws APIException {
         Response response = request.invoke();
+        final Status responseStatus = Status.fromStatusCode(response.getStatus());
 
-        // refresh authentication token if needed
-        if (response.getStatus() == Status.UNAUTHORIZED.getStatusCode()) {
+        if (responseStatus == Status.UNAUTHORIZED
+            || responseStatus == Status.FORBIDDEN
+            || responseStatus == Status.PAYMENT_REQUIRED) {
+
             credentialsProvider.refreshToken(username);
             response = request.invoke();
         }
