@@ -26,8 +26,8 @@ import static org.mockito.Mockito.when;
 import org.junit.Test;
 
 import com.codenvy.eclipse.client.auth.AuthenticationException;
+import com.codenvy.eclipse.client.auth.AuthenticationManager;
 import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.auth.Token;
 
 /**
@@ -39,35 +39,35 @@ public class AbstractClientIT extends RestClientBaseIT {
     @Test(expected = NullPointerException.class)
     public void testNewAbstractClientWithNullURL() {
         final Credentials credentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        new AbstractClient(null, "dummyAPI", DUMMY_USERNAME, credentials, credentialsProvider) {
+        new AbstractClient(null, "dummyAPI", DUMMY_USERNAME, credentials, authenticationManager) {
         };
     }
 
     @Test(expected = NullPointerException.class)
     public void testNewAbstractClientWithNullAPIName() {
         final Credentials credentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        new AbstractClient(REST_API_URL, null, DUMMY_USERNAME, credentials, credentialsProvider) {
+        new AbstractClient(REST_API_URL, null, DUMMY_USERNAME, credentials, authenticationManager) {
         };
     }
 
     @Test(expected = NullPointerException.class)
     public void testNewAbstractClientWithNullUsername() {
         final Credentials credentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        new AbstractClient(REST_API_URL, "dummyAPI", null, credentials, credentialsProvider) {
+        new AbstractClient(REST_API_URL, "dummyAPI", null, credentials, authenticationManager) {
         };
     }
 
     @Test
     public void testNewAbstractClientWithNullCredendials() {
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        new AbstractClient(REST_API_URL, "dummyAPI", DUMMY_USERNAME, null, credentialsProvider) {
+        new AbstractClient(REST_API_URL, "dummyAPI", DUMMY_USERNAME, null, authenticationManager) {
         };
     }
 
@@ -81,7 +81,7 @@ public class AbstractClientIT extends RestClientBaseIT {
 
     @Test
     public void testAbstractClientAuthenticationFilterWithStoredCredentials() {
-        final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
+        final AuthenticationManager credentialsProvider = mock(AuthenticationManager.class);
         when(credentialsProvider.getToken(DUMMY_USERNAME)).thenReturn(new Token(SDK_TOKEN_VALUE));
 
         final AbstractClient client = new AbstractClient(REST_API_URL, "user", DUMMY_USERNAME, null, credentialsProvider) {
@@ -101,11 +101,11 @@ public class AbstractClientIT extends RestClientBaseIT {
     @Test
     public void testAbstractClientAuthenticationFilterWithNoCredentialsStoredButProvided() {
         final Credentials credentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
-        final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
-        when(credentialsProvider.getToken(DUMMY_USERNAME)).thenReturn(null);
-        when(credentialsProvider.authorize(credentials)).thenReturn(new Token(SDK_TOKEN_VALUE));
+        final AuthenticationManager authenticationManager = mock(AuthenticationManager.class);
+        when(authenticationManager.getToken(DUMMY_USERNAME)).thenReturn(null);
+        when(authenticationManager.authorize(credentials)).thenReturn(new Token(SDK_TOKEN_VALUE));
 
-        final AbstractClient client = new AbstractClient(REST_API_URL, "user", DUMMY_USERNAME, credentials, credentialsProvider) {
+        final AbstractClient client = new AbstractClient(REST_API_URL, "user", DUMMY_USERNAME, credentials, authenticationManager) {
         };
 
         // dummy request
@@ -115,16 +115,16 @@ public class AbstractClientIT extends RestClientBaseIT {
               .accept(APPLICATION_JSON)
               .get();
 
-        verify(credentialsProvider, times(1)).getToken(DUMMY_USERNAME);
-        verify(credentialsProvider, times(1)).authorize(eq(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD)));
+        verify(authenticationManager, times(1)).getToken(DUMMY_USERNAME);
+        verify(authenticationManager, times(1)).authorize(eq(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD)));
     }
 
     @Test(expected = AuthenticationException.class)
     public void testAbstractClientAuthenticationFilterWithNoCredentialsStoredAndNoProvided() {
-        final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
-        when(credentialsProvider.getToken(DUMMY_USERNAME)).thenReturn(null);
+        final AuthenticationManager authenticationManager = mock(AuthenticationManager.class);
+        when(authenticationManager.getToken(DUMMY_USERNAME)).thenReturn(null);
 
-        final AbstractClient client = new AbstractClient(REST_API_URL, "user", DUMMY_USERNAME, null, credentialsProvider) {
+        final AbstractClient client = new AbstractClient(REST_API_URL, "user", DUMMY_USERNAME, null, authenticationManager) {
         };
 
         // dummy request

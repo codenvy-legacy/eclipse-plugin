@@ -27,38 +27,35 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.codenvy.eclipse.client.RestClientBaseIT;
-import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.CredentialsProvider;
-import com.codenvy.eclipse.client.auth.Token;
 import com.codenvy.eclipse.client.store.DataStore;
 
 /**
- * {@link CredentialsProvider} tests.
+ * {@link AuthenticationManager} tests.
  * 
  * @author Kevin Pollet
  */
-public class CredentialsProviderIT extends RestClientBaseIT {
+public class AuthenticationManagerIT extends RestClientBaseIT {
     @Test
     public void testAuthorizeWithNullDataStoreAndNullCredentials() {
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        Assert.assertNull(credentialsProvider.authorize(null));
+        Assert.assertNull(authenticationManager.authorize(null));
     }
 
     @Test
     public void testAuthorizeWithNullDataStoreAndCredentials() {
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        Assert.assertNotNull(credentialsProvider.authorize(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD)));
+        Assert.assertNotNull(authenticationManager.authorize(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD)));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testAuthorizeWithDataStoreAndNullCredentials() {
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
 
-        Assert.assertNull(credentialsProvider.authorize(null));
+        Assert.assertNull(authenticationManager.authorize(null));
         verifyZeroInteractions(credentialsStore);
     }
 
@@ -66,8 +63,8 @@ public class CredentialsProviderIT extends RestClientBaseIT {
     @SuppressWarnings("unchecked")
     public void testAuthorizeWithDataStoreAndCredentials() {
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
-        final Token token = credentialsProvider.authorize(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
+        final Token token = authenticationManager.authorize(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
 
         Assert.assertNotNull(token);
         verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new Credentials(DUMMY_PASSWORD, token)));
@@ -75,16 +72,16 @@ public class CredentialsProviderIT extends RestClientBaseIT {
 
     @Test
     public void testGetTokenWithNullDataStoreAndNullUsername() {
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        Assert.assertNull(credentialsProvider.getToken(null));
+        Assert.assertNull(authenticationManager.getToken(null));
     }
 
     @Test
     public void testGetTokenWithNullDataStoreAndUsername() {
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        Assert.assertNull(credentialsProvider.getToken(DUMMY_USERNAME));
+        Assert.assertNull(authenticationManager.getToken(DUMMY_USERNAME));
     }
 
     @Test
@@ -93,8 +90,8 @@ public class CredentialsProviderIT extends RestClientBaseIT {
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         when(credentialsStore.get(null)).thenReturn(null);
 
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
-        final Token token = credentialsProvider.getToken(null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
+        final Token token = authenticationManager.getToken(null);
 
         Assert.assertNull(token);
         verify(credentialsStore, times(1)).get(null);
@@ -106,8 +103,8 @@ public class CredentialsProviderIT extends RestClientBaseIT {
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE)));
 
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
-        final Token token = credentialsProvider.getToken(DUMMY_USERNAME);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
+        final Token token = authenticationManager.getToken(DUMMY_USERNAME);
 
         Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
         verify(credentialsStore, times(1)).get(DUMMY_USERNAME);
@@ -115,16 +112,16 @@ public class CredentialsProviderIT extends RestClientBaseIT {
 
     @Test
     public void testRefreshTokenWithNullDataStoreAndNullUsername() {
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        Assert.assertNull(credentialsProvider.refreshToken(null));
+        Assert.assertNull(authenticationManager.refreshToken(null));
     }
 
     @Test
     public void testRefreshTokenWithNullDataStoreAndUsername() {
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
 
-        Assert.assertNull(credentialsProvider.refreshToken(DUMMY_USERNAME));
+        Assert.assertNull(authenticationManager.refreshToken(DUMMY_USERNAME));
     }
 
     @Test
@@ -133,9 +130,9 @@ public class CredentialsProviderIT extends RestClientBaseIT {
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         when(credentialsStore.get(null)).thenReturn(null);
 
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
 
-        Assert.assertNull(credentialsProvider.refreshToken(null));
+        Assert.assertNull(authenticationManager.refreshToken(null));
         verify(credentialsStore, times(1)).get(null);
     }
 
@@ -145,8 +142,8 @@ public class CredentialsProviderIT extends RestClientBaseIT {
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE)));
 
-        final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
-        final Token token = credentialsProvider.refreshToken(DUMMY_USERNAME);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
+        final Token token = authenticationManager.refreshToken(DUMMY_USERNAME);
 
         Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
         verify(credentialsStore, times(1)).get(DUMMY_USERNAME);

@@ -33,8 +33,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.codenvy.eclipse.client.APIRequestAdaptor.Adaptor;
+import com.codenvy.eclipse.client.auth.AuthenticationManager;
 import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.model.Project;
 
 /**
@@ -51,15 +51,15 @@ public class ProjectClient extends AbstractClient {
      * @param apiName the API name.
      * @param username the username.
      * @param credentials the provided user {@link Credentials} might be {@code null}.
-     * @param credentialsProvider the {@link CredentialsProvider}.
-     * @throws NullPointerException if url, username or credentialsProvider parameter is {@code null}.
+     * @param authenticationManager the {@link AuthenticationManager}.
+     * @throws NullPointerException if url, username or authenticationManager parameter is {@code null}.
      */
     ProjectClient(String url,
                   String username,
                   Credentials credentials,
-                  CredentialsProvider credentialsProvider) {
+                  AuthenticationManager authenticationManager) {
 
-        super(url, "project", username, credentials, credentialsProvider);
+        super(url, "project", username, credentials, authenticationManager);
     }
 
     /**
@@ -79,7 +79,7 @@ public class ProjectClient extends AbstractClient {
                                                  .buildGet();
 
         return new SimpleAPIRequest<>(request, new GenericType<List<Project>>() {
-        }, getCredentialsProvider(), getUsername());
+        }, getAuthenticationManager(), getUsername());
     }
 
     /**
@@ -99,7 +99,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(json(project));
 
-        return new SimpleAPIRequest<>(request, Project.class, getCredentialsProvider(), getUsername());
+        return new SimpleAPIRequest<>(request, Project.class, getAuthenticationManager(), getUsername());
     }
 
     /**
@@ -122,7 +122,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept("application/zip")
                                                  .buildGet();
 
-        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, InputStream.class, getCredentialsProvider(), getUsername()),
+        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, InputStream.class, getAuthenticationManager(), getUsername()),
                                        new Adaptor<ZipInputStream, InputStream>() {
                                            @Override
                                            public ZipInputStream adapt(InputStream response) {
@@ -152,7 +152,7 @@ public class ProjectClient extends AbstractClient {
                                                  .request()
                                                  .buildPut(text(fileInputStream));
 
-        return new SimpleAPIRequest<>(request, Void.class, getCredentialsProvider(), getUsername());
+        return new SimpleAPIRequest<>(request, Void.class, getAuthenticationManager(), getUsername());
     }
 
     /**
@@ -175,7 +175,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept(TEXT_PLAIN)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, InputStream.class, getCredentialsProvider(), getUsername());
+        return new SimpleAPIRequest<>(request, InputStream.class, getAuthenticationManager(), getUsername());
     }
 
     /**
@@ -198,7 +198,7 @@ public class ProjectClient extends AbstractClient {
                                                  .request()
                                                  .build("HEAD");
 
-        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, Response.class, getCredentialsProvider(), getUsername()),
+        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, Response.class, getAuthenticationManager(), getUsername()),
                                        new Adaptor<Boolean, Response>() {
                                            @Override
                                            public Boolean adapt(Response response) {

@@ -18,8 +18,8 @@ package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.codenvy.eclipse.client.auth.AuthenticationManager;
 import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.store.DataStoreFactory;
 import com.codenvy.eclipse.client.store.InMemoryDataStoreFactory;
 
@@ -32,7 +32,7 @@ public class Codenvy {
     private final String              url;
     private final String              username;
     private final Credentials         credentials;
-    private final CredentialsProvider credentialsProvider;
+    private final AuthenticationManager authenticationManager;
 
     /**
      * Constructs an instance of {@link Codenvy} client API.
@@ -54,8 +54,8 @@ public class Codenvy {
         this.url = url;
         this.username = username;
         this.credentials = credentials;
-        this.credentialsProvider =
-                                   new CredentialsProvider(url, credentialsStoreFactory != null ? credentialsStoreFactory.getDataStore(url)
+        this.authenticationManager =
+                                   new AuthenticationManager(url, credentialsStoreFactory != null ? credentialsStoreFactory.getDataStore(url)
                                        : null);
     }
 
@@ -65,7 +65,7 @@ public class Codenvy {
      * @return the user API client.
      */
     public UserClient user() {
-        return new UserClient(url, username, credentials, credentialsProvider);
+        return new UserClient(url, username, credentials, authenticationManager);
     }
 
     /**
@@ -74,7 +74,7 @@ public class Codenvy {
      * @return the builder API client.
      */
     public BuilderClient builder() {
-        return new BuilderClient(url, username, credentials, credentialsProvider);
+        return new BuilderClient(url, username, credentials, authenticationManager);
     }
 
     /**
@@ -83,7 +83,7 @@ public class Codenvy {
      * @return the runner API client.
      */
     public RunnerClient runner() {
-        return new RunnerClient(url, username, credentials, credentialsProvider);
+        return new RunnerClient(url, username, credentials, authenticationManager);
     }
 
     /**
@@ -92,7 +92,7 @@ public class Codenvy {
      * @return the project API client.
      */
     public ProjectClient project() {
-        return new ProjectClient(url, username, credentials, credentialsProvider);
+        return new ProjectClient(url, username, credentials, authenticationManager);
     }
 
     /**
@@ -101,7 +101,7 @@ public class Codenvy {
      * @return the workspace API client.
      */
     public WorkspaceClient workspace() {
-        return new WorkspaceClient(url, username, credentials, credentialsProvider);
+        return new WorkspaceClient(url, username, credentials, authenticationManager);
     }
 
     public static class Builder {

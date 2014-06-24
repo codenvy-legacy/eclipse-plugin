@@ -28,23 +28,23 @@ import javax.ws.rs.core.UriBuilder;
 import com.codenvy.eclipse.client.store.DataStore;
 
 /**
- * This class provides the user credentials to the API.
+ * Authentication manager used to authenticate an user with the Codenvy platform.
  * 
  * @author Kevin Pollet
  */
-public class CredentialsProvider {
+public class AuthenticationManager {
     private final WebTarget                      webTarget;
     private final DataStore<String, Credentials> dataStore;
 
     /**
-     * Constructs an instance of {@link CredentialsProvider}.
+     * Constructs an instance of {@link AuthenticationManager}.
      * 
      * @param url the Codenvy platform url.
      * @param dataStore the {@link DataStore} used to store the user credentials, might be {@code null}.
      * @throws NullPointerException if url parameter is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@link String}.
      */
-    public CredentialsProvider(String url, DataStore<String, Credentials> dataStore) {
+    public AuthenticationManager(String url, DataStore<String, Credentials> dataStore) {
         this.dataStore = dataStore;
 
         final UriBuilder uriBuilder = UriBuilder.fromUri(url)
@@ -57,7 +57,7 @@ public class CredentialsProvider {
     }
 
     /**
-     * Authorises the user with the following {@link Credentials} on Codenvy.
+     * Authorises the user with the following {@link Credentials} on Codenvy platform.
      * 
      * @param credentials the user {@link Credentials}.
      * @return the authentication {@link Token}.

@@ -23,8 +23,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
 import com.codenvy.eclipse.client.auth.AuthenticationFilter;
+import com.codenvy.eclipse.client.auth.AuthenticationManager;
 import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.CredentialsProvider;
 
 /**
  * Abstract client class.
@@ -32,9 +32,9 @@ import com.codenvy.eclipse.client.auth.CredentialsProvider;
  * @author Kevin Pollet
  */
 public abstract class AbstractClient {
-    private final WebTarget           webTarget;
-    private final String              username;
-    private final CredentialsProvider credentialsProvider;
+    private final WebTarget             webTarget;
+    private final String                username;
+    private final AuthenticationManager authenticationManager;
 
     /**
      * Constructs an instance of {@link AbstractClient}.
@@ -43,23 +43,23 @@ public abstract class AbstractClient {
      * @param apiName the API name.
      * @param username the username.
      * @param credentials the provided user {@link Credentials} might be {@code null}.
-     * @param credentialsProvider the {@link CredentialsProvider}.
+     * @param authenticationManager the {@link AuthenticationManager}.
      * @param credentialsStoreFactory the {@linkplain com.codenvy.eclipse.client.store.DataStoreFactory DataStoreFactory}.
-     * @throws NullPointerException if url, apiName, username or credentialsProvider parameter is {@code null}.
+     * @throws NullPointerException if url, apiName, username or authenticationManager parameter is {@code null}.
      */
     AbstractClient(String url,
                    String apiName,
                    String username,
                    Credentials credentials,
-                   CredentialsProvider credentialsProvider) {
+                   AuthenticationManager authenticationManager) {
 
         checkNotNull(url);
         checkNotNull(apiName);
         checkNotNull(username);
-        checkNotNull(credentialsProvider);
+        checkNotNull(authenticationManager);
 
         this.username = username;
-        this.credentialsProvider = credentialsProvider;
+        this.authenticationManager = authenticationManager;
 
         final UriBuilder uriBuilder = UriBuilder.fromUri(url)
                                                 .path("api")
@@ -67,7 +67,7 @@ public abstract class AbstractClient {
 
         this.webTarget = ClientBuilder.newClient()
                                       .target(uriBuilder)
-                                      .register(new AuthenticationFilter(username, credentials, credentialsProvider));
+                                      .register(new AuthenticationFilter(username, credentials, authenticationManager));
     }
 
     /**
@@ -80,12 +80,12 @@ public abstract class AbstractClient {
     }
 
     /**
-     * Returns the {@link CredentialsProvider} used to authenticate.
+     * Returns the {@link AuthenticationManager} used to authenticate.
      * 
-     * @return the {@link CredentialsProvider} used for authentication.
+     * @return the {@link AuthenticationManager} used for authentication.
      */
-    public CredentialsProvider getCredentialsProvider() {
-        return credentialsProvider;
+    public AuthenticationManager getAuthenticationManager() {
+        return authenticationManager;
     }
 
     /**

@@ -16,6 +16,8 @@
  */
 package com.codenvy.eclipse.client.auth;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 
 import javax.ws.rs.client.ClientRequestContext;
@@ -30,34 +32,37 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 public class AuthenticationFilter implements ClientRequestFilter {
-    private final String              username;
-    private final Credentials         credentials;
-    private final CredentialsProvider credentialsProvider;
+    private final String                username;
+    private final Credentials           credentials;
+    private final AuthenticationManager authenticationManager;
 
     /**
      * Constructs an instance of {@link AuthenticationFilter}.
      * 
      * @param username the user name concerned by the authentication.
      * @param credentials the {@link Credentials} used for authentication.
-     * @param credentialsProvider the {@link CredentialsProvider}.
-     * @throws NullPointerException if credentialsProvider or username parameter is {@code null}.
+     * @param authenticationManager the {@link AuthenticationManager}.
+     * @throws NullPointerException if authenticationManager or username parameter is {@code null}.
      */
-    public AuthenticationFilter(String username, Credentials credentials, CredentialsProvider credentialsProvider) {
+    public AuthenticationFilter(String username, Credentials credentials, AuthenticationManager authenticationManager) {
+        checkNotNull(username);
+        checkNotNull(authenticationManager);
+
         this.username = username;
         this.credentials = credentials;
-        this.credentialsProvider = credentialsProvider;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
-        Token token = credentialsProvider.getToken(username);
+        Token token = authenticationManager.getToken(username);
 
         if (token == null) {
             if (credentials == null) {
                 throw new AuthenticationException("No credentials provided for authentication");
             }
 
-            token = credentialsProvider.authorize(credentials);
+            token = authenticationManager.authorize(credentials);
             if (token == null) {
                 throw new AuthenticationException("Unable to negociate a token for authentication");
             }

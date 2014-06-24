@@ -22,8 +22,8 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import javax.ws.rs.client.Invocation;
 
+import com.codenvy.eclipse.client.auth.AuthenticationManager;
 import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.client.model.RunnerStatus;
 
@@ -40,15 +40,15 @@ public class RunnerClient extends AbstractClient {
      * @param apiName the API name.
      * @param username the username.
      * @param credentials the provided user {@link Credentials} might be {@code null}.
-     * @param credentialsProvider the {@link CredentialsProvider}.
-     * @throws NullPointerException if url, username or credentialsProvider parameter is {@code null}.
+     * @param authenticationManager the {@link AuthenticationManager}.
+     * @throws NullPointerException if url, username or authenticationManager parameter is {@code null}.
      */
     RunnerClient(String url,
                  String username,
                  Credentials credentials,
-                 CredentialsProvider credentialsProvider) {
+                 AuthenticationManager authenticationManager) {
 
-        super(url, "runner", username, credentials, credentialsProvider);
+        super(url, "runner", username, credentials, authenticationManager);
     }
 
     /**
@@ -69,7 +69,7 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(null);
 
-        return new SimpleAPIRequest<>(request, RunnerStatus.class, getCredentialsProvider(), getUsername());
+        return new SimpleAPIRequest<>(request, RunnerStatus.class, getAuthenticationManager(), getUsername());
     }
 
     /**
@@ -91,7 +91,7 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(null);
 
-        return new SimpleAPIRequest<>(request, RunnerStatus.class, getCredentialsProvider(), getUsername());
+        return new SimpleAPIRequest<>(request, RunnerStatus.class, getAuthenticationManager(), getUsername());
     }
 
     /**
@@ -113,7 +113,7 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, RunnerStatus.class, getCredentialsProvider(), getUsername());
+        return new SimpleAPIRequest<>(request, RunnerStatus.class, getAuthenticationManager(), getUsername());
     }
 
     /**
@@ -135,6 +135,6 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(TEXT_PLAIN)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, String.class, getCredentialsProvider(), getUsername());
+        return new SimpleAPIRequest<>(request, String.class, getAuthenticationManager(), getUsername());
     }
 }
