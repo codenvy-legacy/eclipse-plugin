@@ -20,7 +20,7 @@ package com.codenvy.eclipse.client.store;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.codenvy.eclipse.client.model.Credentials;
+import com.codenvy.eclipse.client.auth.Credentials;
 
 /**
  * {@link InMemoryDataStoreFactory} tests.

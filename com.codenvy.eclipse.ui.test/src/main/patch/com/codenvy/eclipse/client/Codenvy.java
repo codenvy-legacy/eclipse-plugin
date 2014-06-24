@@ -39,8 +39,8 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.exceptions.APIException;
-import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.client.model.User;
 import com.codenvy.eclipse.client.model.Workspace;

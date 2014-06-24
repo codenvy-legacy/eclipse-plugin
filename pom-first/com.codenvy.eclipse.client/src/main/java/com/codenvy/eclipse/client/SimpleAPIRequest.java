@@ -23,6 +23,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.exceptions.APIException;
 
 /**

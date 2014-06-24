@@ -29,7 +29,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codenvy.eclipse.client.model.Token;
+import com.codenvy.eclipse.client.auth.Token;
 import com.codenvy.eclipse.client.store.DataStore;
 import com.codenvy.eclipse.client.store.StoredCredentials;
 

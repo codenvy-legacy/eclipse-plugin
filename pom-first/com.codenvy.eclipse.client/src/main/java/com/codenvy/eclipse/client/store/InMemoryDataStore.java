@@ -21,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.codenvy.eclipse.client.model.Credentials;
+import com.codenvy.eclipse.client.auth.Credentials;
 
 /**
  * {@link DataStore} implementation which stores user credentials in memory.

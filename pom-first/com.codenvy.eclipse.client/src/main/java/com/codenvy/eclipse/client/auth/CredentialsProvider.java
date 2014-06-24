@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.client;
+package com.codenvy.eclipse.client.auth;
 
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -25,8 +25,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
-import com.codenvy.eclipse.client.model.Credentials;
-import com.codenvy.eclipse.client.model.Token;
 import com.codenvy.eclipse.client.store.DataStore;
 
 /**
@@ -46,7 +44,7 @@ public class CredentialsProvider {
      * @throws NullPointerException if url parameter is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@link String}.
      */
-    CredentialsProvider(String url, DataStore<String, Credentials> dataStore) {
+    public CredentialsProvider(String url, DataStore<String, Credentials> dataStore) {
         this.dataStore = dataStore;
 
         final UriBuilder uriBuilder = UriBuilder.fromUri(url)

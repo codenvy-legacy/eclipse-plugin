@@ -22,7 +22,7 @@ import java.util.Properties;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
-import com.codenvy.eclipse.client.model.Credentials;
+import com.codenvy.eclipse.client.auth.Credentials;
 
 
 /**

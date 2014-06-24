@@ -25,8 +25,9 @@ import java.util.List;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 
+import com.codenvy.eclipse.client.auth.Credentials;
+import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.exceptions.APIException;
-import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.Workspace;
 import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
 

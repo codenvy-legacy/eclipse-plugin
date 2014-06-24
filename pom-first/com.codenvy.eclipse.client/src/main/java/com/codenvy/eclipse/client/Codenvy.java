@@ -18,7 +18,8 @@ package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.codenvy.eclipse.client.model.Credentials;
+import com.codenvy.eclipse.client.auth.Credentials;
+import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.store.DataStoreFactory;
 import com.codenvy.eclipse.client.store.InMemoryDataStoreFactory;
 

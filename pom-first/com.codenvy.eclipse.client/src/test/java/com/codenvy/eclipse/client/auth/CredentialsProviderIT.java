@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.client;
+package com.codenvy.eclipse.client.auth;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -26,8 +26,10 @@ import static org.mockito.Mockito.when;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.codenvy.eclipse.client.model.Credentials;
-import com.codenvy.eclipse.client.model.Token;
+import com.codenvy.eclipse.client.RestClientBaseIT;
+import com.codenvy.eclipse.client.auth.Credentials;
+import com.codenvy.eclipse.client.auth.CredentialsProvider;
+import com.codenvy.eclipse.client.auth.Token;
 import com.codenvy.eclipse.client.store.DataStore;
 
 /**

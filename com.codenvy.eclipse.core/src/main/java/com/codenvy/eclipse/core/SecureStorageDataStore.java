@@ -21,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.StorageException;
 
-import com.codenvy.eclipse.client.model.Token;
+import com.codenvy.eclipse.client.auth.Token;
 import com.codenvy.eclipse.client.store.DataStore;
 import com.codenvy.eclipse.client.store.StoredCredentials;
 

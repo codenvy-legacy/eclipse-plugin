@@ -61,7 +61,7 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.registry.WorkingSetDescriptor;
 
 import com.codenvy.eclipse.client.Codenvy;
-import com.codenvy.eclipse.client.model.Credentials;
+import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.client.model.Workspace;
 import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;

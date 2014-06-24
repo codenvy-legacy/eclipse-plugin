@@ -22,8 +22,9 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import javax.ws.rs.client.Invocation;
 
+import com.codenvy.eclipse.client.auth.Credentials;
+import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.exceptions.APIException;
-import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.client.model.RunnerStatus;
 
