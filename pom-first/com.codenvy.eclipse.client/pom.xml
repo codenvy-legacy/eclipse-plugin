@@ -81,9 +81,20 @@
 
 	<build>
 		<testResources>
+			<!-- Exclude binary resources from filtering to prevent side effects -->
 			<testResource>
 				<filtering>true</filtering>
 				<directory>src/test/resources</directory>
+				<excludes>
+					<exclude>*.zip</exclude>
+				</excludes>
+			</testResource>
+			<testResource>
+				<filtering>false</filtering>
+				<directory>src/test/resources</directory>
+				<includes>
+					<include>*.zip</include>
+				</includes>
 			</testResource>
 		</testResources>
 		<plugins>

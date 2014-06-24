@@ -1,7 +1,7 @@
 /*
  * CODENVY CONFIDENTIAL
  * ________________
- * 
+ *
  * [2012] - [2014] Codenvy, S.A.
  * All Rights Reserved.
  * NOTICE: All information contained herein is, and remains
@@ -17,6 +17,7 @@
 package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.client.Entity.text;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -35,17 +36,18 @@ import javax.ws.rs.core.Response.Status;
 import com.codenvy.eclipse.client.RequestResponseAdaptor.Adaptor;
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
 import com.codenvy.eclipse.client.model.Project;
+import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
 
 /**
  * The Codenvy project API client.
- * 
+ *
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
 public class ProjectClient extends AbstractClient {
     /**
      * Constructs an instance of {@link ProjectClient}.
-     * 
+     *
      * @param url the Codenvy platform URL.
      * @param authenticationManager the {@link AuthenticationManager}.
      * @throws NullPointerException if url or authenticationManager parameter is {@code null}.
@@ -56,7 +58,7 @@ public class ProjectClient extends AbstractClient {
 
     /**
      * Retrieves all workspace projects.
-     * 
+     *
      * @param workspaceId the workspace id.
      * @return the workspace project list never {@code null}.
      * @throws NullPointerException if workspaceId parameter is {@code null}.
@@ -76,7 +78,7 @@ public class ProjectClient extends AbstractClient {
 
     /**
      * Creates a project in the given workspace.
-     * 
+     *
      * @param project the project to create.
      * @return the new project, never {@code null}.
      * @throws NullPointerException if project parameter is {@code null}.
@@ -96,7 +98,7 @@ public class ProjectClient extends AbstractClient {
 
     /**
      * Exports a resource in the given project.
-     * 
+     *
      * @param project the project.
      * @param resourcePath the path of the resource to export, must be a folder.
      * @return the resource {@link ZipInputStream} or {@code null} if the resource is not found.
@@ -115,17 +117,40 @@ public class ProjectClient extends AbstractClient {
                                                  .buildGet();
 
         return new RequestResponseAdaptor<>(new SimpleRequest<>(request, InputStream.class, getAuthenticationManager()),
-                                       new Adaptor<ZipInputStream, InputStream>() {
-                                           @Override
-                                           public ZipInputStream adapt(InputStream response) {
-                                               return new ZipInputStream(response);
-                                           }
-                                       });
+                                            new Adaptor<ZipInputStream, InputStream>() {
+                                                @Override
+                                                public ZipInputStream adapt(InputStream response) {
+                                                    return new ZipInputStream(response);
+                                                }
+                                            });
+    }
+
+    /**
+     * Upload a local ZIP folder.
+     *
+     * @param workspace the {@link WorkspaceRef} in which the ZIP folder will be imported.
+     * @param project the pre-exisiting {@link Project} in which the archive content should be imported.
+     * @param archiveInputStream the archive {@link InputStream}.
+     * @return the {@link Request} pointing to a {@link Void} result.
+     * @throws NullPointerException if workspace, projectName or archiveInputStrem parameters are {@code null}.
+     */
+    public Request<Void> importArchive(WorkspaceRef workspace, Project project, InputStream archiveInputStream) {
+        checkNotNull(workspace);
+        checkNotNull(project);
+        checkNotNull(archiveInputStream);
+
+        final Invocation request = getWebTarget().path(workspace.id)
+                                                 .path("import")
+                                                 .path(project.name)
+                                                 .request()
+                                                 .buildPost(entity(archiveInputStream, "application/zip"));
+
+        return new SimpleRequest<>(request, Void.class, getAuthenticationManager());
     }
 
     /**
      * Updates a resource in the given project.
-     * 
+     *
      * @param project the project.
      * @param filePath the path to the file to update.
      * @param fileInputStream the file {@link InputStream}.
@@ -149,7 +174,7 @@ public class ProjectClient extends AbstractClient {
 
     /**
      * Gets file content in the given project.
-     * 
+     *
      * @param project the project.
      * @param filePath the file path.
      * @return the file {@link InputStream} or {@code null} if not found.
@@ -172,7 +197,7 @@ public class ProjectClient extends AbstractClient {
 
     /**
      * Returns if the given resource exists in the given Codenvy project.
-     * 
+     *
      * @param project the Codenvy project.
      * @param resource the resource path.
      * @return {@code true} if the given resource exists in the Codenvy project, {@code false} otherwise.
@@ -191,13 +216,13 @@ public class ProjectClient extends AbstractClient {
                                                  .build("HEAD");
 
         return new RequestResponseAdaptor<>(new SimpleRequest<>(request, Response.class, getAuthenticationManager()),
-                                       new Adaptor<Boolean, Response>() {
-                                           @Override
-                                           public Boolean adapt(Response response) {
-                                               // TODO check if better, bad request response is sent if resourcePath is a folder
-                                               final Status status = fromStatusCode(response.getStatus());
-                                               return status == Status.OK || status == Status.BAD_REQUEST;
-                                           }
-                                       });
+                                            new Adaptor<Boolean, Response>() {
+                                                @Override
+                                                public Boolean adapt(Response response) {
+                                                    // TODO check if better, bad request response is sent if resourcePath is a folder
+                                                    final Status status = fromStatusCode(response.getStatus());
+                                                    return status == Status.OK || status == Status.BAD_REQUEST;
+                                                }
+                                            });
     }
 }

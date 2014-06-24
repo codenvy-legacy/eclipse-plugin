@@ -1,7 +1,7 @@
 /*
  * CODENVY CONFIDENTIAL
  * ________________
- * 
+ *
  * [2012] - [2014] Codenvy, S.A.
  * All Rights Reserved.
  * NOTICE: All information contained herein is, and remains
@@ -18,6 +18,7 @@ package com.codenvy.eclipse.client;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,7 +40,7 @@ import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
 
 /**
  * {@linkplain com.codenvy.eclipse.client.ProjectClient ProjectService} tests.
- * 
+ *
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
@@ -127,6 +128,45 @@ public class ProjectClientIT extends AbstractIT {
 
         Assert.assertNotNull(zipInputStream);
     }
+
+    @Test(expected = NullPointerException.class)
+    public void testImportArchiveWithNullWorkspace() {
+        codenvy.project()
+               .importArchive(null,
+                              projectPrj1,
+                              ProjectClientIT.class.getResourceAsStream("/archiveToImport.zip"))
+               .execute();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testImportArchiveWithNullProject() {
+        codenvy.project()
+               .importArchive(defaultWorkspace,
+                              null,
+                              ProjectClientIT.class.getResourceAsStream("/archiveToImport.zip"))
+               .execute();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testImportArchiveWithNullInputStream() {
+        codenvy.project()
+               .importArchive(defaultWorkspace,
+                              projectPrj1,
+                              null)
+               .execute();
+    }
+
+    @Test
+    public void testImportArchive() throws FileNotFoundException, IOException {
+        codenvy.project()
+               .importArchive(defaultWorkspace,
+                              projectPrj1,
+                              ProjectClientIT.class.getResourceAsStream("/archiveToImport.zip"))
+               .execute();
+
+        Assert.assertTrue(codenvy.project().isResource(projectPrj1, "/fileToImport.txt").execute());
+    }
+
 
     @Test(expected = NullPointerException.class)
     public void testUpdateFileWithNullProject() {
