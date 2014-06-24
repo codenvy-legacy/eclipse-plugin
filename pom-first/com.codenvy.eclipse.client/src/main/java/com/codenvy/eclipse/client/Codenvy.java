@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.store.DataStoreFactory;
+import com.codenvy.eclipse.client.store.InMemoryDataStoreFactory;
 import com.codenvy.eclipse.client.store.StoredCredentials;
 
 /**
@@ -104,18 +105,15 @@ public class Codenvy {
     }
 
     public static class Builder {
-        private final String                                      url;
-        private final String                                      username;
-        private Credentials                                       credentials;
-        private final DataStoreFactory<String, StoredCredentials> credentialsStoreFactory;
+        private final String                                url;
+        private final String                                username;
+        private Credentials                                 credentials;
+        private DataStoreFactory<String, StoredCredentials> credentialsStoreFactory;
 
-        public Builder(String url,
-                       String username,
-                       DataStoreFactory<String, StoredCredentials> credentialsStoreFactory) {
-
+        public Builder(String url, String username) {
             this.url = url;
             this.username = username;
-            this.credentialsStoreFactory = credentialsStoreFactory;
+            this.credentialsStoreFactory = new InMemoryDataStoreFactory();
         }
 
         /**
@@ -126,6 +124,17 @@ public class Codenvy {
          */
         public Builder withCredentials(Credentials credentials) {
             this.credentials = credentials;
+            return this;
+        }
+
+        /**
+         * Defines the {@link DataStoreFactory} used to store the user {@link Credentials}.
+         * 
+         * @param credentialsStoreFactory the {@link DataStoreFactory} to use.
+         * @return {@link Builder} instance.
+         */
+        public Builder withCredentialsStoreFactory(DataStoreFactory<String, StoredCredentials> credentialsStoreFactory) {
+            this.credentialsStoreFactory = credentialsStoreFactory;
             return this;
         }
 
