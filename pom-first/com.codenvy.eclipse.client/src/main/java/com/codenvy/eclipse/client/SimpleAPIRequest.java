@@ -24,11 +24,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.codenvy.eclipse.client.auth.CredentialsProvider;
-import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.exceptions.CodenvyException;
 
 /**
  * {@link APIRequest} implementation reading the body of the {@link Response}.
- *
+ * 
  * @author Kevin Pollet
  * @author Stéphane Daviet
  * @param <T> the {@linkplain java.lang.reflect.Type Type} of the {@link Response} body.
@@ -42,7 +42,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
 
     /**
      * Constructs an instance of {@link SimpleAPIRequest}.
-     *
+     * 
      * @param request the request to invoke.
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
      * @param credentialsProvider the {@link CredentialsProvider} instance.
@@ -55,7 +55,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
 
     /**
      * Constructs an instance of {@link SimpleAPIRequest}.
-     *
+     * 
      * @param request the request to invoke.
      * @param genericEntityType the request response entity {@link GenericType}.
      * @param credentialsProvider the {@link CredentialsProvider} instance.
@@ -68,7 +68,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
 
     /**
      * Constructs an instance of {@link SimpleAPIRequest}.
-     *
+     * 
      * @param request the request to invoke.
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
      * @param genericEntityType the request response entity {@link GenericType}.
@@ -95,7 +95,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
     }
 
     @Override
-    public T execute() throws APIException {
+    public T execute() throws CodenvyException {
         Response response = request.invoke();
         final Status responseStatus = Status.fromStatusCode(response.getStatus());
 
@@ -116,33 +116,33 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
 
     /**
      * Reads the API {@link Response} body entity.
-     *
+     * 
      * @param response the API {@link Response}.
      * @param entityType the entity type to read in {@link Response} body.
      * @return the entity type instance.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    private T readEntity(Response response, Class<T> entityType) throws APIException {
+    private T readEntity(Response response, Class<T> entityType) throws CodenvyException {
         if (Status.Family.SUCCESSFUL == response.getStatusInfo().getFamily()) {
             return response.readEntity(entityType);
         }
 
-        throw APIException.from(response);
+        throw CodenvyException.from(response);
     }
 
     /**
      * Reads the API {@link Response} body entity.
-     *
+     * 
      * @param response the API {@link Response}.
      * @param genericEntityType the entity type to read in {@link Response} body.
      * @return the entity type instance.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    private T readEntity(Response response, GenericType<T> genericEntityType) throws APIException {
-        if (Status.OK.getStatusCode() == response.getStatus()) {
+    private T readEntity(Response response, GenericType<T> genericEntityType) throws CodenvyException {
+        if (Status.Family.SUCCESSFUL == response.getStatusInfo().getFamily()) {
             return response.readEntity(genericEntityType);
         }
 
-        throw APIException.from(response);
+        throw CodenvyException.from(response);
     }
 }

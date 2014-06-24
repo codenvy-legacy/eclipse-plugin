@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response.Status;
 import com.codenvy.eclipse.client.APIRequestAdaptor.Adaptor;
 import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.CredentialsProvider;
-import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.exceptions.CodenvyException;
 import com.codenvy.eclipse.client.model.Project;
 
 /**
@@ -69,9 +69,9 @@ public class ProjectClient extends AbstractClient {
      * @param workspaceId the workspace id.
      * @return the workspace project list never {@code null}.
      * @throws NullPointerException if workspaceId parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<List<Project>> getWorkspaceProjects(String workspaceId) throws APIException {
+    public APIRequest<List<Project>> getWorkspaceProjects(String workspaceId) throws CodenvyException {
         checkNotNull(workspaceId);
 
         final Invocation request = getWebTarget().path(workspaceId)
@@ -89,9 +89,9 @@ public class ProjectClient extends AbstractClient {
      * @param project the project to create.
      * @return the new project, never {@code null}.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<Project> create(Project project) throws APIException {
+    public APIRequest<Project> create(Project project) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -110,9 +110,9 @@ public class ProjectClient extends AbstractClient {
      * @param resourcePath the path of the resource to export, must be a folder.
      * @return the resource {@link ZipInputStream} or {@code null} if the resource is not found.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<ZipInputStream> exportResources(Project project, String resourcePath) throws APIException {
+    public APIRequest<ZipInputStream> exportResources(Project project, String resourcePath) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -139,9 +139,9 @@ public class ProjectClient extends AbstractClient {
      * @param filePath the path to the file to update.
      * @param fileInputStream the file {@link InputStream}.
      * @throws NullPointerException if project, filePath or fileInputStream parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<Void> updateFile(Project project, String filePath, InputStream fileInputStream) throws APIException {
+    public APIRequest<Void> updateFile(Project project, String filePath, InputStream fileInputStream) throws CodenvyException {
         checkNotNull(project);
         checkNotNull(filePath);
         checkNotNull(fileInputStream);
@@ -162,9 +162,9 @@ public class ProjectClient extends AbstractClient {
      * @param project the project.
      * @param filePath the file path.
      * @return the file {@link InputStream} or {@code null} if not found.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<InputStream> getFile(Project project, String filePath) throws APIException {
+    public APIRequest<InputStream> getFile(Project project, String filePath) throws CodenvyException {
         checkNotNull(project);
         checkNotNull(filePath);
 
@@ -186,9 +186,9 @@ public class ProjectClient extends AbstractClient {
      * @param resource the resource path.
      * @return {@code true} if the given resource exists in the Codenvy project, {@code false} otherwise.
      * @throws NullPointerException if project or resourcePath parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<Boolean> isResource(Project project, String resourcePath) throws APIException {
+    public APIRequest<Boolean> isResource(Project project, String resourcePath) throws CodenvyException {
         checkNotNull(project);
         checkNotNull(resourcePath);
 

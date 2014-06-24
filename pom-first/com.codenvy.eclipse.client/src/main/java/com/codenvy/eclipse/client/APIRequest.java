@@ -16,7 +16,7 @@
  */
 package com.codenvy.eclipse.client;
 
-import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.exceptions.CodenvyException;
 
 /**
  * The API request contract returned by the Codenvy client API.
@@ -29,7 +29,7 @@ public interface APIRequest<T> {
      * Executes the Codenvy API request.
      * 
      * @return the API request result.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    T execute() throws APIException;
+    T execute() throws CodenvyException;
 }

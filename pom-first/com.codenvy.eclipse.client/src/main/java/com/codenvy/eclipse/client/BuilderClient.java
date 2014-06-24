@@ -24,7 +24,7 @@ import javax.ws.rs.client.Invocation;
 
 import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.CredentialsProvider;
-import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.exceptions.CodenvyException;
 import com.codenvy.eclipse.client.model.BuilderStatus;
 import com.codenvy.eclipse.client.model.Project;
 
@@ -58,9 +58,9 @@ public class BuilderClient extends AbstractClient {
      * @param project the project to build.
      * @return the {@link BuilderStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<BuilderStatus> build(Project project) throws APIException {
+    public APIRequest<BuilderStatus> build(Project project) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -80,9 +80,9 @@ public class BuilderClient extends AbstractClient {
      * @param taskId the builder task id.
      * @return the {@link BuilderStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<BuilderStatus> status(Project project, long taskId) throws APIException {
+    public APIRequest<BuilderStatus> status(Project project, long taskId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -102,9 +102,9 @@ public class BuilderClient extends AbstractClient {
      * @param taskId the builder task id.
      * @return the builder logs.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<String> logs(Project project, long taskId) throws APIException {
+    public APIRequest<String> logs(Project project, long taskId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -124,9 +124,9 @@ public class BuilderClient extends AbstractClient {
      * @param taskId the builder task id.
      * @return the {@link BuilderStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<BuilderStatus> cancel(Project project, long taskId) throws APIException {
+    public APIRequest<BuilderStatus> cancel(Project project, long taskId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)

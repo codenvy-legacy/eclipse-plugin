@@ -22,7 +22,7 @@ import javax.ws.rs.client.Invocation;
 
 import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.CredentialsProvider;
-import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.exceptions.CodenvyException;
 import com.codenvy.eclipse.client.model.User;
 
 /**
@@ -54,9 +54,9 @@ public class UserClient extends AbstractClient {
      * Returns the current user.
      * 
      * @return the current user.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<User> current() throws APIException {
+    public APIRequest<User> current() throws CodenvyException {
         final Invocation request = getWebTarget().request()
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();

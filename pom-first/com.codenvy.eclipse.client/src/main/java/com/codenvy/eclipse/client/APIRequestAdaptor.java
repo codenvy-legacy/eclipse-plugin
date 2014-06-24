@@ -18,7 +18,7 @@ package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.exceptions.CodenvyException;
 
 /**
  * {@link APIRequest} implementation adapting an API request response to another type.
@@ -47,7 +47,7 @@ public class APIRequestAdaptor<T, S> implements APIRequest<T> {
     }
 
     @Override
-    public T execute() throws APIException {
+    public T execute() throws CodenvyException {
         return adaptor.adapt(adaptee.execute());
     }
 

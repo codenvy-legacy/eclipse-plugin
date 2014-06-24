@@ -27,31 +27,31 @@ import com.codenvy.eclipse.client.model.Error;
  * 
  * @author Kevin Pollet
  */
-public class APIException extends RuntimeException {
+public class CodenvyException extends RuntimeException {
     private static final long serialVersionUID = 7031838814322889179L;
 
     /**
-     * Reads the {@code Response} body and constructs an instance of {@link APIException}.
+     * Reads the {@code Response} body and constructs an instance of {@link CodenvyException}.
      * 
      * @param response the rest API {@link Response}.
      * @throws NullPointerException if response parameter is {@code null}.
      */
-    public static APIException from(Response response) {
+    public static CodenvyException from(Response response) {
         checkNotNull(response);
 
         final Error codenvyError = response.readEntity(Error.class);
-        return new APIException(response.getStatus(), codenvyError.message);
+        return new CodenvyException(response.getStatus(), codenvyError.message);
     }
 
     private final int status;
 
     /**
-     * Constructs an instance of {@link APIException}.
+     * Constructs an instance of {@link CodenvyException}.
      * 
      * @param status the HTTP status code.
      * @param message the error message.
      */
-    private APIException(int status, String message) {
+    private CodenvyException(int status, String message) {
         super(message);
 
         this.status = status;

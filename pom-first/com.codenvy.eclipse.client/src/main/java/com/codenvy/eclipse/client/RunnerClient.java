@@ -24,7 +24,7 @@ import javax.ws.rs.client.Invocation;
 
 import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.CredentialsProvider;
-import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.exceptions.CodenvyException;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.client.model.RunnerStatus;
 
@@ -58,9 +58,9 @@ public class RunnerClient extends AbstractClient {
      * @param project the project to run.
      * @return the {@link RunnerStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<RunnerStatus> run(Project project) throws APIException {
+    public APIRequest<RunnerStatus> run(Project project) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -80,9 +80,9 @@ public class RunnerClient extends AbstractClient {
      * @param processId the runner process id.
      * @return the {@link RunnerStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<RunnerStatus> stop(Project project, long processId) throws APIException {
+    public APIRequest<RunnerStatus> stop(Project project, long processId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -102,9 +102,9 @@ public class RunnerClient extends AbstractClient {
      * @param processId the runner process id.
      * @return the {@link RunnerStatus}.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<RunnerStatus> status(Project project, long processId) throws APIException {
+    public APIRequest<RunnerStatus> status(Project project, long processId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -124,9 +124,9 @@ public class RunnerClient extends AbstractClient {
      * @param processId the runner process id.
      * @return the runner logs.
      * @throws NullPointerException if project parameter is {@code null}.
-     * @throws APIException if something goes wrong with the API call.
+     * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<String> logs(Project project, long processId) throws APIException {
+    public APIRequest<String> logs(Project project, long processId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
