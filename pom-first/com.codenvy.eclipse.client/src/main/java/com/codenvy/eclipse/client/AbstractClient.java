@@ -18,19 +18,13 @@ package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.IOException;
-
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.ext.Provider;
 
-import com.codenvy.eclipse.client.auth.AuthenticationException;
+import com.codenvy.eclipse.client.auth.AuthenticationFilter;
 import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.CredentialsProvider;
-import com.codenvy.eclipse.client.auth.Token;
 
 /**
  * Abstract client class.
@@ -40,7 +34,6 @@ import com.codenvy.eclipse.client.auth.Token;
 public abstract class AbstractClient {
     private final WebTarget           webTarget;
     private final String              username;
-    private final Credentials         credentials;
     private final CredentialsProvider credentialsProvider;
 
     /**
@@ -66,7 +59,6 @@ public abstract class AbstractClient {
         checkNotNull(credentialsProvider);
 
         this.username = username;
-        this.credentials = credentials;
         this.credentialsProvider = credentialsProvider;
 
         final UriBuilder uriBuilder = UriBuilder.fromUri(url)
@@ -75,7 +67,7 @@ public abstract class AbstractClient {
 
         this.webTarget = ClientBuilder.newClient()
                                       .target(uriBuilder)
-                                      .register(new AuthenticationFilter());
+                                      .register(new AuthenticationFilter(username, credentials, credentialsProvider));
     }
 
     /**
@@ -103,33 +95,5 @@ public abstract class AbstractClient {
      */
     public String getUsername() {
         return username;
-    }
-
-    /**
-     * Filter used to inject {@link Token} in client request.
-     * 
-     * @author Kevin Pollet
-     */
-    @Provider
-    private class AuthenticationFilter implements ClientRequestFilter {
-        @Override
-        public void filter(ClientRequestContext requestContext) throws IOException {
-            Token authToken = credentialsProvider.getToken(username);
-
-            if (authToken == null) {
-                if (credentials == null) {
-                    throw new AuthenticationException("No credentials provided for authentication");
-                }
-
-                authToken = credentialsProvider.authorize(credentials);
-                if (authToken == null) {
-                    throw new AuthenticationException("Unable to negociate a token for authentication");
-                }
-            }
-
-            requestContext.setUri(UriBuilder.fromUri(requestContext.getUri())
-                                            .queryParam("token", authToken.value)
-                                            .build());
-        }
     }
 }
