@@ -1,7 +1,7 @@
 /*
  * CODENVY CONFIDENTIAL
  * ________________
- * 
+ *
  * [2012] - [2014] Codenvy, S.A.
  * All Rights Reserved.
  * NOTICE: All information contained herein is, and remains
@@ -27,8 +27,9 @@ import com.codenvy.eclipse.client.exceptions.APIException;
 
 /**
  * {@link APIRequest} implementation reading the body of the {@link Response}.
- * 
+ *
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  * @param <T> the {@linkplain java.lang.reflect.Type Type} of the {@link Response} body.
  */
 public class SimpleAPIRequest<T> implements APIRequest<T> {
@@ -40,7 +41,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
 
     /**
      * Constructs an instance of {@link SimpleAPIRequest}.
-     * 
+     *
      * @param request the request to invoke.
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
      * @param credentialsProvider the {@link CredentialsProvider} instance.
@@ -53,7 +54,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
 
     /**
      * Constructs an instance of {@link SimpleAPIRequest}.
-     * 
+     *
      * @param request the request to invoke.
      * @param genericEntityType the request response entity {@link GenericType}.
      * @param credentialsProvider the {@link CredentialsProvider} instance.
@@ -66,7 +67,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
 
     /**
      * Constructs an instance of {@link SimpleAPIRequest}.
-     * 
+     *
      * @param request the request to invoke.
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
      * @param genericEntityType the request response entity {@link GenericType}.
@@ -114,14 +115,14 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
 
     /**
      * Reads the API {@link Response} body entity.
-     * 
+     *
      * @param response the API {@link Response}.
      * @param entityType the entity type to read in {@link Response} body.
      * @return the entity type instance.
      * @throws APIException if something goes wrong with the API call.
      */
     private T readEntity(Response response, Class<T> entityType) throws APIException {
-        if (Status.OK.getStatusCode() == response.getStatus()) {
+        if (Status.Family.SUCCESSFUL == response.getStatusInfo().getFamily()) {
             return response.readEntity(entityType);
         }
 
@@ -130,7 +131,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
 
     /**
      * Reads the API {@link Response} body entity.
-     * 
+     *
      * @param response the API {@link Response}.
      * @param genericEntityType the entity type to read in {@link Response} body.
      * @return the entity type instance.
