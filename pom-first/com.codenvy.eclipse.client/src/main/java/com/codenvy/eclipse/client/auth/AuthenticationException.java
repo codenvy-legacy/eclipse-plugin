@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.client.exceptions;
+package com.codenvy.eclipse.client.auth;
 
 import javax.ws.rs.ProcessingException;
 

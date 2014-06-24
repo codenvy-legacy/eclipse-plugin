@@ -18,8 +18,6 @@ package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.codenvy.eclipse.client.exceptions.CodenvyException;
-
 /**
  * {@link APIRequest} implementation adapting an API request response to another type.
  * 

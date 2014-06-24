@@ -16,7 +16,6 @@
  */
 package com.codenvy.eclipse.client;
 
-import com.codenvy.eclipse.client.exceptions.CodenvyException;
 
 /**
  * The API request contract returned by the Codenvy client API.

@@ -25,10 +25,10 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
+import com.codenvy.eclipse.client.auth.AuthenticationException;
 import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.auth.Token;
-import com.codenvy.eclipse.client.exceptions.AuthenticationException;
 
 /**
  * {@link AbstractClient} tests.

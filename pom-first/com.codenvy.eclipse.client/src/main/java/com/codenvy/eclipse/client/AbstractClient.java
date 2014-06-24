@@ -27,10 +27,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 
+import com.codenvy.eclipse.client.auth.AuthenticationException;
 import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.auth.Token;
-import com.codenvy.eclipse.client.exceptions.AuthenticationException;
 
 /**
  * Abstract client class.

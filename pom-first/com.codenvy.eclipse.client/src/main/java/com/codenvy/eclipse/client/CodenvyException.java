@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.client.exceptions;
+package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -36,7 +36,7 @@ public class CodenvyException extends RuntimeException {
      * @param response the rest API {@link Response}.
      * @throws NullPointerException if response parameter is {@code null}.
      */
-    public static CodenvyException from(Response response) {
+    static CodenvyException from(Response response) {
         checkNotNull(response);
 
         final Error codenvyError = response.readEntity(Error.class);

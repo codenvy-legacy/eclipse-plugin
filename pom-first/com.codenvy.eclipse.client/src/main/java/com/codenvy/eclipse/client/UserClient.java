@@ -22,7 +22,6 @@ import javax.ws.rs.client.Invocation;
 
 import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.CredentialsProvider;
-import com.codenvy.eclipse.client.exceptions.CodenvyException;
 import com.codenvy.eclipse.client.model.User;
 
 /**
