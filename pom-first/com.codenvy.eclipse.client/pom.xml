@@ -118,11 +118,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<includes>
-						<include>**/*IT.java</include>
-					</includes>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
