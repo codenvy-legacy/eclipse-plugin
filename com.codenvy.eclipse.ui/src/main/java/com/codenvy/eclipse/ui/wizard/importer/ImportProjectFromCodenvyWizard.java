@@ -1,7 +1,7 @@
 /*
  * CODENVY CONFIDENTIAL
  * ________________
- * 
+ *
  * [2012] - [2014] Codenvy, S.A.
  * All Rights Reserved.
  * NOTICE: All information contained herein is, and remains
@@ -48,16 +48,17 @@ import org.eclipse.ui.PlatformUI;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
-import com.codenvy.eclipse.ui.wizard.importer.pages.AuthenticationWizardPage;
+import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
+import com.codenvy.eclipse.ui.wizard.common.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
 
 /**
  * Wizard used to import Codenvy projects from the given Codenvy platform.
- * 
+ *
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWizard, INewWizard {
+public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWizard, INewWizard, CredentialsProviderWizard {
     private final AuthenticationWizardPage authenticationWizardPage;
     private final ProjectWizardPage        projectWizardPage;
 
@@ -110,8 +111,8 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
     @Override
     public boolean performFinish() {
-        final String platformURL = authenticationWizardPage.getURL();
-        final String username = authenticationWizardPage.getUsername();
+        final String platformURL = getUrl();
+        final String username = getUsername();
         final List<IWorkingSet> workingSets = projectWizardPage.getWorkingSets();
         final List<Project> projects = projectWizardPage.getProjects();
         final IWorkbench workbench = PlatformUI.getWorkbench();
@@ -164,12 +165,24 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
         return true;
     }
 
-    public AuthenticationWizardPage getAuthenticationWizardPage() {
-        return authenticationWizardPage;
+    @Override
+    public String getUrl() {
+        return authenticationWizardPage != null ? authenticationWizardPage.getURL() : null;
     }
 
-    public ProjectWizardPage getProjectWizardPage() {
-        return projectWizardPage;
+    @Override
+    public String getUsername() {
+        return authenticationWizardPage != null ? authenticationWizardPage.getUsername() : null;
+    }
+
+    @Override
+    public String getPassword() {
+        return authenticationWizardPage != null ? authenticationWizardPage.getPassword() : null;
+    }
+
+    @Override
+    public boolean isStoreUserCredentials() {
+        return authenticationWizardPage.isStoreUserCredentials();
     }
 
     /**

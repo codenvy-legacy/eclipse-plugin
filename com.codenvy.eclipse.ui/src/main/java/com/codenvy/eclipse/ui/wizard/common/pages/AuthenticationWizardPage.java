@@ -1,7 +1,7 @@
 /*
  * CODENVY CONFIDENTIAL
  * ________________
- * 
+ *
  * [2012] - [2014] Codenvy, S.A.
  * All Rights Reserved.
  * NOTICE: All information contained herein is, and remains
@@ -14,7 +14,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Codenvy S.A..
  */
-package com.codenvy.eclipse.ui.wizard.importer.pages;
+package com.codenvy.eclipse.ui.wizard.common.pages;
 
 import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
 import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
@@ -23,7 +23,6 @@ import static java.util.Arrays.asList;
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -47,12 +46,11 @@ import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;
 import com.codenvy.eclipse.ui.utils.SecureStorageHelper;
 import com.codenvy.eclipse.ui.widgets.ComboAutoCompleteField;
-import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
 import com.google.common.collect.ObjectArrays;
 
 /**
  * Authentication wizard page. In this wizard page the user authenticates with the Codenvy platform by it's URL, Username and Password.
- * 
+ *
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
@@ -134,11 +132,8 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
     @Override
     public void handlePageChanging(final PageChangingEvent event) {
-        final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
-        final IWizardPage targetPage = (IWizardPage)event.getTargetPage();
-
-        if (isCurrentPage() && wizard.getProjectWizardPage().getName().equals(targetPage.getName())) {
-            // check that Codenvy authentication is OK
+        if (isCurrentPage()) {
+            // Check that Codenvy authentication is OK
             try {
 
                 CodenvyPlugin.getDefault()
@@ -149,7 +144,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
                              .current()
                              .execute();
 
-                // add the new location to preferences
+                // Add the new location to preferences
                 final IPreferenceStore codenvyPreferenceStore = CodenvyUIPlugin.getDefault().getPreferenceStore();
                 final String[] locations =
                                            CodenvyPreferencesInitializer.parseString(codenvyPreferenceStore.getString(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME));
@@ -170,7 +165,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
     /**
      * Returns the Codenvy platform url.
-     * 
+     *
      * @return the Codenvy platform url never {@code null}.
      */
     public String getURL() {
@@ -179,7 +174,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
     /**
      * Returns the user name.
-     * 
+     *
      * @return the username never {@code null}.
      */
     public String getUsername() {
@@ -188,7 +183,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
     /**
      * Returns the user password.
-     * 
+     *
      * @return the password never {@code null}.
      */
     public String getPassword() {
@@ -197,7 +192,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
     /**
      * Returns if the user password must be stored for later use.
-     * 
+     *
      * @return {@code true} if the user password must be stored for later use, {@code false} otherwise.
      */
     public boolean isStoreUserCredentials() {

@@ -1,7 +1,7 @@
 /*
  * CODENVY CONFIDENTIAL
  * ________________
- * 
+ *
  * [2012] - [2014] Codenvy, S.A.
  * All Rights Reserved.
  * NOTICE: All information contained herein is, and remains
@@ -63,19 +63,20 @@ import org.eclipse.ui.internal.registry.WorkingSetDescriptor;
 import com.codenvy.eclipse.client.Codenvy;
 import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.model.Project;
-import com.codenvy.eclipse.client.model.Workspace;
 import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
-import com.codenvy.eclipse.ui.wizard.importer.ImportProjectFromCodenvyWizard;
+import com.codenvy.eclipse.ui.wizard.common.CredentialsProvider;
+import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
+import com.codenvy.eclipse.ui.wizard.common.jobs.LoadWorkspacesJob;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 
 /**
  * Project wizard page. In this wizard page the user selects the projects to import in Eclipse.
- * 
+ *
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
@@ -228,8 +229,8 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
         if (isCurrentPage()) {
             projectTableViewer.setInput(null);
             workspaceComboViewer.setInput(null);
-            setPageComplete(!getProjects().isEmpty());
             loadWorkspaces();
+            setPageComplete(!getProjects().isEmpty());
         }
     }
 
@@ -239,51 +240,14 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
     private void loadWorkspaces() {
         try {
 
-            getContainer().run(true, false, new IRunnableWithProgress() {
+            getContainer().run(true, false, new LoadWorkspacesJob(getWizard()) {
                 @Override
-                public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
-
-                    try {
-                        Display.getDefault().syncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                final String platformURL = wizard.getAuthenticationWizardPage().getURL();
-                                final String username = wizard.getAuthenticationWizardPage().getUsername();
-                                final String password = wizard.getAuthenticationWizardPage().getPassword();
-                                final boolean isStoreUserCredentials = wizard.getAuthenticationWizardPage().isStoreUserCredentials();
-                                final Credentials credentials = new Credentials.Builder().withUsername(username)
-                                                                                         .withPassword(password)
-                                                                                         .storeOnlyToken(!isStoreUserCredentials)
-                                                                                         .build();
-
-                                final Codenvy codenvy = CodenvyPlugin.getDefault()
-                                                                     .getCodenvyBuilder(platformURL, username)
-                                                                     .withCredentials(credentials)
-                                                                     .build();
-
-                                final List<Workspace> workspaces = codenvy.workspace()
-                                                                          .all()
-                                                                          .execute();
-
-                                monitor.beginTask("Fetch workspaces from Codenvy", workspaces.size());
-
-                                final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
-                                for (Workspace workspace : workspaces) {
-                                    workspaceRefs.add(codenvy.workspace().withName(workspace.workspaceRef.name).execute());
-                                    monitor.worked(1);
-                                }
-
-                                workspaceComboViewer.setInput(workspaceRefs.toArray());
-                                if (!workspaces.isEmpty()) {
-                                    workspaceComboViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
-                                }
-                            }
-                        });
-
-                    } finally {
-                        monitor.done();
+                public void postLoadCallback(List<WorkspaceRef> workspaceRefs) {
+                    workspaceComboViewer.setInput(workspaceRefs.toArray());
+                    if (!workspaceRefs.isEmpty()) {
+                        workspaceComboViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
                     }
+                    workspaceComboViewer.refresh();
                 }
             });
 
@@ -303,7 +267,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    final ImportProjectFromCodenvyWizard wizard = (ImportProjectFromCodenvyWizard)getWizard();
+                    final CredentialsProvider wizard = getWizard();
 
                     try {
 
@@ -312,10 +276,10 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                         Display.getDefault().syncExec(new Runnable() {
                             @Override
                             public void run() {
-                                final String platformURL = wizard.getAuthenticationWizardPage().getURL();
-                                final String username = wizard.getAuthenticationWizardPage().getUsername();
-                                final String password = wizard.getAuthenticationWizardPage().getPassword();
-                                final boolean isStoreUserCredentials = wizard.getAuthenticationWizardPage().isStoreUserCredentials();
+                                final String platformURL = wizard.getUrl();
+                                final String username = wizard.getUsername();
+                                final String password = wizard.getPassword();
+                                final boolean isStoreUserCredentials = wizard.isStoreUserCredentials();
                                 final Credentials credentials = new Credentials.Builder().withUsername(username)
                                                                                          .withPassword(password)
                                                                                          .storeOnlyToken(!isStoreUserCredentials)
@@ -356,7 +320,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
     /**
      * Defines checked projects in UI and shared data.
-     * 
+     *
      * @see ImportWizardSharedData
      */
     private void setCheckedProjects() {
@@ -370,7 +334,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
     /**
      * Returns the selected working sets.
-     * 
+     *
      * @return the selected working sets
      */
     public List<IWorkingSet> getWorkingSets() {
@@ -380,7 +344,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
     /**
      * Returns the selected Codenvy projects.
-     * 
+     *
      * @return the selected Codenvy projects never {@code null}.
      */
     public List<Project> getProjects() {
@@ -393,7 +357,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
 
     /**
      * Custom label provider displaying grayed elements in grey.
-     * 
+     *
      * @author Kevin Pollet
      */
     private class ColumnLabelProviderWithGreyElement extends ColumnLabelProvider {
@@ -402,5 +366,10 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             final boolean isGrayed = projectTableViewer.getGrayed(element);
             return isGrayed ? Display.getCurrent().getSystemColor(SWT.COLOR_GRAY) : super.getForeground(element);
         }
+    }
+
+    @Override
+    public CredentialsProviderWizard getWizard() {
+        return (CredentialsProviderWizard)super.getWizard();
     }
 }
