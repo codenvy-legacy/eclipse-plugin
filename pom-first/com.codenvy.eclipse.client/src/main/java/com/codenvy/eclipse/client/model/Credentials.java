@@ -16,33 +16,59 @@
  */
 package com.codenvy.eclipse.client.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * This class represents the user credentials used for authentication.
+ * User credentials used for authentication.
  * 
  * @author Kevin Pollet
  */
+@JsonIgnoreProperties(ignoreUnknown = true, value = "token")
 public class Credentials {
     public final String username;
     public final String password;
+    public final Token  token;
 
     /**
-     * Construct an instance of {@linkplain Credentials}.
+     * Constructs an instance of {@link Credentials}.
      * 
-     * @param username the user username.
+     * @param username the user name.
      * @param password the user password.
-     * @throws NullPointerException if username parameter is {@code null}.
      */
-    @JsonCreator
-    public Credentials(@JsonProperty("username") String username, @JsonProperty("password") String password) {
-        checkNotNull(username);
+    public Credentials(String username, String password) {
+        this(username, password, null);
+    }
 
+    /**
+     * Constructs an instance of {@link Credentials}.
+     * 
+     * @param password the user password.
+     * @param token the user authentication {@link Token}.
+     */
+    public Credentials(String password, Token token) {
+        this(null, password, token);
+    }
+
+    /**
+     * Constructs an instance of {@link Credentials}.
+     * 
+     * @param token the user authentication {@link Token}.
+     */
+    public Credentials(Token token) {
+        this(null, null, token);
+    }
+
+    /**
+     * Constructs an instance of {@link Credentials}.
+     * 
+     * @param username the user name.
+     * @param password the user password.
+     * @param token the user authentication {@link Token}.
+     */
+    private Credentials(String username, String password, Token token) {
         this.username = username;
         this.password = password;
+        this.token = token;
     }
 
     @Override
@@ -50,6 +76,7 @@ public class Credentials {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((password == null) ? 0 : password.hashCode());
+        result = prime * result + ((token == null) ? 0 : token.hashCode());
         result = prime * result + ((username == null) ? 0 : username.hashCode());
         return result;
     }
@@ -67,6 +94,11 @@ public class Credentials {
             if (other.password != null)
                 return false;
         } else if (!password.equals(other.password))
+            return false;
+        if (token == null) {
+            if (other.token != null)
+                return false;
+        } else if (!token.equals(other.token))
             return false;
         if (username == null) {
             if (other.username != null)

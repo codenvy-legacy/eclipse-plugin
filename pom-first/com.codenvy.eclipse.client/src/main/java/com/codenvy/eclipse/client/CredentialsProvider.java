@@ -28,7 +28,6 @@ import javax.ws.rs.core.UriBuilder;
 import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.Token;
 import com.codenvy.eclipse.client.store.DataStore;
-import com.codenvy.eclipse.client.store.StoredCredentials;
 
 /**
  * This class provides the user credentials to the API.
@@ -36,8 +35,8 @@ import com.codenvy.eclipse.client.store.StoredCredentials;
  * @author Kevin Pollet
  */
 public class CredentialsProvider {
-    private final WebTarget                            webTarget;
-    private final DataStore<String, StoredCredentials> dataStore;
+    private final WebTarget                      webTarget;
+    private final DataStore<String, Credentials> dataStore;
 
     /**
      * Constructs an instance of {@link CredentialsProvider}.
@@ -47,7 +46,7 @@ public class CredentialsProvider {
      * @throws NullPointerException if url parameter is {@code null}.
      * @throws IllegalArgumentException if url parameter is an empty {@link String}.
      */
-    CredentialsProvider(String url, DataStore<String, StoredCredentials> dataStore) {
+    CredentialsProvider(String url, DataStore<String, Credentials> dataStore) {
         this.dataStore = dataStore;
 
         final UriBuilder uriBuilder = UriBuilder.fromUri(url)
@@ -78,7 +77,7 @@ public class CredentialsProvider {
                 token = response.readEntity(Token.class);
 
                 if (dataStore != null) {
-                    dataStore.put(credentials.username, new StoredCredentials(credentials.password, token));
+                    dataStore.put(credentials.username, new Credentials(credentials.password, token));
                 }
             }
         }
@@ -96,7 +95,7 @@ public class CredentialsProvider {
             return null;
         }
 
-        final StoredCredentials credentials = dataStore.get(username);
+        final Credentials credentials = dataStore.get(username);
         return credentials == null ? null : credentials.token;
     }
 
@@ -111,7 +110,7 @@ public class CredentialsProvider {
             return null;
         }
 
-        final StoredCredentials storedCredentials = dataStore.get(username);
+        final Credentials storedCredentials = dataStore.get(username);
         return storedCredentials != null ? authorize(new Credentials(username, storedCredentials.password)) : null;
     }
 }

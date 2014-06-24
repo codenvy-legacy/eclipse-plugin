@@ -21,25 +21,27 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.codenvy.eclipse.client.model.Credentials;
+
 /**
  * {@link DataStoreFactory} implementation providing {@link DataStore} which stores user credentials in memory.
  * 
  * @author Kevin Pollet
  */
-public class InMemoryDataStoreFactory implements DataStoreFactory<String, StoredCredentials> {
-    private final ConcurrentMap<String, DataStore<String, StoredCredentials>> dataStores;
+public class InMemoryDataStoreFactory implements DataStoreFactory<String, Credentials> {
+    private final ConcurrentMap<String, DataStore<String, Credentials>> dataStores;
 
     public InMemoryDataStoreFactory() {
         this.dataStores = new ConcurrentHashMap<>();
     }
 
     @Override
-    public DataStore<String, StoredCredentials> getDataStore(String id) {
+    public DataStore<String, Credentials> getDataStore(String id) {
         checkNotNull(id);
 
-        DataStore<String, StoredCredentials> store = dataStores.get(id);
+        DataStore<String, Credentials> store = dataStores.get(id);
         if (store == null) {
-            final DataStore<String, StoredCredentials> dataStore = new InMemoryDataStore();
+            final DataStore<String, Credentials> dataStore = new InMemoryDataStore();
             store = dataStores.putIfAbsent(id, dataStore);
             if (store == null) {
                 store = dataStore;

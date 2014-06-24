@@ -29,7 +29,6 @@ import org.junit.Test;
 import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.Token;
 import com.codenvy.eclipse.client.store.DataStore;
-import com.codenvy.eclipse.client.store.StoredCredentials;
 
 /**
  * {@link CredentialsProvider} tests.
@@ -54,7 +53,7 @@ public class CredentialsProviderIT extends RestClientBaseIT {
     @Test
     @SuppressWarnings("unchecked")
     public void testAuthorizeWithDataStoreAndNullCredentials() {
-        final DataStore<String, StoredCredentials> credentialsStore = mock(DataStore.class);
+        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
 
         Assert.assertNull(credentialsProvider.authorize(null));
@@ -64,12 +63,12 @@ public class CredentialsProviderIT extends RestClientBaseIT {
     @Test
     @SuppressWarnings("unchecked")
     public void testAuthorizeWithDataStoreAndCredentials() {
-        final DataStore<String, StoredCredentials> credentialsStore = mock(DataStore.class);
+        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
         final Token token = credentialsProvider.authorize(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
 
         Assert.assertNotNull(token);
-        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new StoredCredentials(DUMMY_PASSWORD, token)));
+        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new Credentials(DUMMY_PASSWORD, token)));
     }
 
     @Test
@@ -89,7 +88,7 @@ public class CredentialsProviderIT extends RestClientBaseIT {
     @Test
     @SuppressWarnings("unchecked")
     public void testGetTokenWithDataStoreAndNullUsername() {
-        final DataStore<String, StoredCredentials> credentialsStore = mock(DataStore.class);
+        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         when(credentialsStore.get(null)).thenReturn(null);
 
         final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
@@ -102,8 +101,8 @@ public class CredentialsProviderIT extends RestClientBaseIT {
     @Test
     @SuppressWarnings("unchecked")
     public void testGetTokenWithDataStoreAndUsername() {
-        final DataStore<String, StoredCredentials> credentialsStore = mock(DataStore.class);
-        when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(new StoredCredentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE)));
+        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
+        when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE)));
 
         final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
         final Token token = credentialsProvider.getToken(DUMMY_USERNAME);
@@ -129,7 +128,7 @@ public class CredentialsProviderIT extends RestClientBaseIT {
     @Test
     @SuppressWarnings("unchecked")
     public void testRefreshTokenWithDataStoreAndNullUsername() {
-        final DataStore<String, StoredCredentials> credentialsStore = mock(DataStore.class);
+        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         when(credentialsStore.get(null)).thenReturn(null);
 
         final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
@@ -141,14 +140,14 @@ public class CredentialsProviderIT extends RestClientBaseIT {
     @Test
     @SuppressWarnings("unchecked")
     public void testRefreshTokenWithDataStoreAndUsername() {
-        final DataStore<String, StoredCredentials> credentialsStore = mock(DataStore.class);
-        when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(new StoredCredentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE)));
+        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
+        when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE)));
 
         final CredentialsProvider credentialsProvider = new CredentialsProvider(REST_API_URL, credentialsStore);
         final Token token = credentialsProvider.refreshToken(DUMMY_USERNAME);
 
         Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
         verify(credentialsStore, times(1)).get(DUMMY_USERNAME);
-        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new StoredCredentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE))));
+        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE))));
     }
 }

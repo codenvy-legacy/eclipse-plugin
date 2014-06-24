@@ -21,7 +21,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.store.DataStoreFactory;
 import com.codenvy.eclipse.client.store.InMemoryDataStoreFactory;
-import com.codenvy.eclipse.client.store.StoredCredentials;
 
 /**
  * The Codenvy client API entry point.
@@ -46,7 +45,7 @@ public class Codenvy {
     private Codenvy(String url,
                     String username,
                     Credentials credentials,
-                    DataStoreFactory<String, StoredCredentials> credentialsStoreFactory) {
+                    DataStoreFactory<String, Credentials> credentialsStoreFactory) {
 
         checkNotNull(url);
         checkNotNull(username);
@@ -105,10 +104,10 @@ public class Codenvy {
     }
 
     public static class Builder {
-        private final String                                url;
-        private final String                                username;
-        private Credentials                                 credentials;
-        private DataStoreFactory<String, StoredCredentials> credentialsStoreFactory;
+        private final String                          url;
+        private final String                          username;
+        private Credentials                           credentials;
+        private DataStoreFactory<String, Credentials> credentialsStoreFactory;
 
         public Builder(String url, String username) {
             this.url = url;
@@ -133,7 +132,7 @@ public class Codenvy {
          * @param credentialsStoreFactory the {@link DataStoreFactory} to use.
          * @return {@link Builder} instance.
          */
-        public Builder withCredentialsStoreFactory(DataStoreFactory<String, StoredCredentials> credentialsStoreFactory) {
+        public Builder withCredentialsStoreFactory(DataStoreFactory<String, Credentials> credentialsStoreFactory) {
             this.credentialsStoreFactory = credentialsStoreFactory;
             return this;
         }

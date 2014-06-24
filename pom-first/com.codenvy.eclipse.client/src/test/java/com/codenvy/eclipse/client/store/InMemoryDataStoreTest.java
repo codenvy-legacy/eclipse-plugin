@@ -19,6 +19,7 @@ package com.codenvy.eclipse.client.store;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.codenvy.eclipse.client.model.Credentials;
 import com.codenvy.eclipse.client.model.Token;
 
 /**
@@ -27,8 +28,8 @@ import com.codenvy.eclipse.client.model.Token;
  * @author Kevin Pollet
  */
 public class InMemoryDataStoreTest {
-    private final DataStoreFactory<String, StoredCredentials> dataStoreFactory;
-    private final DataStore<String, StoredCredentials>        dataStore;
+    private final DataStoreFactory<String, Credentials> dataStoreFactory;
+    private final DataStore<String, Credentials>        dataStore;
 
     public InMemoryDataStoreTest() {
         dataStoreFactory = new InMemoryDataStoreFactory();
@@ -49,15 +50,15 @@ public class InMemoryDataStoreTest {
 
     @Test
     public void testGetWithExistingKey() {
-        dataStore.put("testGetWithExistingKey", new StoredCredentials("dummy", new Token("dummy")));
+        dataStore.put("testGetWithExistingKey", new Credentials("dummy", new Token("dummy")));
 
         Assert.assertNotNull(dataStore.get("testGetWithExistingKey"));
-        Assert.assertEquals(new StoredCredentials("dummy", new Token("dummy")), dataStore.get("testGetWithExistingKey"));
+        Assert.assertEquals(new Credentials("dummy", new Token("dummy")), dataStore.get("testGetWithExistingKey"));
     }
 
     @Test(expected = NullPointerException.class)
     public void testPutWithNullKey() {
-        dataStore.put(null, new StoredCredentials("dummy", new Token("dummy")));
+        dataStore.put(null, new Credentials("dummy", new Token("dummy")));
     }
 
     @Test(expected = NullPointerException.class)
@@ -77,11 +78,11 @@ public class InMemoryDataStoreTest {
 
     @Test
     public void testDeleteWithExistingKey() {
-        dataStore.put("testDeleteWithExistingKey", new StoredCredentials("dummy", new Token("dummy")));
-        final StoredCredentials storedCredentials = dataStore.delete("testDeleteWithExistingKey");
+        dataStore.put("testDeleteWithExistingKey", new Credentials("dummy", new Token("dummy")));
+        final Credentials credentials = dataStore.delete("testDeleteWithExistingKey");
 
-        Assert.assertNotNull(storedCredentials);
-        Assert.assertEquals(new StoredCredentials("dummy", new Token("dummy")), storedCredentials);
+        Assert.assertNotNull(credentials);
+        Assert.assertEquals(new Credentials("dummy", new Token("dummy")), credentials);
         Assert.assertNull(dataStore.delete("testDeleteWithExistingKey"));
     }
 }

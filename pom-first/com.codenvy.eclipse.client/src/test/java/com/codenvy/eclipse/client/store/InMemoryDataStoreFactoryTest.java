@@ -20,6 +20,8 @@ package com.codenvy.eclipse.client.store;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.codenvy.eclipse.client.model.Credentials;
+
 /**
  * {@link InMemoryDataStoreFactory} tests.
  * 
@@ -33,7 +35,7 @@ public class InMemoryDataStoreFactoryTest {
 
     @Test
     public void testGetDataStoreId() {
-        final DataStoreFactory<String, StoredCredentials> dataStoreFactory = new InMemoryDataStoreFactory();
+        final DataStoreFactory<String, Credentials> dataStoreFactory = new InMemoryDataStoreFactory();
 
         Assert.assertNotNull(dataStoreFactory.getDataStore("dummy"));
         Assert.assertEquals(dataStoreFactory.getDataStore("equals"), dataStoreFactory.getDataStore("equals"));
