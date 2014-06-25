@@ -34,7 +34,6 @@ import javax.ws.rs.core.Response.Status;
 
 import com.codenvy.eclipse.client.APIRequestAdaptor.Adaptor;
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
-import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.model.Project;
 
 /**
@@ -48,18 +47,11 @@ public class ProjectClient extends AbstractClient {
      * Constructs an instance of {@link ProjectClient}.
      * 
      * @param url the Codenvy platform URL.
-     * @param apiName the API name.
-     * @param username the username.
-     * @param credentials the provided user {@link Credentials} might be {@code null}.
      * @param authenticationManager the {@link AuthenticationManager}.
-     * @throws NullPointerException if url, username or authenticationManager parameter is {@code null}.
+     * @throws NullPointerException if url or authenticationManager parameter is {@code null}.
      */
-    ProjectClient(String url,
-                  String username,
-                  Credentials credentials,
-                  AuthenticationManager authenticationManager) {
-
-        super(url, "project", username, credentials, authenticationManager);
+    ProjectClient(String url, AuthenticationManager authenticationManager) {
+        super(url, "project", authenticationManager);
     }
 
     /**
@@ -79,7 +71,7 @@ public class ProjectClient extends AbstractClient {
                                                  .buildGet();
 
         return new SimpleAPIRequest<>(request, new GenericType<List<Project>>() {
-        }, getAuthenticationManager(), getUsername());
+        }, getAuthenticationManager());
     }
 
     /**
@@ -99,7 +91,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(json(project));
 
-        return new SimpleAPIRequest<>(request, Project.class, getAuthenticationManager(), getUsername());
+        return new SimpleAPIRequest<>(request, Project.class, getAuthenticationManager());
     }
 
     /**
@@ -122,7 +114,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept("application/zip")
                                                  .buildGet();
 
-        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, InputStream.class, getAuthenticationManager(), getUsername()),
+        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, InputStream.class, getAuthenticationManager()),
                                        new Adaptor<ZipInputStream, InputStream>() {
                                            @Override
                                            public ZipInputStream adapt(InputStream response) {
@@ -152,7 +144,7 @@ public class ProjectClient extends AbstractClient {
                                                  .request()
                                                  .buildPut(text(fileInputStream));
 
-        return new SimpleAPIRequest<>(request, Void.class, getAuthenticationManager(), getUsername());
+        return new SimpleAPIRequest<>(request, Void.class, getAuthenticationManager());
     }
 
     /**
@@ -175,7 +167,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept(TEXT_PLAIN)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, InputStream.class, getAuthenticationManager(), getUsername());
+        return new SimpleAPIRequest<>(request, InputStream.class, getAuthenticationManager());
     }
 
     /**
@@ -198,7 +190,7 @@ public class ProjectClient extends AbstractClient {
                                                  .request()
                                                  .build("HEAD");
 
-        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, Response.class, getAuthenticationManager(), getUsername()),
+        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, Response.class, getAuthenticationManager()),
                                        new Adaptor<Boolean, Response>() {
                                            @Override
                                            public Boolean adapt(Response response) {

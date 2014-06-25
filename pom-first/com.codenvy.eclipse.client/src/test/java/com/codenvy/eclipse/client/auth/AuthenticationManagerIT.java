@@ -20,13 +20,12 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.codenvy.eclipse.client.RestClientBaseIT;
+import com.codenvy.eclipse.client.AbstractIT;
 import com.codenvy.eclipse.client.store.DataStore;
 
 /**
@@ -34,119 +33,105 @@ import com.codenvy.eclipse.client.store.DataStore;
  * 
  * @author Kevin Pollet
  */
-public class AuthenticationManagerIT extends RestClientBaseIT {
-    @Test
-    public void testAuthorizeWithNullDataStoreAndNullCredentials() {
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        Assert.assertNull(authenticationManager.authorize(null));
-    }
-
-    @Test
-    public void testAuthorizeWithNullDataStoreAndCredentials() {
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        Assert.assertNotNull(authenticationManager.authorize(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD)));
-    }
-
-    @Test
+public class AuthenticationManagerIT extends AbstractIT {
+    @Test(expected = NullPointerException.class)
     @SuppressWarnings("unchecked")
-    public void testAuthorizeWithDataStoreAndNullCredentials() {
-        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
+    public void testNewAuthenticationManagerWithNullURL() {
+        new AuthenticationManager(null, DUMMY_USERNAME, new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+                                  mock(CredentialsProvider.class), mock(DataStore.class));
+    }
 
-        Assert.assertNull(authenticationManager.authorize(null));
-        verifyZeroInteractions(credentialsStore);
+    @Test(expected = NullPointerException.class)
+    @SuppressWarnings("unchecked")
+    public void testNewAuthenticationManagerWithNullUsername() {
+        new AuthenticationManager(REST_API_URL, null, new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+                                  mock(CredentialsProvider.class), mock(DataStore.class));
+    }
+
+    @Test(expected = AuthenticationException.class)
+    public void testAuthorizeWithNullDataStoreNullCredentialsAndNullCredentialsProvider() {
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, null, null, null);
+        authenticationManager.authorize();
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void testAuthorizeWithDataStoreAndCredentials() {
-        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
-        final Token token = authenticationManager.authorize(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
+    public void testAuthorizeWithNullDataStoreNullCredentialsAndCredentialsProvider() {
+        final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
+        when(credentialsProvider.load(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
+
+        final AuthenticationManager authenticationManager =
+                                                            new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, null,
+                                                                                      credentialsProvider, null);
+        authenticationManager.authorize();
+
+        verify(credentialsProvider, times(1)).load(DUMMY_USERNAME);
+    }
+
+    @Test
+    public void testAuthorizeWithNullDataStoreCredentialsAndCredentialsProvider() {
+        final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, DUMMY_USERNAME,
+                                                                                      new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+                                                                                      credentialsProvider, null);
+
+        final Token token = authenticationManager.authorize();
 
         Assert.assertNotNull(token);
-        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new Credentials(DUMMY_PASSWORD, token)));
-    }
-
-    @Test
-    public void testGetTokenWithNullDataStoreAndNullUsername() {
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        Assert.assertNull(authenticationManager.getToken(null));
-    }
-
-    @Test
-    public void testGetTokenWithNullDataStoreAndUsername() {
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        Assert.assertNull(authenticationManager.getToken(DUMMY_USERNAME));
+        Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
+        verify(credentialsProvider, times(0)).load(DUMMY_USERNAME);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGetTokenWithDataStoreAndNullUsername() {
+    public void testAuthorizeWithDataStoreCredentialsAndCredentialsProvider() {
+        final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
-        when(credentialsStore.get(null)).thenReturn(null);
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, DUMMY_USERNAME,
+                                                                                      new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+                                                                                      credentialsProvider, credentialsStore);
 
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
-        final Token token = authenticationManager.getToken(null);
+        final Token token = authenticationManager.authorize();
+
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
+        verify(credentialsProvider, times(0)).load(DUMMY_USERNAME);
+        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE))));
+    }
+
+    @Test
+    public void testGetTokenWithNullDataStore() {
+        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, null, null, null);
+
+        Assert.assertNull(authenticationManager.getToken());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGetTokenWithMissingUsername() {
+        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
+        when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(null);
+
+        final AuthenticationManager authenticationManager =
+                                                            new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, null, null,
+                                                                                      credentialsStore);
+        final Token token = authenticationManager.getToken();
 
         Assert.assertNull(token);
-        verify(credentialsStore, times(1)).get(null);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testGetTokenWithDataStoreAndUsername() {
-        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
-        when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE)));
-
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
-        final Token token = authenticationManager.getToken(DUMMY_USERNAME);
-
-        Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
         verify(credentialsStore, times(1)).get(DUMMY_USERNAME);
     }
 
     @Test
-    public void testRefreshTokenWithNullDataStoreAndNullUsername() {
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        Assert.assertNull(authenticationManager.refreshToken(null));
-    }
-
-    @Test
-    public void testRefreshTokenWithNullDataStoreAndUsername() {
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        Assert.assertNull(authenticationManager.refreshToken(DUMMY_USERNAME));
-    }
-
-    @Test
     @SuppressWarnings("unchecked")
-    public void testRefreshTokenWithDataStoreAndNullUsername() {
-        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
-        when(credentialsStore.get(null)).thenReturn(null);
-
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
-
-        Assert.assertNull(authenticationManager.refreshToken(null));
-        verify(credentialsStore, times(1)).get(null);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testRefreshTokenWithDataStoreAndUsername() {
+    public void testGetTokenWithExistingUsername() {
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE)));
 
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, credentialsStore);
-        final Token token = authenticationManager.refreshToken(DUMMY_USERNAME);
+        final AuthenticationManager authenticationManager =
+                                                            new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, null, null,
+                                                                                      credentialsStore);
+        final Token token = authenticationManager.getToken();
 
         Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
         verify(credentialsStore, times(1)).get(DUMMY_USERNAME);
-        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE))));
     }
 }

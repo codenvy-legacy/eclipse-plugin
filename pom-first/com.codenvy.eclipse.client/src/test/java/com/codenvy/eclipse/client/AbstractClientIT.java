@@ -16,122 +16,46 @@
  */
 package com.codenvy.eclipse.client;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
-import com.codenvy.eclipse.client.auth.AuthenticationException;
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
 import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.Token;
+import com.codenvy.eclipse.client.auth.CredentialsProvider;
 
 /**
  * {@link AbstractClient} tests.
  * 
  * @author Kevin Pollet
  */
-public class AbstractClientIT extends RestClientBaseIT {
+public class AbstractClientIT extends AbstractIT {
+    private final AuthenticationManager dummyAuthenticationManager;
+
+    public AbstractClientIT() {
+        final Credentials dummyCredentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
+        final CredentialsProvider dummyCredentialsProvider = mock(CredentialsProvider.class);
+
+        this.dummyAuthenticationManager =
+                                          new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, dummyCredentials,
+                                                                    dummyCredentialsProvider, null);
+    }
+
     @Test(expected = NullPointerException.class)
     public void testNewAbstractClientWithNullURL() {
-        final Credentials credentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        new AbstractClient(null, "dummyAPI", DUMMY_USERNAME, credentials, authenticationManager) {
+        new AbstractClient(null, "dummyAPI", dummyAuthenticationManager) {
         };
     }
 
     @Test(expected = NullPointerException.class)
     public void testNewAbstractClientWithNullAPIName() {
-        final Credentials credentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        new AbstractClient(REST_API_URL, null, DUMMY_USERNAME, credentials, authenticationManager) {
+        new AbstractClient(REST_API_URL, null, dummyAuthenticationManager) {
         };
     }
 
     @Test(expected = NullPointerException.class)
-    public void testNewAbstractClientWithNullUsername() {
-        final Credentials credentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        new AbstractClient(REST_API_URL, "dummyAPI", null, credentials, authenticationManager) {
+    public void testNewAbstractClientWithNullAuthenticationManager() {
+        new AbstractClient(REST_API_URL, "dummyAPI", null) {
         };
-    }
-
-    @Test
-    public void testNewAbstractClientWithNullCredendials() {
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, null);
-
-        new AbstractClient(REST_API_URL, "dummyAPI", DUMMY_USERNAME, null, authenticationManager) {
-        };
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testNewAbstractClientWithNullCredendialsProvider() {
-        final Credentials credentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
-
-        new AbstractClient(REST_API_URL, "dummyAPI", DUMMY_USERNAME, credentials, null) {
-        };
-    }
-
-    @Test
-    public void testAbstractClientAuthenticationFilterWithStoredCredentials() {
-        final AuthenticationManager credentialsProvider = mock(AuthenticationManager.class);
-        when(credentialsProvider.getToken(DUMMY_USERNAME)).thenReturn(new Token(SDK_TOKEN_VALUE));
-
-        final AbstractClient client = new AbstractClient(REST_API_URL, "user", DUMMY_USERNAME, null, credentialsProvider) {
-        };
-
-        // dummy request
-        client.getWebTarget()
-              .path("current")
-              .request()
-              .accept(APPLICATION_JSON)
-              .get();
-
-        verify(credentialsProvider, times(1)).getToken(DUMMY_USERNAME);
-        verify(credentialsProvider, times(0)).authorize(eq(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD)));
-    }
-
-    @Test
-    public void testAbstractClientAuthenticationFilterWithNoCredentialsStoredButProvided() {
-        final Credentials credentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
-        final AuthenticationManager authenticationManager = mock(AuthenticationManager.class);
-        when(authenticationManager.getToken(DUMMY_USERNAME)).thenReturn(null);
-        when(authenticationManager.authorize(credentials)).thenReturn(new Token(SDK_TOKEN_VALUE));
-
-        final AbstractClient client = new AbstractClient(REST_API_URL, "user", DUMMY_USERNAME, credentials, authenticationManager) {
-        };
-
-        // dummy request
-        client.getWebTarget()
-              .path("current")
-              .request()
-              .accept(APPLICATION_JSON)
-              .get();
-
-        verify(authenticationManager, times(1)).getToken(DUMMY_USERNAME);
-        verify(authenticationManager, times(1)).authorize(eq(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD)));
-    }
-
-    @Test(expected = AuthenticationException.class)
-    public void testAbstractClientAuthenticationFilterWithNoCredentialsStoredAndNoProvided() {
-        final AuthenticationManager authenticationManager = mock(AuthenticationManager.class);
-        when(authenticationManager.getToken(DUMMY_USERNAME)).thenReturn(null);
-
-        final AbstractClient client = new AbstractClient(REST_API_URL, "user", DUMMY_USERNAME, null, authenticationManager) {
-        };
-
-        // dummy request
-        client.getWebTarget()
-              .path("current")
-              .request()
-              .accept(APPLICATION_JSON)
-              .get();
     }
 }

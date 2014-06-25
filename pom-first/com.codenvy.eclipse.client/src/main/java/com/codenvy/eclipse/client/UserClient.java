@@ -21,7 +21,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import javax.ws.rs.client.Invocation;
 
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
-import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.model.User;
 
 /**
@@ -35,18 +34,11 @@ public class UserClient extends AbstractClient {
      * Constructs an instance of {@link UserClient}.
      * 
      * @param url the Codenvy platform URL.
-     * @param apiName the API name.
-     * @param username the username.
-     * @param credentials the provided user {@link Credentials} might be {@code null}.
      * @param authenticationManager the {@link AuthenticationManager}.
-     * @throws NullPointerException if url, username or authenticationManager parameter is {@code null}.
+     * @throws NullPointerException if url or authenticationManager parameter is {@code null}.
      */
-    UserClient(String url,
-               String username,
-               Credentials credentials,
-               AuthenticationManager authenticationManager) {
-
-        super(url, "user", username, credentials, authenticationManager);
+    UserClient(String url, AuthenticationManager authenticationManager) {
+        super(url, "user", authenticationManager);
     }
 
     /**
@@ -60,6 +52,6 @@ public class UserClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<User>(request, User.class, getAuthenticationManager(), getUsername());
+        return new SimpleAPIRequest<User>(request, User.class, getAuthenticationManager());
     }
 }

@@ -30,7 +30,7 @@ import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class WorkspaceClientIT extends RestClientBaseIT {
+public class WorkspaceClientIT extends AbstractIT {
     @Test
     public void testGetAllWorkspaces() {
         final List<Workspace> workspaces = codenvy.workspace()

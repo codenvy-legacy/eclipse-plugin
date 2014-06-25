@@ -19,6 +19,7 @@ package com.codenvy.eclipse.client.auth;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.net.URI;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -32,44 +33,31 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 public class AuthenticationFilter implements ClientRequestFilter {
-    private final String                username;
-    private final Credentials           credentials;
     private final AuthenticationManager authenticationManager;
 
     /**
      * Constructs an instance of {@link AuthenticationFilter}.
      * 
-     * @param username the user name concerned by the authentication.
-     * @param credentials the {@link Credentials} used for authentication.
      * @param authenticationManager the {@link AuthenticationManager}.
-     * @throws NullPointerException if authenticationManager or username parameter is {@code null}.
+     * @throws NullPointerException if authenticationManager parameter is {@code null}.
      */
-    public AuthenticationFilter(String username, Credentials credentials, AuthenticationManager authenticationManager) {
-        checkNotNull(username);
+    public AuthenticationFilter(AuthenticationManager authenticationManager) {
         checkNotNull(authenticationManager);
 
-        this.username = username;
-        this.credentials = credentials;
         this.authenticationManager = authenticationManager;
     }
 
     @Override
-    public void filter(ClientRequestContext requestContext) throws IOException {
-        Token token = authenticationManager.getToken(username);
-
+    public void filter(ClientRequestContext requestContext) throws IOException, AuthenticationException {
+        Token token = authenticationManager.getToken();
         if (token == null) {
-            if (credentials == null) {
-                throw new AuthenticationException("No credentials provided for authentication");
-            }
-
-            token = authenticationManager.authorize(credentials);
-            if (token == null) {
-                throw new AuthenticationException("Unable to negociate a token for authentication");
-            }
+            token = authenticationManager.authorize();
         }
 
-        requestContext.setUri(UriBuilder.fromUri(requestContext.getUri())
-                                        .queryParam("token", token.value)
-                                        .build());
+        final URI uriWithToken = UriBuilder.fromUri(requestContext.getUri())
+                                           .queryParam("token", token.value)
+                                           .build();
+
+        requestContext.setUri(uriWithToken);
     }
 }

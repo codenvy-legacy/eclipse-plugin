@@ -27,7 +27,7 @@ import com.codenvy.eclipse.client.model.User;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class UserClientIT extends RestClientBaseIT {
+public class UserClientIT extends AbstractIT {
     @Test
     public void testGetCurrentUser() {
         final User currentUser = codenvy.user()

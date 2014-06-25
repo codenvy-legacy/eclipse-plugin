@@ -30,7 +30,7 @@ import com.codenvy.eclipse.client.auth.Credentials;
  * 
  * @author Kevin Pollet
  */
-public abstract class RestClientBaseIT {
+public abstract class AbstractIT {
     private static final String   REST_API_URL_PROPERTY_NAME = "rest.api.url";
 
     protected static final String DUMMY_USERNAME             = "dummyUsername";
@@ -44,7 +44,7 @@ public abstract class RestClientBaseIT {
     public static void initRestAPIURL() {
         final Properties codenvySdkProperties = new Properties();
         try {
-            codenvySdkProperties.load(RestClientBaseIT.class.getResourceAsStream("/codenvy-sdk.properties"));
+            codenvySdkProperties.load(AbstractIT.class.getResourceAsStream("/codenvy-sdk.properties"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

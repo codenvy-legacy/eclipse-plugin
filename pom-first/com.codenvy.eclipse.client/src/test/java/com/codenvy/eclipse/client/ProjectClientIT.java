@@ -43,7 +43,7 @@ import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class ProjectClientIT extends RestClientBaseIT {
+public class ProjectClientIT extends AbstractIT {
     private static WorkspaceRef defaultWorkspace;
     private static Project      projectPrj1;
 

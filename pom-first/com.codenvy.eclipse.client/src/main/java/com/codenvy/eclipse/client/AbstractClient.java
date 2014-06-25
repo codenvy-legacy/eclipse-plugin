@@ -24,7 +24,6 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.codenvy.eclipse.client.auth.AuthenticationFilter;
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
-import com.codenvy.eclipse.client.auth.Credentials;
 
 /**
  * Abstract client class.
@@ -33,7 +32,6 @@ import com.codenvy.eclipse.client.auth.Credentials;
  */
 public abstract class AbstractClient {
     private final WebTarget             webTarget;
-    private final String                username;
     private final AuthenticationManager authenticationManager;
 
     /**
@@ -41,24 +39,18 @@ public abstract class AbstractClient {
      * 
      * @param url the Codenvy platform URL.
      * @param apiName the API name.
-     * @param username the username.
-     * @param credentials the provided user {@link Credentials} might be {@code null}.
      * @param authenticationManager the {@link AuthenticationManager}.
      * @param credentialsStoreFactory the {@linkplain com.codenvy.eclipse.client.store.DataStoreFactory DataStoreFactory}.
-     * @throws NullPointerException if url, apiName, username or authenticationManager parameter is {@code null}.
+     * @throws NullPointerException if url, apiName or authenticationManager parameter is {@code null}.
      */
     AbstractClient(String url,
                    String apiName,
-                   String username,
-                   Credentials credentials,
                    AuthenticationManager authenticationManager) {
 
         checkNotNull(url);
         checkNotNull(apiName);
-        checkNotNull(username);
         checkNotNull(authenticationManager);
 
-        this.username = username;
         this.authenticationManager = authenticationManager;
 
         final UriBuilder uriBuilder = UriBuilder.fromUri(url)
@@ -67,7 +59,7 @@ public abstract class AbstractClient {
 
         this.webTarget = ClientBuilder.newClient()
                                       .target(uriBuilder)
-                                      .register(new AuthenticationFilter(username, credentials, authenticationManager));
+                                      .register(new AuthenticationFilter(authenticationManager));
     }
 
     /**
@@ -86,14 +78,5 @@ public abstract class AbstractClient {
      */
     public AuthenticationManager getAuthenticationManager() {
         return authenticationManager;
-    }
-
-    /**
-     * Returns the username.
-     * 
-     * @return the username.
-     */
-    public String getUsername() {
-        return username;
     }
 }

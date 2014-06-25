@@ -33,7 +33,6 @@ import com.codenvy.eclipse.client.auth.AuthenticationManager;
  * @param <T> the {@linkplain java.lang.reflect.Type Type} of the {@link Response} body.
  */
 public class SimpleAPIRequest<T> implements APIRequest<T> {
-    private final String                username;
     private final Class<T>              entityType;
     private final GenericType<T>        genericEntityType;
     private final Invocation            request;
@@ -45,11 +44,10 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
      * @param request the request to invoke.
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
      * @param authenticationManager the {@link AuthenticationManager} instance.
-     * @param username the user name.
-     * @throws NullPointerException if request, entityType, authenticationManager or username parameter is {@code null}.
+     * @throws NullPointerException if request, entityType or authenticationManager parameter is {@code null}.
      */
-    SimpleAPIRequest(Invocation request, Class<T> entityType, AuthenticationManager authenticationManager, String username) {
-        this(request, entityType, null, authenticationManager, username);
+    SimpleAPIRequest(Invocation request, Class<T> entityType, AuthenticationManager authenticationManager) {
+        this(request, entityType, null, authenticationManager);
     }
 
     /**
@@ -58,11 +56,10 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
      * @param request the request to invoke.
      * @param genericEntityType the request response entity {@link GenericType}.
      * @param authenticationManager the {@link AuthenticationManager} instance.
-     * @param username the user name.
-     * @throws NullPointerException if request, genericEntityType, authenticationManager or username parameter is {@code null}.
+     * @throws NullPointerException if request, genericEntityType or authenticationManager parameter is {@code null}.
      */
-    SimpleAPIRequest(Invocation request, GenericType<T> genericEntityType, AuthenticationManager authenticationManager, String username) {
-        this(request, null, genericEntityType, authenticationManager, username);
+    SimpleAPIRequest(Invocation request, GenericType<T> genericEntityType, AuthenticationManager authenticationManager) {
+        this(request, null, genericEntityType, authenticationManager);
     }
 
     /**
@@ -72,25 +69,21 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
      * @param genericEntityType the request response entity {@link GenericType}.
      * @param authenticationManager the {@link AuthenticationManager} instance.
-     * @param username the username.
-     * @throws NullPointerException if request, entityType, genericEntityType, authenticationManager or username parameter is {@code null}.
+     * @throws NullPointerException if request, entityType, genericEntityType, authenticationManager parameter is {@code null}.
      */
     private SimpleAPIRequest(Invocation request,
                              Class<T> entityType,
                              GenericType<T> genericEntityType,
-                             AuthenticationManager authenticationManager,
-                             String username) {
+                             AuthenticationManager authenticationManager) {
 
         checkNotNull(request);
         checkNotNull(entityType != null || genericEntityType != null);
         checkNotNull(authenticationManager);
-        checkNotNull(username);
 
         this.request = request;
         this.entityType = entityType;
         this.genericEntityType = genericEntityType;
         this.authenticationManager = authenticationManager;
-        this.username = username;
     }
 
     @Override
@@ -102,7 +95,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
             || responseStatus == Status.FORBIDDEN
             || responseStatus == Status.PAYMENT_REQUIRED) {
 
-            authenticationManager.refreshToken(username);
+            authenticationManager.refreshToken();
             response = request.invoke();
         }
 
