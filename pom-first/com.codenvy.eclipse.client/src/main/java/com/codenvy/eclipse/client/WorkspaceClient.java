@@ -53,13 +53,13 @@ public class WorkspaceClient extends AbstractClient {
      * @return all Codenvy workspaces never {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<List<Workspace>> all() throws CodenvyException {
+    public Request<List<Workspace>> all() throws CodenvyException {
         final Invocation request = getWebTarget().path("all")
                                                  .request()
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, new GenericType<List<Workspace>>() {
+        return new SimpleRequest<>(request, new GenericType<List<Workspace>>() {
         }, getAuthenticationManager());
     }
 
@@ -71,7 +71,7 @@ public class WorkspaceClient extends AbstractClient {
      * @throws NullPointerException if name parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<WorkspaceRef> withName(String name) throws CodenvyException {
+    public Request<WorkspaceRef> withName(String name) throws CodenvyException {
         checkNotNull(name);
 
         final Invocation request = getWebTarget().queryParam("name", name)
@@ -79,7 +79,7 @@ public class WorkspaceClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, WorkspaceRef.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, WorkspaceRef.class, getAuthenticationManager());
     }
 
     /**
@@ -90,14 +90,14 @@ public class WorkspaceClient extends AbstractClient {
      * @throws NullPointerException if {@link WorkspaceRef} parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<WorkspaceRef> create(WorkspaceRef workspaceRef) throws CodenvyException {
+    public Request<WorkspaceRef> create(WorkspaceRef workspaceRef) throws CodenvyException {
         checkNotNull(workspaceRef);
 
         final Invocation request = getWebTarget().request()
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(json(workspaceRef));
 
-        return new SimpleAPIRequest<>(request, WorkspaceRef.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, WorkspaceRef.class, getAuthenticationManager());
 
     }
 }

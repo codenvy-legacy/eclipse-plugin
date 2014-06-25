@@ -19,24 +19,24 @@ package com.codenvy.eclipse.client;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * {@link APIRequest} implementation adapting an API request response to another type.
+ * {@link Request} implementation adapting an API request response to another type.
  * 
  * @author Kevin Pollet
  * @param <T> the {@linkplain java.lang.reflect.Type Type} of the adapted request response.
  * @param <S> the {@linkplain java.lang.reflect.Type Type} of the request response to adapt.
  */
-public class APIRequestAdaptor<T, S> implements APIRequest<T> {
-    private final APIRequest<S> adaptee;
+public class RequestResponseAdaptor<T, S> implements Request<T> {
+    private final Request<S> adaptee;
     private final Adaptor<T, S> adaptor;
 
     /**
-     * Constructs an instance of {@link APIRequestAdaptor}.
+     * Constructs an instance of {@link RequestResponseAdaptor}.
      * 
-     * @param adaptee the {@link APIRequest} to adapt.
-     * @param adaptor the {@link APIRequest} response adaptor.
+     * @param adaptee the {@link Request} to adapt.
+     * @param adaptor the {@link Request} response adaptor.
      * @throws NullPointerException if adaptee or adaptor parameter is {@code null}.
      */
-    APIRequestAdaptor(APIRequest<S> adaptee, Adaptor<T, S> adaptor) {
+    RequestResponseAdaptor(Request<S> adaptee, Adaptor<T, S> adaptor) {
         checkNotNull(adaptee);
         checkNotNull(adaptor);
 

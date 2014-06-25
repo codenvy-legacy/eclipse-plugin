@@ -51,7 +51,7 @@ public class RunnerClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<RunnerStatus> run(Project project) throws CodenvyException {
+    public Request<RunnerStatus> run(Project project) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -61,7 +61,7 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(null);
 
-        return new SimpleAPIRequest<>(request, RunnerStatus.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, RunnerStatus.class, getAuthenticationManager());
     }
 
     /**
@@ -73,7 +73,7 @@ public class RunnerClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<RunnerStatus> stop(Project project, long processId) throws CodenvyException {
+    public Request<RunnerStatus> stop(Project project, long processId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -83,7 +83,7 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(null);
 
-        return new SimpleAPIRequest<>(request, RunnerStatus.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, RunnerStatus.class, getAuthenticationManager());
     }
 
     /**
@@ -95,7 +95,7 @@ public class RunnerClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<RunnerStatus> status(Project project, long processId) throws CodenvyException {
+    public Request<RunnerStatus> status(Project project, long processId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -105,7 +105,7 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, RunnerStatus.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, RunnerStatus.class, getAuthenticationManager());
     }
 
     /**
@@ -117,7 +117,7 @@ public class RunnerClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<String> logs(Project project, long processId) throws CodenvyException {
+    public Request<String> logs(Project project, long processId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -127,6 +127,6 @@ public class RunnerClient extends AbstractClient {
                                                  .accept(TEXT_PLAIN)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, String.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, String.class, getAuthenticationManager());
     }
 }

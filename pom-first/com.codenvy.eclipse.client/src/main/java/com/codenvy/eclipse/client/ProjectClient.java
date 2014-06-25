@@ -32,7 +32,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.codenvy.eclipse.client.APIRequestAdaptor.Adaptor;
+import com.codenvy.eclipse.client.RequestResponseAdaptor.Adaptor;
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
 import com.codenvy.eclipse.client.model.Project;
 
@@ -62,7 +62,7 @@ public class ProjectClient extends AbstractClient {
      * @throws NullPointerException if workspaceId parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<List<Project>> getWorkspaceProjects(String workspaceId) throws CodenvyException {
+    public Request<List<Project>> getWorkspaceProjects(String workspaceId) throws CodenvyException {
         checkNotNull(workspaceId);
 
         final Invocation request = getWebTarget().path(workspaceId)
@@ -70,7 +70,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, new GenericType<List<Project>>() {
+        return new SimpleRequest<>(request, new GenericType<List<Project>>() {
         }, getAuthenticationManager());
     }
 
@@ -82,7 +82,7 @@ public class ProjectClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<Project> create(Project project) throws CodenvyException {
+    public Request<Project> create(Project project) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -91,7 +91,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(json(project));
 
-        return new SimpleAPIRequest<>(request, Project.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, Project.class, getAuthenticationManager());
     }
 
     /**
@@ -103,7 +103,7 @@ public class ProjectClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<ZipInputStream> exportResources(Project project, String resourcePath) throws CodenvyException {
+    public Request<ZipInputStream> exportResources(Project project, String resourcePath) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -114,7 +114,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept("application/zip")
                                                  .buildGet();
 
-        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, InputStream.class, getAuthenticationManager()),
+        return new RequestResponseAdaptor<>(new SimpleRequest<>(request, InputStream.class, getAuthenticationManager()),
                                        new Adaptor<ZipInputStream, InputStream>() {
                                            @Override
                                            public ZipInputStream adapt(InputStream response) {
@@ -132,7 +132,7 @@ public class ProjectClient extends AbstractClient {
      * @throws NullPointerException if project, filePath or fileInputStream parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<Void> updateFile(Project project, String filePath, InputStream fileInputStream) throws CodenvyException {
+    public Request<Void> updateFile(Project project, String filePath, InputStream fileInputStream) throws CodenvyException {
         checkNotNull(project);
         checkNotNull(filePath);
         checkNotNull(fileInputStream);
@@ -144,7 +144,7 @@ public class ProjectClient extends AbstractClient {
                                                  .request()
                                                  .buildPut(text(fileInputStream));
 
-        return new SimpleAPIRequest<>(request, Void.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, Void.class, getAuthenticationManager());
     }
 
     /**
@@ -155,7 +155,7 @@ public class ProjectClient extends AbstractClient {
      * @return the file {@link InputStream} or {@code null} if not found.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<InputStream> getFile(Project project, String filePath) throws CodenvyException {
+    public Request<InputStream> getFile(Project project, String filePath) throws CodenvyException {
         checkNotNull(project);
         checkNotNull(filePath);
 
@@ -167,7 +167,7 @@ public class ProjectClient extends AbstractClient {
                                                  .accept(TEXT_PLAIN)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, InputStream.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, InputStream.class, getAuthenticationManager());
     }
 
     /**
@@ -179,7 +179,7 @@ public class ProjectClient extends AbstractClient {
      * @throws NullPointerException if project or resourcePath parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<Boolean> isResource(Project project, String resourcePath) throws CodenvyException {
+    public Request<Boolean> isResource(Project project, String resourcePath) throws CodenvyException {
         checkNotNull(project);
         checkNotNull(resourcePath);
 
@@ -190,7 +190,7 @@ public class ProjectClient extends AbstractClient {
                                                  .request()
                                                  .build("HEAD");
 
-        return new APIRequestAdaptor<>(new SimpleAPIRequest<>(request, Response.class, getAuthenticationManager()),
+        return new RequestResponseAdaptor<>(new SimpleRequest<>(request, Response.class, getAuthenticationManager()),
                                        new Adaptor<Boolean, Response>() {
                                            @Override
                                            public Boolean adapt(Response response) {

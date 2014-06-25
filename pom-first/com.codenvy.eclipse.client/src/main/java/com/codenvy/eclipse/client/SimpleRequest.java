@@ -26,44 +26,44 @@ import javax.ws.rs.core.Response.Status;
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
 
 /**
- * {@link APIRequest} implementation reading the body of the {@link Response}.
+ * {@link Request} implementation reading the body of the {@link Response}.
  * 
  * @author Kevin Pollet
  * @author Stéphane Daviet
  * @param <T> the {@linkplain java.lang.reflect.Type Type} of the {@link Response} body.
  */
-public class SimpleAPIRequest<T> implements APIRequest<T> {
+public class SimpleRequest<T> implements Request<T> {
     private final Class<T>              entityType;
     private final GenericType<T>        genericEntityType;
     private final Invocation            request;
     private final AuthenticationManager authenticationManager;
 
     /**
-     * Constructs an instance of {@link SimpleAPIRequest}.
+     * Constructs an instance of {@link SimpleRequest}.
      * 
      * @param request the request to invoke.
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
      * @param authenticationManager the {@link AuthenticationManager} instance.
      * @throws NullPointerException if request, entityType or authenticationManager parameter is {@code null}.
      */
-    SimpleAPIRequest(Invocation request, Class<T> entityType, AuthenticationManager authenticationManager) {
+    SimpleRequest(Invocation request, Class<T> entityType, AuthenticationManager authenticationManager) {
         this(request, entityType, null, authenticationManager);
     }
 
     /**
-     * Constructs an instance of {@link SimpleAPIRequest}.
+     * Constructs an instance of {@link SimpleRequest}.
      * 
      * @param request the request to invoke.
      * @param genericEntityType the request response entity {@link GenericType}.
      * @param authenticationManager the {@link AuthenticationManager} instance.
      * @throws NullPointerException if request, genericEntityType or authenticationManager parameter is {@code null}.
      */
-    SimpleAPIRequest(Invocation request, GenericType<T> genericEntityType, AuthenticationManager authenticationManager) {
+    SimpleRequest(Invocation request, GenericType<T> genericEntityType, AuthenticationManager authenticationManager) {
         this(request, null, genericEntityType, authenticationManager);
     }
 
     /**
-     * Constructs an instance of {@link SimpleAPIRequest}.
+     * Constructs an instance of {@link SimpleRequest}.
      * 
      * @param request the request to invoke.
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
@@ -71,7 +71,7 @@ public class SimpleAPIRequest<T> implements APIRequest<T> {
      * @param authenticationManager the {@link AuthenticationManager} instance.
      * @throws NullPointerException if request, entityType, genericEntityType, authenticationManager parameter is {@code null}.
      */
-    private SimpleAPIRequest(Invocation request,
+    private SimpleRequest(Invocation request,
                              Class<T> entityType,
                              GenericType<T> genericEntityType,
                              AuthenticationManager authenticationManager) {

@@ -52,7 +52,7 @@ public class BuilderClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<BuilderStatus> build(Project project) throws CodenvyException {
+    public Request<BuilderStatus> build(Project project) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -62,7 +62,7 @@ public class BuilderClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildPost(null);
 
-        return new SimpleAPIRequest<>(request, BuilderStatus.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, BuilderStatus.class, getAuthenticationManager());
     }
 
     /**
@@ -74,7 +74,7 @@ public class BuilderClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<BuilderStatus> status(Project project, long taskId) throws CodenvyException {
+    public Request<BuilderStatus> status(Project project, long taskId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -84,7 +84,7 @@ public class BuilderClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, BuilderStatus.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, BuilderStatus.class, getAuthenticationManager());
     }
 
     /**
@@ -96,7 +96,7 @@ public class BuilderClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<String> logs(Project project, long taskId) throws CodenvyException {
+    public Request<String> logs(Project project, long taskId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -106,7 +106,7 @@ public class BuilderClient extends AbstractClient {
                                                  .accept(TEXT_PLAIN)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, String.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, String.class, getAuthenticationManager());
     }
 
     /**
@@ -118,7 +118,7 @@ public class BuilderClient extends AbstractClient {
      * @throws NullPointerException if project parameter is {@code null}.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    public APIRequest<BuilderStatus> cancel(Project project, long taskId) throws CodenvyException {
+    public Request<BuilderStatus> cancel(Project project, long taskId) throws CodenvyException {
         checkNotNull(project);
 
         final Invocation request = getWebTarget().path(project.workspaceId)
@@ -128,6 +128,6 @@ public class BuilderClient extends AbstractClient {
                                                  .accept(APPLICATION_JSON)
                                                  .buildGet();
 
-        return new SimpleAPIRequest<>(request, BuilderStatus.class, getAuthenticationManager());
+        return new SimpleRequest<>(request, BuilderStatus.class, getAuthenticationManager());
     }
 }

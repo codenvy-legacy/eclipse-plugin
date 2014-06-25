@@ -23,7 +23,7 @@ package com.codenvy.eclipse.client;
  * @author Kevin Pollet
  * @param <T> the API request return {@linkplain java.lang.reflect.Type Type}
  */
-public interface APIRequest<T> {
+public interface Request<T> {
     /**
      * Executes the Codenvy API request.
      * 
