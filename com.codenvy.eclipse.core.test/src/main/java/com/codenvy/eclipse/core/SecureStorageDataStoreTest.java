@@ -29,9 +29,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.Token;
 import com.codenvy.eclipse.client.store.DataStore;
-import com.codenvy.eclipse.client.store.StoredCredentials;
 
 /**
  * {@link SecureStorageDataStore} tests.
@@ -81,15 +81,15 @@ public class SecureStorageDataStoreTest {
 
     @Test
     public void testGetWithMissingUsername() {
-        final DataStore<String, StoredCredentials> dataStore = new SecureStorageDataStore(urlNode);
+        final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
 
         Assert.assertNull(dataStore.get(FOO_USERNAME));
     }
 
     @Test
     public void testGet() {
-        final DataStore<String, StoredCredentials> dataStore = new SecureStorageDataStore(urlNode);
-        final StoredCredentials storedCredentials = dataStore.get(BAR_USERNAME);
+        final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
+        final Credentials storedCredentials = dataStore.get(BAR_USERNAME);
 
         Assert.assertNotNull(storedCredentials);
         Assert.assertEquals(BAR_PASSWORD, storedCredentials.password);
@@ -98,7 +98,11 @@ public class SecureStorageDataStoreTest {
 
     @Test(expected = NullPointerException.class)
     public void testPutWithNullUsername() {
-        new SecureStorageDataStore(urlNode).put(null, new StoredCredentials(BAR_PASSWORD, new Token(BAR_TOKEN)));
+        final Credentials credentials = new Credentials.Builder().withPassword(BAR_PASSWORD)
+                                                                 .withToken(new Token(BAR_TOKEN))
+                                                                 .build();
+
+        new SecureStorageDataStore(urlNode).put(null, credentials);
     }
 
     @Test(expected = NullPointerException.class)
@@ -108,8 +112,12 @@ public class SecureStorageDataStoreTest {
 
     @Test
     public void testPut() throws StorageException {
-        final DataStore<String, StoredCredentials> dataStore = new SecureStorageDataStore(urlNode);
-        final StoredCredentials storedCredentials = dataStore.put(FOO_USERNAME, new StoredCredentials(FOO_PASSWORD, new Token(FOO_TOKEN)));
+        final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
+        final Credentials credentials = new Credentials.Builder().withPassword(FOO_PASSWORD)
+                                                                 .withToken(new Token(FOO_TOKEN))
+                                                                 .build();
+
+        final Credentials storedCredentials = dataStore.put(FOO_USERNAME, credentials);
 
         Assert.assertNull(storedCredentials);
         Assert.assertTrue(urlNode.nodeExists(FOO_USERNAME));
@@ -118,12 +126,37 @@ public class SecureStorageDataStoreTest {
     }
 
     @Test
+    public void testPutWithStoreOnlyToken() throws StorageException {
+        final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
+        final Credentials credentials = new Credentials.Builder().withPassword(FOO_PASSWORD)
+                                                                 .withToken(new Token(FOO_TOKEN))
+                                                                 .storeOnlyToken(true)
+                                                                 .build();
+
+        final Credentials storedCredentials = dataStore.put(FOO_USERNAME, credentials);
+
+        Assert.assertNull(storedCredentials);
+        Assert.assertTrue(urlNode.nodeExists(FOO_USERNAME));
+        Assert.assertNull(urlNode.node(FOO_USERNAME).get(CODENVY_PASSWORD_KEY_NAME, (String)null));
+        Assert.assertEquals(FOO_TOKEN, urlNode.node(FOO_USERNAME).get(CODENVY_TOKEN_KEY_NAME, (String)null));
+
+    }
+
+    @Test
     public void testPutOnExitingNode() throws StorageException {
-        final DataStore<String, StoredCredentials> dataStore = new SecureStorageDataStore(urlNode);
-        final StoredCredentials storedCredentials = dataStore.put(BAR_USERNAME, new StoredCredentials(FOO_PASSWORD, new Token(FOO_TOKEN)));
+        final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
+        final Credentials fooCredentials = new Credentials.Builder().withPassword(FOO_PASSWORD)
+                                                                    .withToken(new Token(FOO_TOKEN))
+                                                                    .build();
+
+        final Credentials barCredentials = new Credentials.Builder().withPassword(BAR_PASSWORD)
+                                                                    .withToken(new Token(BAR_TOKEN))
+                                                                    .build();
+
+        final Credentials storedCredentials = dataStore.put(BAR_USERNAME, fooCredentials);
 
         Assert.assertNotNull(storedCredentials);
-        Assert.assertEquals(new StoredCredentials(BAR_PASSWORD, new Token(BAR_TOKEN)), storedCredentials);
+        Assert.assertEquals(barCredentials, storedCredentials);
         Assert.assertEquals(FOO_PASSWORD, urlNode.node(BAR_USERNAME).get(CODENVY_PASSWORD_KEY_NAME, (String)null));
         Assert.assertEquals(FOO_TOKEN, urlNode.node(BAR_USERNAME).get(CODENVY_TOKEN_KEY_NAME, (String)null));
     }
@@ -135,19 +168,22 @@ public class SecureStorageDataStoreTest {
 
     @Test
     public void testDeleteWithMissingUsername() {
-        final DataStore<String, StoredCredentials> dataStore = new SecureStorageDataStore(urlNode);
-        final StoredCredentials storedCredentials = dataStore.delete(FOO_USERNAME);
+        final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
+        final Credentials storedCredentials = dataStore.delete(FOO_USERNAME);
 
         Assert.assertNull(storedCredentials);
     }
 
     @Test
     public void testDelete() {
-        final DataStore<String, StoredCredentials> dataStore = new SecureStorageDataStore(urlNode);
-        final StoredCredentials storedCredentials = dataStore.delete(BAR_USERNAME);
+        final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
+        final Credentials storedCredentials = dataStore.delete(BAR_USERNAME);
+        final Credentials credentials = new Credentials.Builder().withPassword(BAR_PASSWORD)
+                                                                 .withToken(new Token(BAR_TOKEN))
+                                                                 .build();
 
         Assert.assertNotNull(storedCredentials);
         Assert.assertFalse(urlNode.nodeExists(BAR_USERNAME));
-        Assert.assertEquals(new StoredCredentials(BAR_PASSWORD, new Token(BAR_TOKEN)), storedCredentials);
+        Assert.assertEquals(credentials, storedCredentials);
     }
 }

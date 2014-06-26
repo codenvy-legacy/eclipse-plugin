@@ -40,13 +40,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.exceptions.APIException;
+import com.codenvy.eclipse.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.client.model.User;
 import com.codenvy.eclipse.client.model.Workspace;
 import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.client.store.DataStoreFactory;
-import com.codenvy.eclipse.client.store.StoredCredentials;
 
 /**
  * Codenvy mock used for UI tests.
@@ -97,9 +96,9 @@ public class Codenvy {
 
     public UserClient user() {
         final UserClient userClientMock = Mockito.mock(UserClient.class);
-        when(userClientMock.current()).thenReturn(new APIRequest<User>() {
+        when(userClientMock.current()).thenReturn(new Request<User>() {
             @Override
-            public User execute() throws APIException {
+            public User execute() throws CodenvyException {
                 return new User(MOCK_USER_ID, "<none>", MOCK_USERNAME);
             }
         });
@@ -117,12 +116,12 @@ public class Codenvy {
 
     public ProjectClient project() {
         final ProjectClient projectClientMock = mock(ProjectClient.class);
-        when(projectClientMock.getWorkspaceProjects(anyString())).thenAnswer(new Answer<APIRequest<List<Project>>>() {
+        when(projectClientMock.getWorkspaceProjects(anyString())).thenAnswer(new Answer<Request<List<Project>>>() {
             @Override
-            public APIRequest<List<Project>> answer(final InvocationOnMock invocation) throws Throwable {
-                return new APIRequest<List<Project>>() {
+            public Request<List<Project>> answer(final InvocationOnMock invocation) throws Throwable {
+                return new Request<List<Project>>() {
                     @Override
-                    public List<Project> execute() throws APIException {
+                    public List<Project> execute() throws CodenvyException {
                         if (MOCK_WORKSPACE_ID.equals(invocation.getArguments()[0])) {
                             return projects;
                         }
@@ -132,12 +131,12 @@ public class Codenvy {
             }
         });
 
-        when(projectClientMock.exportResources(any(Project.class), anyString())).thenAnswer(new Answer<APIRequest<ZipInputStream>>() {
+        when(projectClientMock.exportResources(any(Project.class), anyString())).thenAnswer(new Answer<Request<ZipInputStream>>() {
             @Override
-            public APIRequest<ZipInputStream> answer(final InvocationOnMock invocation) throws Throwable {
-                return new APIRequest<ZipInputStream>() {
+            public Request<ZipInputStream> answer(final InvocationOnMock invocation) throws Throwable {
+                return new Request<ZipInputStream>() {
                     @Override
-                    public ZipInputStream execute() throws APIException {
+                    public ZipInputStream execute() throws CodenvyException {
                         final Project project = (Project)invocation.getArguments()[0];
                         if (MOCK_WORKSPACE_ID.equals(project.workspaceId) && MOCK_PROJECT_NAME.equals(project.name)) {
                             return new ZipInputStream(getClass().getResourceAsStream("/prj1.zip"));
@@ -148,12 +147,12 @@ public class Codenvy {
             }
         });
 
-        when(projectClientMock.isResource(any(Project.class), anyString())).thenAnswer(new Answer<APIRequest<Boolean>>() {
+        when(projectClientMock.isResource(any(Project.class), anyString())).thenAnswer(new Answer<Request<Boolean>>() {
             @Override
-            public APIRequest<Boolean> answer(final InvocationOnMock invocation) throws Throwable {
-                return new APIRequest<Boolean>() {
+            public Request<Boolean> answer(final InvocationOnMock invocation) throws Throwable {
+                return new Request<Boolean>() {
                     @Override
-                    public Boolean execute() throws APIException {
+                    public Boolean execute() throws CodenvyException {
                         Boolean exists = Boolean.FALSE;
                         final Project project = (Project)invocation.getArguments()[0];
                         final String resourcePath = (String)invocation.getArguments()[1];
@@ -191,19 +190,19 @@ public class Codenvy {
     public WorkspaceClient workspace() {
         final WorkspaceClient workspaceClientMock = mock(WorkspaceClient.class);
 
-        when(workspaceClientMock.all()).thenReturn(new APIRequest<List<Workspace>>() {
+        when(workspaceClientMock.all()).thenReturn(new Request<List<Workspace>>() {
             @Override
-            public List<Workspace> execute() throws APIException {
+            public List<Workspace> execute() throws CodenvyException {
                 return workspaces;
             }
         });
 
-        when(workspaceClientMock.withName(anyString())).thenAnswer(new Answer<APIRequest<WorkspaceRef>>() {
+        when(workspaceClientMock.withName(anyString())).thenAnswer(new Answer<Request<WorkspaceRef>>() {
             @Override
-            public APIRequest<WorkspaceRef> answer(final InvocationOnMock invocation) throws Throwable {
-                return new APIRequest<Workspace.WorkspaceRef>() {
+            public Request<WorkspaceRef> answer(final InvocationOnMock invocation) throws Throwable {
+                return new Request<Workspace.WorkspaceRef>() {
                     @Override
-                    public WorkspaceRef execute() throws APIException {
+                    public WorkspaceRef execute() throws CodenvyException {
                         for (Workspace workspace : workspaces) {
                             if (workspace.workspaceRef.name.equals(invocation.getArguments()[0])) {
                                 return workspace.workspaceRef;
@@ -220,16 +219,51 @@ public class Codenvy {
     }
 
     public static class Builder {
-
-        public Builder(String url,
-                       String username,
-                       DataStoreFactory<String, StoredCredentials> credentialsStoreFactory) {
+        /**
+         * Constructs an instance of {@link Builder}.
+         * 
+         * @param url the Codenvy platform URL.
+         * @param username the user name.
+         * @throws NullPointerException if url or username parameter is {@code null}.
+         */
+        public Builder(String url, String username) {
         }
 
+        /**
+         * Provides the user {@link Credentials} used if they are not found in storage.
+         * 
+         * @param credentials the provided {@link Credentials}.
+         * @return {@link Builder} instance.
+         */
         public Builder withCredentials(Credentials credentials) {
             return this;
         }
 
+        /**
+         * Defines the {@link DataStoreFactory} used to store the user {@link Credentials}.
+         * 
+         * @param credentialsStoreFactory the {@link DataStoreFactory} to use.
+         * @return {@link Builder} instance.
+         */
+        public Builder withCredentialsStoreFactory(DataStoreFactory<String, Credentials> credentialsStoreFactory) {
+            return this;
+        }
+
+        /**
+         * Defines the {@link CredentialsProvider} used to provide credentials if they are not stored or provided
+         * 
+         * @param credentialsProvider the credentials provider.
+         * @return {@link Builder} instance.
+         */
+        public Builder withCredentialsProvider(CredentialsProvider credentialsProvider) {
+            return this;
+        }
+
+        /**
+         * Builds the {@link Codenvy} client.
+         * 
+         * @return the {@link Codenvy} client instance.
+         */
         public Codenvy build() {
             return new Codenvy();
         }

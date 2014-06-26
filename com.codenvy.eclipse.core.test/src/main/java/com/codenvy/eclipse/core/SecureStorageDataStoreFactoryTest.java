@@ -24,9 +24,9 @@ import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.store.DataStore;
 import com.codenvy.eclipse.client.store.DataStoreFactory;
-import com.codenvy.eclipse.client.store.StoredCredentials;
 
 /**
  * {@link SecureStorageDataStoreFactory} tests.
@@ -34,10 +34,10 @@ import com.codenvy.eclipse.client.store.StoredCredentials;
  * @author Kevin Pollet
  */
 public class SecureStorageDataStoreFactoryTest {
-    private static final String                               FOO_DATA_STORE_ID = "http://foo.com";
+    private static final String                         FOO_DATA_STORE_ID = "http://foo.com";
 
-    private final DataStoreFactory<String, StoredCredentials> dataStoreFactory;
-    private final ISecurePreferences                          root;
+    private final DataStoreFactory<String, Credentials> dataStoreFactory;
+    private final ISecurePreferences                    root;
 
     public SecureStorageDataStoreFactoryTest() {
         dataStoreFactory = SecureStorageDataStoreFactory.INSTANCE;
@@ -51,7 +51,7 @@ public class SecureStorageDataStoreFactoryTest {
 
     @Test
     public void testGetDataStore() {
-        final DataStore<String, StoredCredentials> dataStore = dataStoreFactory.getDataStore(FOO_DATA_STORE_ID);
+        final DataStore<String, Credentials> dataStore = dataStoreFactory.getDataStore(FOO_DATA_STORE_ID);
 
         Assert.assertNotNull(dataStore);
         Assert.assertTrue(root.nodeExists(CODENVY_NODE_NAME));

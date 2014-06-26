@@ -58,13 +58,13 @@ public class CodenvyPlugin extends Plugin {
     }
 
     /**
-     * Returns a Codenvy builder for the given url and username.
+     * Returns a Codenvy builder for the given URL and username.
      * 
-     * @param url the Codenvy platform url.
+     * @param url the Codenvy platform URL.
      * @param username the username.
      * @return an instance of the Codenvy API builder.
      */
     public Codenvy.Builder getCodenvyBuilder(String url, String username) {
-        return new Codenvy.Builder(url, username, SecureStorageDataStoreFactory.INSTANCE);
+        return new Codenvy.Builder(url, username).withCredentialsStoreFactory(SecureStorageDataStoreFactory.INSTANCE);
     }
 }

@@ -21,16 +21,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.StorageException;
 
+import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.auth.Token;
 import com.codenvy.eclipse.client.store.DataStore;
-import com.codenvy.eclipse.client.store.StoredCredentials;
 
 /**
  * Stores user credentials in Eclipse secure storage.
  * 
  * @author Kevin Pollet
  */
-public class SecureStorageDataStore implements DataStore<String, StoredCredentials> {
+public class SecureStorageDataStore implements DataStore<String, Credentials> {
     public static final String       CODENVY_PASSWORD_KEY_NAME = "password";
     public static final String       CODENVY_TOKEN_KEY_NAME    = "token";
 
@@ -49,7 +49,7 @@ public class SecureStorageDataStore implements DataStore<String, StoredCredentia
     }
 
     @Override
-    public StoredCredentials get(String username) {
+    public Credentials get(String username) {
         checkNotNull(username);
 
         try {
@@ -63,7 +63,9 @@ public class SecureStorageDataStore implements DataStore<String, StoredCredentia
             final String password = node.get(CODENVY_PASSWORD_KEY_NAME, null);
             final String token = node.get(CODENVY_TOKEN_KEY_NAME, null);
 
-            return new StoredCredentials(password, new Token(token));
+            return new Credentials.Builder().withPassword(password)
+                                            .withToken(new Token(token))
+                                            .build();
 
         } catch (StorageException e) {
             throw new RuntimeException(e);
@@ -71,16 +73,18 @@ public class SecureStorageDataStore implements DataStore<String, StoredCredentia
     }
 
     @Override
-    public StoredCredentials put(String username, StoredCredentials credentials) {
+    public Credentials put(String username, Credentials credentials) {
         checkNotNull(username);
         checkNotNull(credentials);
 
         try {
 
-            final StoredCredentials previousCredentials = get(username);
+            final Credentials previousCredentials = get(username);
             final ISecurePreferences node = urlNode.node(username);
 
-            node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
+            if (!credentials.storeOnlyToken) {
+                node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
+            }
             node.put(CODENVY_TOKEN_KEY_NAME, credentials.token.value, true);
 
             return previousCredentials;
@@ -91,10 +95,10 @@ public class SecureStorageDataStore implements DataStore<String, StoredCredentia
     }
 
     @Override
-    public StoredCredentials delete(String username) {
+    public Credentials delete(String username) {
         checkNotNull(username);
 
-        final StoredCredentials previousCredentials = get(username);
+        final Credentials previousCredentials = get(username);
         final ISecurePreferences node = urlNode.node(username);
         if (node != null) {
             node.removeNode();

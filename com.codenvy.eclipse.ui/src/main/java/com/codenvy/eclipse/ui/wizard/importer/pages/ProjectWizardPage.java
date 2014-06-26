@@ -251,10 +251,13 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 final String platformURL = wizard.getAuthenticationWizardPage().getURL();
                                 final String username = wizard.getAuthenticationWizardPage().getUsername();
                                 final String password = wizard.getAuthenticationWizardPage().getPassword();
+                                final Credentials credentials = new Credentials.Builder().withUsername(username)
+                                                                                         .withPassword(password)
+                                                                                         .build();
 
                                 final Codenvy codenvy = CodenvyPlugin.getDefault()
                                                                      .getCodenvyBuilder(platformURL, username)
-                                                                     .withCredentials(new Credentials(username, password))
+                                                                     .withCredentials(credentials)
                                                                      .build();
 
                                 final List<Workspace> workspaces = codenvy.workspace()
@@ -310,10 +313,14 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 final String platformURL = wizard.getAuthenticationWizardPage().getURL();
                                 final String username = wizard.getAuthenticationWizardPage().getUsername();
                                 final String password = wizard.getAuthenticationWizardPage().getPassword();
+                                final Credentials credentials = new Credentials.Builder().withUsername(username)
+                                                                                         .withPassword(password)
+                                                                                         .build();
+
 
                                 final Codenvy codenvy = CodenvyPlugin.getDefault()
                                                                      .getCodenvyBuilder(platformURL, username)
-                                                                     .withCredentials(new Credentials(username, password))
+                                                                     .withCredentials(credentials)
                                                                      .build();
 
                                 final List<Project> projects = codenvy.project()

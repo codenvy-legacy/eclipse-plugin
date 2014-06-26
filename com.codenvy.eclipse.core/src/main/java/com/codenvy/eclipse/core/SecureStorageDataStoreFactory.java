@@ -22,16 +22,16 @@ import static org.eclipse.equinox.security.storage.EncodingUtils.encodeSlashes;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 
+import com.codenvy.eclipse.client.auth.Credentials;
 import com.codenvy.eclipse.client.store.DataStore;
 import com.codenvy.eclipse.client.store.DataStoreFactory;
-import com.codenvy.eclipse.client.store.StoredCredentials;
 
 /**
  * The Eclipse secure storage data store factory.
  * 
  * @author Kevin Pollet
  */
-public enum SecureStorageDataStoreFactory implements DataStoreFactory<String, StoredCredentials> {
+public enum SecureStorageDataStoreFactory implements DataStoreFactory<String, Credentials> {
     INSTANCE;
 
     public static final String       CODENVY_NODE_NAME = "Codenvy";
@@ -44,7 +44,7 @@ public enum SecureStorageDataStoreFactory implements DataStoreFactory<String, St
     }
 
     @Override
-    public DataStore<String, StoredCredentials> getDataStore(String id) {
+    public DataStore<String, Credentials> getDataStore(String id) {
         checkNotNull(id);
         return new SecureStorageDataStore(codenvyNode.node(encodeSlashes(id)));
     }
