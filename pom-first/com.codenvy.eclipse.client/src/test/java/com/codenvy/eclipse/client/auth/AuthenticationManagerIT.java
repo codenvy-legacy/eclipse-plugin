@@ -34,18 +34,29 @@ import com.codenvy.eclipse.client.store.DataStore;
  * @author Kevin Pollet
  */
 public class AuthenticationManagerIT extends AbstractIT {
+    private final Credentials credentials;
+    private final Credentials credentialsWithToken;
+
+    public AuthenticationManagerIT() {
+        this.credentials = new Credentials.Builder().withUsername(DUMMY_USERNAME)
+                                                    .withPassword(DUMMY_PASSWORD)
+                                                    .build();
+
+        this.credentialsWithToken = new Credentials.Builder().withPassword(DUMMY_PASSWORD)
+                                                             .withToken(new Token(SDK_TOKEN_VALUE))
+                                                             .build();
+    }
+
     @Test(expected = NullPointerException.class)
     @SuppressWarnings("unchecked")
     public void testNewAuthenticationManagerWithNullURL() {
-        new AuthenticationManager(null, DUMMY_USERNAME, new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
-                                  mock(CredentialsProvider.class), mock(DataStore.class));
+        new AuthenticationManager(null, DUMMY_USERNAME, credentials, mock(CredentialsProvider.class), mock(DataStore.class));
     }
 
     @Test(expected = NullPointerException.class)
     @SuppressWarnings("unchecked")
     public void testNewAuthenticationManagerWithNullUsername() {
-        new AuthenticationManager(REST_API_URL, null, new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
-                                  mock(CredentialsProvider.class), mock(DataStore.class));
+        new AuthenticationManager(REST_API_URL, null, credentials, mock(CredentialsProvider.class), mock(DataStore.class));
     }
 
     @Test(expected = AuthenticationException.class)
@@ -57,7 +68,7 @@ public class AuthenticationManagerIT extends AbstractIT {
     @Test
     public void testAuthorizeWithNullDataStoreNullCredentialsAndCredentialsProvider() {
         final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
-        when(credentialsProvider.getCredentials(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
+        when(credentialsProvider.getCredentials(DUMMY_USERNAME)).thenReturn(credentials);
 
         final AuthenticationManager authenticationManager =
                                                             new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, null,
@@ -70,8 +81,8 @@ public class AuthenticationManagerIT extends AbstractIT {
     @Test
     public void testAuthorizeWithNullDataStoreCredentialsAndCredentialsProvider() {
         final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, DUMMY_USERNAME,
-                                                                                      new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+        final AuthenticationManager authenticationManager =
+                                                            new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, credentials,
                                                                                       credentialsProvider, null);
 
         final Token token = authenticationManager.authorize();
@@ -86,8 +97,8 @@ public class AuthenticationManagerIT extends AbstractIT {
     public void testAuthorizeWithDataStoreCredentialsAndCredentialsProvider() {
         final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
-        final AuthenticationManager authenticationManager = new AuthenticationManager(REST_API_URL, DUMMY_USERNAME,
-                                                                                      new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD),
+        final AuthenticationManager authenticationManager =
+                                                            new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, credentials,
                                                                                       credentialsProvider, credentialsStore);
 
         final Token token = authenticationManager.authorize();
@@ -95,7 +106,7 @@ public class AuthenticationManagerIT extends AbstractIT {
         Assert.assertNotNull(token);
         Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
         verify(credentialsProvider, times(0)).getCredentials(DUMMY_USERNAME);
-        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE))));
+        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(credentialsWithToken));
     }
 
     @Test
@@ -124,7 +135,7 @@ public class AuthenticationManagerIT extends AbstractIT {
     @SuppressWarnings("unchecked")
     public void testGetTokenWithExistingUsername() {
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
-        when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE)));
+        when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(credentialsWithToken);
 
         final AuthenticationManager authenticationManager =
                                                             new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, null, null,

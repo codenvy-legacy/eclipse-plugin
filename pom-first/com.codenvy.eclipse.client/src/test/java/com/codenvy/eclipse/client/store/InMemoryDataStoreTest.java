@@ -17,6 +17,7 @@
 package com.codenvy.eclipse.client.store;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.codenvy.eclipse.client.auth.Credentials;
@@ -28,18 +29,26 @@ import com.codenvy.eclipse.client.auth.Token;
  * @author Kevin Pollet
  */
 public class InMemoryDataStoreTest {
-    private final DataStoreFactory<String, Credentials> dataStoreFactory;
-    private final DataStore<String, Credentials>        dataStore;
+    private static final String                   DUMMY_DATASTORE_KEY = "dummyKey";
+    private static final String                   DUMMY_USERNAME      = "dummyUsername";
+    private static final String                   DUMMY_PASSWORD      = "dummyPassword";
+    private static final String                   DUMMY_TOKEN         = "dummyToken";
 
-    public InMemoryDataStoreTest() {
-        dataStoreFactory = new InMemoryDataStoreFactory();
-        dataStore = dataStoreFactory.getDataStore("dummy");
+    private DataStoreFactory<String, Credentials> dataStoreFactory;
+    private DataStore<String, Credentials>        dataStore;
+    private Credentials                           credentials;
+
+    @Before
+    public void before() {
+        this.dataStoreFactory = new InMemoryDataStoreFactory();
+        this.dataStore = dataStoreFactory.getDataStore(DUMMY_DATASTORE_KEY);
+        this.credentials = new Credentials.Builder().withPassword(DUMMY_PASSWORD)
+                                                    .withToken(new Token(DUMMY_TOKEN))
+                                                    .build();
     }
 
     @Test(expected = NullPointerException.class)
     public void testGetWithNullKey() {
-
-
         dataStore.get(null);
     }
 
@@ -50,20 +59,33 @@ public class InMemoryDataStoreTest {
 
     @Test
     public void testGetWithExistingKey() {
-        dataStore.put("testGetWithExistingKey", new Credentials("dummy", new Token("dummy")));
+        dataStore.put("testGetWithExistingKey", credentials);
 
         Assert.assertNotNull(dataStore.get("testGetWithExistingKey"));
-        Assert.assertEquals(new Credentials("dummy", new Token("dummy")), dataStore.get("testGetWithExistingKey"));
+        Assert.assertEquals(credentials, dataStore.get("testGetWithExistingKey"));
     }
 
     @Test(expected = NullPointerException.class)
     public void testPutWithNullKey() {
-        dataStore.put(null, new Credentials("dummy", new Token("dummy")));
+        dataStore.put(null, credentials);
     }
 
     @Test(expected = NullPointerException.class)
     public void testPutWithNullCredentials() {
-        dataStore.put("dummy", null);
+        dataStore.put(DUMMY_USERNAME, null);
+    }
+
+    @Test
+    public void testPutWithStoreOnlyTokenCredentials() {
+        final Credentials credentials = new Credentials.Builder().withPassword(DUMMY_PASSWORD)
+                                                                 .withToken(new Token(DUMMY_TOKEN))
+                                                                 .storeOnlyToken(true)
+                                                                 .build();
+
+        dataStore.put(DUMMY_USERNAME, credentials);
+
+        Assert.assertNotNull(dataStore.get(DUMMY_USERNAME));
+        Assert.assertEquals(new Credentials.Builder().withToken(new Token(DUMMY_TOKEN)).build(), dataStore.get(DUMMY_USERNAME));
     }
 
     @Test(expected = NullPointerException.class)
@@ -78,11 +100,11 @@ public class InMemoryDataStoreTest {
 
     @Test
     public void testDeleteWithExistingKey() {
-        dataStore.put("testDeleteWithExistingKey", new Credentials("dummy", new Token("dummy")));
-        final Credentials credentials = dataStore.delete("testDeleteWithExistingKey");
+        dataStore.put("testDeleteWithExistingKey", credentials);
+        final Credentials deletedCredentials = dataStore.delete("testDeleteWithExistingKey");
 
         Assert.assertNotNull(credentials);
-        Assert.assertEquals(new Credentials("dummy", new Token("dummy")), credentials);
+        Assert.assertEquals(credentials, deletedCredentials);
         Assert.assertNull(dataStore.delete("testDeleteWithExistingKey"));
     }
 }

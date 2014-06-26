@@ -25,38 +25,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true, value = "token")
 public class Credentials {
-    public final String username;
-    public final String password;
-    public final Token  token;
-
-    /**
-     * Constructs an instance of {@link Credentials}.
-     * 
-     * @param username the user name.
-     * @param password the user password.
-     */
-    public Credentials(String username, String password) {
-        this(username, password, null);
-    }
-
-    /**
-     * Constructs an instance of {@link Credentials}.
-     * 
-     * @param password the user password.
-     * @param token the user authentication {@link Token}.
-     */
-    public Credentials(String password, Token token) {
-        this(null, password, token);
-    }
-
-    /**
-     * Constructs an instance of {@link Credentials}.
-     * 
-     * @param token the user authentication {@link Token}.
-     */
-    public Credentials(Token token) {
-        this(null, null, token);
-    }
+    public final String  username;
+    public final String  password;
+    public final Token   token;
+    public final boolean storeOnlyToken;
 
     /**
      * Constructs an instance of {@link Credentials}.
@@ -64,11 +36,13 @@ public class Credentials {
      * @param username the user name.
      * @param password the user password.
      * @param token the user authentication {@link Token}.
+     * @param storeOnlyToken {@code true} if only the authentication {@link Token} must be stored.
      */
-    private Credentials(String username, String password, Token token) {
+    private Credentials(String username, String password, Token token, boolean storeOnlyToken) {
         this.username = username;
         this.password = password;
         this.token = token;
+        this.storeOnlyToken = storeOnlyToken;
     }
 
     @Override
@@ -106,5 +80,70 @@ public class Credentials {
         } else if (!username.equals(other.username))
             return false;
         return true;
+    }
+
+    /**
+     * Builder used to build a {@link Credentials} object.
+     * 
+     * @author Kevin Pollet
+     */
+    public static class Builder {
+        private String  username;
+        private String  password;
+        private Token   token;
+        private boolean storeOnlyToken;
+
+        /**
+         * Defines the user name.
+         * 
+         * @param username the user name.
+         * @return the {@link Builder} instance.
+         */
+        public Builder withUsername(String username) {
+            this.username = username;
+            return this;
+        }
+
+        /**
+         * Defines the user password.
+         * 
+         * @param password the user password.
+         * @return the {@link Builder} instance.
+         */
+        public Builder withPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        /**
+         * Defines the authentication {@link Token}.
+         * 
+         * @param token the authentication {@link Token}.
+         * @return the {@link Builder} instance.
+         */
+        public Builder withToken(Token token) {
+            this.token = token;
+            return this;
+        }
+
+        /**
+         * Defines if only the authentication {@link Token} must be stored.
+         * 
+         * @param storeOnlyToken {@code true} if only the authentication {@link Token} must be stored.
+         * @return the {@link Builder} instance.
+         */
+        public Builder storeOnlyToken(boolean storeOnlyToken) {
+            this.storeOnlyToken = storeOnlyToken;
+            return this;
+        }
+
+        /**
+         * Builds the {@link Credentials} object.
+         * 
+         * @return the created {@link Credentials} object.
+         */
+        public Credentials build() {
+            return new Credentials(username, password, token, storeOnlyToken);
+        }
     }
 }

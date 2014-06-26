@@ -43,11 +43,12 @@ public class InMemoryDataStore implements DataStore<String, Credentials> {
     }
 
     @Override
-    public Credentials put(String key, Credentials value) {
+    public Credentials put(String key, Credentials credentials) {
         checkNotNull(key);
-        checkNotNull(value);
+        checkNotNull(credentials);
 
-        return data.putIfAbsent(key, value);
+        return data.putIfAbsent(key, credentials.storeOnlyToken ? new Credentials.Builder().withToken(credentials.token).build()
+            : credentials);
     }
 
     @Override

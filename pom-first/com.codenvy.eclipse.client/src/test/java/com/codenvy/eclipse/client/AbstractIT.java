@@ -52,9 +52,11 @@ public abstract class AbstractIT {
         REST_API_URL = System.getProperty(REST_API_URL_PROPERTY_NAME, codenvySdkProperties.getProperty(REST_API_URL_PROPERTY_NAME));
         Assert.assertNotNull(REST_API_URL);
 
-        codenvy =
-                  new Codenvy.Builder(REST_API_URL, DUMMY_USERNAME)
-                                                                   .withCredentials(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD))
+        final Credentials credentials = new Credentials.Builder().withUsername(DUMMY_USERNAME)
+                                                                 .withPassword(DUMMY_PASSWORD)
+                                                                 .build();
+
+        codenvy = new Codenvy.Builder(REST_API_URL, DUMMY_USERNAME).withCredentials(credentials)
                                                                    .build();
     }
 }

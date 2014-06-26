@@ -33,7 +33,10 @@ public class AbstractClientIT extends AbstractIT {
     private final AuthenticationManager dummyAuthenticationManager;
 
     public AbstractClientIT() {
-        final Credentials dummyCredentials = new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD);
+        final Credentials dummyCredentials = new Credentials.Builder().withUsername(DUMMY_USERNAME)
+                                                                      .withPassword(DUMMY_PASSWORD)
+                                                                      .build();
+
         final CredentialsProvider dummyCredentialsProvider = mock(CredentialsProvider.class);
 
         this.dummyAuthenticationManager =

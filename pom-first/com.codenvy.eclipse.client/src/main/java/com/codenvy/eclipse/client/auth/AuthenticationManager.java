@@ -112,7 +112,12 @@ public class AuthenticationManager {
             token = response.readEntity(Token.class);
 
             if (dataStore != null) {
-                dataStore.put(credentials.username, new Credentials(credentials.password, token));
+                final Credentials credentialsToStore = new Credentials.Builder().withPassword(credentials.password)
+                                                                                .withToken(token)
+                                                                                .storeOnlyToken(credentials.storeOnlyToken)
+                                                                                .build();
+
+                dataStore.put(credentials.username, credentialsToStore);
             }
         }
 
