@@ -57,14 +57,14 @@ public class AuthenticationManagerIT extends AbstractIT {
     @Test
     public void testAuthorizeWithNullDataStoreNullCredentialsAndCredentialsProvider() {
         final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
-        when(credentialsProvider.load(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
+        when(credentialsProvider.getCredentials(DUMMY_USERNAME)).thenReturn(new Credentials(DUMMY_USERNAME, DUMMY_PASSWORD));
 
         final AuthenticationManager authenticationManager =
                                                             new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, null,
                                                                                       credentialsProvider, null);
         authenticationManager.authorize();
 
-        verify(credentialsProvider, times(1)).load(DUMMY_USERNAME);
+        verify(credentialsProvider, times(1)).getCredentials(DUMMY_USERNAME);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class AuthenticationManagerIT extends AbstractIT {
 
         Assert.assertNotNull(token);
         Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
-        verify(credentialsProvider, times(0)).load(DUMMY_USERNAME);
+        verify(credentialsProvider, times(0)).getCredentials(DUMMY_USERNAME);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class AuthenticationManagerIT extends AbstractIT {
 
         Assert.assertNotNull(token);
         Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
-        verify(credentialsProvider, times(0)).load(DUMMY_USERNAME);
+        verify(credentialsProvider, times(0)).getCredentials(DUMMY_USERNAME);
         verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(new Credentials(DUMMY_PASSWORD, new Token(SDK_TOKEN_VALUE))));
     }
 

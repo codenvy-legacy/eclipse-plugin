@@ -23,10 +23,10 @@ package com.codenvy.eclipse.client.auth;
  */
 public interface CredentialsProvider {
     /**
-     * Loads the {@link Credentials} for user authentication.
+     * Returns the {@link Credentials} for user authentication.
      * 
      * @param username the user name to load credentials for.
      * @return the loaded credentials or {@code null} if none.
      */
-    Credentials load(String username);
+    Credentials getCredentials(String username);
 }
