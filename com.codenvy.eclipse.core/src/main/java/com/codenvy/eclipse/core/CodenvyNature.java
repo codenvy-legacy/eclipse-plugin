@@ -81,7 +81,7 @@ public class CodenvyNature implements IProjectNature {
     public void configure() throws CoreException {
         EclipseProjectHelper.checkCodenvyProjectLayout(codenvyProject);
 
-        final IFile codenvyDesciptorFile = codenvyProject.getFolder(".codenvy").getFile("project");
+        final IFile codenvyDesciptorFile = codenvyProject.getFolder(".codenvy").getFile("project.json");
         if (codenvyDesciptorFile.exists()) {
             final Job job = new Job("Configure project") {
                 @Override

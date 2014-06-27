@@ -226,7 +226,7 @@ public final class EclipseProjectHelper {
      */
     public static void checkCodenvyProjectLayout(IProject project) {
         final IFolder codenvyFolder = project.getFolder(".codenvy");
-        final IFile codenvyProjectFile = codenvyFolder.getFile("project");
+        final IFile codenvyProjectFile = codenvyFolder.getFile("project.json");
         final IFile codenvyTeamFile = codenvyFolder.getFile("team");
 
         try {
