@@ -161,6 +161,7 @@ public class Codenvy {
          * @return {@link Builder} instance.
          */
         public Builder withCredentialsProvider(CredentialsProvider credentialsProvider) {
+            this.credentialsProvider = credentialsProvider;
             return this;
         }
 

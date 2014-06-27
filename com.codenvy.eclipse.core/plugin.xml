@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="com.codenvy.eclipse.core.credentialsProvider" name="CredentialsProvider" schema="schema/com.codenvy.eclipse.core.credentialsProvider.exsd"/>
    <extension
          id="com.codenvy.eclipse.core.codenvyNature"
          name="Codenvy Nature"

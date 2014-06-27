@@ -148,7 +148,7 @@ public class AuthenticationManager {
      * 
      * @param username the user name.
      * @return the {@link Token}.
-     * @throws AuthenticationException if there is a problem during the token negociation.
+     * @throws AuthenticationException if there is a problem during the token negotiation.
      */
     public Token refreshToken() throws AuthenticationException {
         return authorize(dataStore == null ? null : dataStore.get(username));

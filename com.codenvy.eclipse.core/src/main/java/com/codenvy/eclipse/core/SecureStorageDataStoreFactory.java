@@ -34,18 +34,15 @@ import com.codenvy.eclipse.client.store.DataStoreFactory;
 public enum SecureStorageDataStoreFactory implements DataStoreFactory<String, Credentials> {
     INSTANCE;
 
-    public static final String       CODENVY_NODE_NAME = "Codenvy";
-
-    private final ISecurePreferences codenvyNode;
-
-    private SecureStorageDataStoreFactory() {
-        final ISecurePreferences root = SecurePreferencesFactory.getDefault();
-        this.codenvyNode = root.node(CODENVY_NODE_NAME);
-    }
+    public static final String CODENVY_NODE_NAME = "Codenvy";
 
     @Override
     public DataStore<String, Credentials> getDataStore(String id) {
         checkNotNull(id);
+
+        final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+        final ISecurePreferences codenvyNode = root.node(CODENVY_NODE_NAME);
+
         return new SecureStorageDataStore(codenvyNode.node(encodeSlashes(id)));
     }
 }

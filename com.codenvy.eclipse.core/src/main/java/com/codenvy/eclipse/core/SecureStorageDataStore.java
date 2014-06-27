@@ -63,7 +63,8 @@ public class SecureStorageDataStore implements DataStore<String, Credentials> {
             final String password = node.get(CODENVY_PASSWORD_KEY_NAME, null);
             final String token = node.get(CODENVY_TOKEN_KEY_NAME, null);
 
-            return new Credentials.Builder().withPassword(password)
+            return new Credentials.Builder().withUsername(username)
+                                            .withPassword(password)
                                             .withToken(new Token(token))
                                             .build();
 

@@ -251,8 +251,10 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 final String platformURL = wizard.getAuthenticationWizardPage().getURL();
                                 final String username = wizard.getAuthenticationWizardPage().getUsername();
                                 final String password = wizard.getAuthenticationWizardPage().getPassword();
+                                final boolean isStoreUserCredentials = wizard.getAuthenticationWizardPage().isStoreUserCredentials();
                                 final Credentials credentials = new Credentials.Builder().withUsername(username)
                                                                                          .withPassword(password)
+                                                                                         .storeOnlyToken(!isStoreUserCredentials)
                                                                                          .build();
 
                                 final Codenvy codenvy = CodenvyPlugin.getDefault()
@@ -313,8 +315,10 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
                                 final String platformURL = wizard.getAuthenticationWizardPage().getURL();
                                 final String username = wizard.getAuthenticationWizardPage().getUsername();
                                 final String password = wizard.getAuthenticationWizardPage().getPassword();
+                                final boolean isStoreUserCredentials = wizard.getAuthenticationWizardPage().isStoreUserCredentials();
                                 final Credentials credentials = new Credentials.Builder().withUsername(username)
                                                                                          .withPassword(password)
+                                                                                         .storeOnlyToken(!isStoreUserCredentials)
                                                                                          .build();
 
 

@@ -145,11 +145,13 @@ public class SecureStorageDataStoreTest {
     @Test
     public void testPutOnExitingNode() throws StorageException {
         final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
-        final Credentials fooCredentials = new Credentials.Builder().withPassword(FOO_PASSWORD)
+        final Credentials fooCredentials = new Credentials.Builder().withUsername(FOO_USERNAME)
+                                                                    .withPassword(FOO_PASSWORD)
                                                                     .withToken(new Token(FOO_TOKEN))
                                                                     .build();
 
-        final Credentials barCredentials = new Credentials.Builder().withPassword(BAR_PASSWORD)
+        final Credentials barCredentials = new Credentials.Builder().withUsername(BAR_USERNAME)
+                                                                    .withPassword(BAR_PASSWORD)
                                                                     .withToken(new Token(BAR_TOKEN))
                                                                     .build();
 
@@ -178,7 +180,8 @@ public class SecureStorageDataStoreTest {
     public void testDelete() {
         final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
         final Credentials storedCredentials = dataStore.delete(BAR_USERNAME);
-        final Credentials credentials = new Credentials.Builder().withPassword(BAR_PASSWORD)
+        final Credentials credentials = new Credentials.Builder().withUsername(BAR_USERNAME)
+                                                                 .withPassword(BAR_PASSWORD)
                                                                  .withToken(new Token(BAR_TOKEN))
                                                                  .build();
 

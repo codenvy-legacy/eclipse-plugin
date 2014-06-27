@@ -28,7 +28,7 @@ import com.codenvy.eclipse.core.team.CodenvyMetaResource;
  */
 public class CodenvyAdapterFactory implements IAdapterFactory {
     @Override
-    public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
+    public synchronized Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
         if (CodenvyMetaResource.class == adapterType && adaptableObject instanceof IResource) {
             return new CodenvyMetaResource((IResource)adaptableObject);
         }

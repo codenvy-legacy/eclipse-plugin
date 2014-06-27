@@ -177,6 +177,15 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         return password.getText();
     }
 
+    /**
+     * Returns if the user password must be stored for later use.
+     * 
+     * @return {@code true} if the user password must be stored for later use, {@code false} otherwise.
+     */
+    public boolean isStoreUserCredentials() {
+        return storeUserCredentials.getSelection();
+    }
+
     private void autoFillUsernames() {
         if (!isNullOrEmpty(urls.getText())) {
             final String currentUsername = usernames.getText();

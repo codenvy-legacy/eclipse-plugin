@@ -16,10 +16,15 @@
  */
 package com.codenvy.eclipse.core;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
 import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.client.auth.CredentialsProvider;
 
 /**
  * The activator class controls the plug-in life cycle.
@@ -28,12 +33,15 @@ import com.codenvy.eclipse.client.Codenvy;
  */
 public class CodenvyPlugin extends Plugin {
     // the plug-in ID
-    public static final String   PLUGIN_ID      = "com.codenvy.eclipse.core"; //$NON-NLS-1$
+    public static final String   PLUGIN_ID                         = "com.codenvy.eclipse.core";        //$NON-NLS-1$
+    public static final String   CREDENTIALS_PROVIDER_EXTENSION_ID = PLUGIN_ID + ".credentialsProvider"; //$NON-NLS-1$
+    private CredentialsProvider  credentialsProvider;
+
 
     /**
      * Constant identifying the job family identifier for Codenvy jobs.
      */
-    public static final Object   FAMILY_CODENVY = new Object();
+    public static final Object   FAMILY_CODENVY                    = new Object();
 
     // the shared instance
     private static CodenvyPlugin plugin;
@@ -41,6 +49,19 @@ public class CodenvyPlugin extends Plugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+
+        final IExtensionRegistry registry = Platform.getExtensionRegistry();
+        final IConfigurationElement[] configurationElements = registry.getConfigurationElementsFor(CREDENTIALS_PROVIDER_EXTENSION_ID);
+
+        for (IConfigurationElement oneConfigurationElement : configurationElements) {
+            try {
+
+                credentialsProvider = (CredentialsProvider)oneConfigurationElement.createExecutableExtension("class");
+
+            } catch (CoreException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void stop(BundleContext context) throws Exception {
@@ -65,6 +86,7 @@ public class CodenvyPlugin extends Plugin {
      * @return an instance of the Codenvy API builder.
      */
     public Codenvy.Builder getCodenvyBuilder(String url, String username) {
-        return new Codenvy.Builder(url, username).withCredentialsStoreFactory(SecureStorageDataStoreFactory.INSTANCE);
+        return new Codenvy.Builder(url, username).withCredentialsStoreFactory(SecureStorageDataStoreFactory.INSTANCE)
+                                                 .withCredentialsProvider(credentialsProvider);
     }
 }

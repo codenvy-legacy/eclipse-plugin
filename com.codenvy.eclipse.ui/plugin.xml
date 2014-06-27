@@ -310,4 +310,10 @@
             processType="com.codenvy.eclipse.core.launcher.CodenvyBuilderProcess">
       </consoleLineTracker>
    </extension>
+   <extension
+         point="com.codenvy.eclipse.core.credentialsProvider">
+      <CredentialsProvider
+            class="com.codenvy.eclipse.ui.CredentialsProviderWithPrompt">
+      </CredentialsProvider>
+   </extension>
 </plugin>

@@ -16,13 +16,13 @@
  */
 package com.codenvy.eclipse.core.team;
 
-import static org.eclipse.core.resources.IResource.PROJECT;
 import static org.eclipse.core.resources.IResource.ROOT;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.eclipse.client.Codenvy;
+import com.codenvy.eclipse.client.auth.AuthenticationException;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 
@@ -56,11 +56,16 @@ public class CodenvyMetaResource {
                                                          .getCodenvyBuilder(metaProject.url, metaProject.username)
                                                          .build();
 
-                    this.tracked =
-                                   resource.getType() == PROJECT ? true : codenvy.project()
-                                                                                 .isResource(codenvyProject,
-                                                                                             resource.getProjectRelativePath().toString())
-                                                                                 .execute();
+                    try {
+
+                        final String resourcePath = resource.getProjectRelativePath().toString();
+                        this.tracked = codenvy.project()
+                                              .isResource(codenvyProject, resourcePath)
+                                              .execute();
+
+                    } catch (AuthenticationException e) {
+                        this.tracked = false;
+                    }
                 }
             }
         }
