@@ -118,7 +118,7 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
         try {
 
-            workbench.getProgressService().run(true, false, new IRunnableWithProgress() {
+            workbench.getProgressService().run(true, true, new IRunnableWithProgress() {
                 @Override
                 public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask("Importing projects", projects.size());
