@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -63,7 +64,14 @@ import com.google.common.io.ByteStreams;
  * @author Stéphane Daviet
  */
 public final class EclipseProjectHelper {
-    private static final String CODENVY_PROJECT_LAYOUT_MARKER_ID = "com.codenvy.eclipse.core.codenvyProjectLayoutMarker";
+    private static final String       CODENVY_PROJECT_LAYOUT_MARKER_ID = "com.codenvy.eclipse.core.codenvyProjectLayoutMarker";
+
+    private static final List<String> excludedResources                = Arrays.asList(new String[]{".project",
+                                                                       ".classpath",
+                                                                       ".settings",
+                                                                       "target",
+                                                                       "bin",
+                                                                       ".git"});
 
     /**
      * Creates an {@link IProject} in the current Eclipse workspace.
@@ -185,6 +193,10 @@ public final class EclipseProjectHelper {
 
                     for (int i = 0; i < files.size(); i++) {
                         final IResource resource = files.get(i);
+                        if (excludedResources.contains(resource.getName())) {
+                            continue;
+                        }
+
                         final ZipEntry entry =
                                                new ZipEntry(resource.getProjectRelativePath().toString()
                                                             + (resource instanceof IContainer ? '/' : ""));
