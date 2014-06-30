@@ -18,14 +18,18 @@ package com.codenvy.eclipse.ui.wizard.importer;
 
 import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.createIProjectFromZipStream;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardContainer;
@@ -33,6 +37,7 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
@@ -40,7 +45,6 @@ import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
 
-import com.codenvy.eclipse.client.Codenvy;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -114,40 +118,44 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
         try {
 
-            workbench.getProgressService()
-                     .run(true, true, new IRunnableWithProgress() {
-                         @Override
-                         public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                             monitor.beginTask("Importing projects", projects.size());
+            getContainer().run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask("Importing projects", projects.size());
 
-                             final Codenvy codenvy = CodenvyPlugin.getDefault()
-                                                                  .getCodenvyBuilder(platformURL, username)
-                                                                  .build();
+                    final List<IProject> importedProjects = new ArrayList<>();
+                    for (final Project oneProject : projects) {
+                        final IPath workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+                        final IPath newProjectLocation = workspaceLocation != null ? workspaceLocation.append(oneProject.name) : null;
 
-                             final List<IProject> importedProjects = new ArrayList<>();
-                             for (Project oneProject : projects) {
-                                 final ZipInputStream zipInputStream = codenvy.project()
-                                                                              .exportResources(oneProject, null)
-                                                                              .execute();
+                        if (newProjectLocation != null && newProjectLocation.toFile().exists()) {
+                            Display.getDefault().syncExec(new Runnable() {
+                                @Override
+                                public void run() {
+                                    final String message = "Project with name '" + oneProject.name + "' exists in workspace, override?";
+                                    final boolean override = MessageDialog.openQuestion(getShell(), "Override existing project", message);
+                                    if (override) {
+                                        deleteDirectory(newProjectLocation.toFile());
+                                    }
+                                }
+                            });
+                        }
 
-                                 final IProject newProject = createIProjectFromZipStream(zipInputStream,
-                                                                                         new CodenvyMetaProject(
-                                                                                                                platformURL,
-                                                                                                                username,
-                                                                                                                oneProject.name,
-                                                                                                                oneProject.workspaceId),
-                                                                                         monitor);
-                                 importedProjects.add(newProject);
-                                 monitor.worked(1);
-                             }
+                        if (newProjectLocation == null || !newProjectLocation.toFile().exists()) {
+                            final IProject importedProject = importProject(platformURL, username, oneProject, monitor);
+                            importedProjects.add(importedProject);
+                        }
 
-                             final IWorkingSetManager workingSetManager = workbench.getWorkingSetManager();
-                             for (IAdaptable importedProject : importedProjects) {
-                                 workingSetManager.addToWorkingSets(importedProject,
-                                                                    workingSets.toArray(new IWorkingSet[workingSets.size()]));
-                             }
-                         }
-                     });
+                        monitor.worked(1);
+                    }
+
+                    final IWorkingSetManager workingSetManager = workbench.getWorkingSetManager();
+                    for (IAdaptable importedProject : importedProjects) {
+                        workingSetManager.addToWorkingSets(importedProject,
+                                                           workingSets.toArray(new IWorkingSet[workingSets.size()]));
+                    }
+                }
+            });
 
         } catch (InvocationTargetException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -162,5 +170,45 @@ public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWiz
 
     public ProjectWizardPage getProjectWizardPage() {
         return projectWizardPage;
+    }
+
+    /**
+     * Imports the given Codenvy project into Eclipse.
+     * 
+     * @param platformURL the Codenvy platform URL.
+     * @param username the user name.
+     * @param project the Codenvy {@link Project} to import.
+     * @param monitor the {@link IProgressMonitor}.
+     * @return the imported {@link IProject} reference.
+     */
+    private IProject importProject(String platformURL, String username, Project project, IProgressMonitor monitor) {
+        final ZipInputStream zipInputStream = CodenvyPlugin.getDefault()
+                                                           .getCodenvyBuilder(platformURL, username)
+                                                           .build()
+                                                           .project()
+                                                           .exportResources(project, null)
+                                                           .execute();
+
+        return createIProjectFromZipStream(zipInputStream,
+                                           new CodenvyMetaProject(platformURL, username, project.name, project.workspaceId), monitor);
+    }
+
+    /**
+     * Deletes the given directory and it's sub folders and files.
+     * 
+     * @param directory the directory to delete.
+     */
+    private void deleteDirectory(File directory) {
+        if (directory.isDirectory()) {
+            for (File oneFile : directory.listFiles()) {
+                if (oneFile.isDirectory()) {
+                    deleteDirectory(oneFile);
+                }
+                else {
+                    oneFile.delete();
+                }
+            }
+            directory.delete();
+        }
     }
 }
