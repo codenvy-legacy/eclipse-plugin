@@ -55,6 +55,7 @@ import com.codenvy.eclipse.ui.wizard.exporter.pages.ExportCodenvyProjectsPage;
 import com.codenvy.eclipse.ui.wizard.exporter.pages.WorkspaceWizardPage;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.ObjectArrays;
 
 /**
  * Export project to Codenvy wizard.
@@ -154,7 +155,13 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                              }).orNull();
 
                                      if (remoteProject == null) {
-                                         remoteProject = new Project.Builder().withProjectTypeId("unknown")
+                                         String codenvyProjectType = null;
+                                         for (String natureId : project.getDescription().getNatureIds()) {
+                                             codenvyProjectType = CodenvyNature.NATURE_MAPPINGS.inverse().get(project.getNature(natureId));
+                                         }
+                                         remoteProject =
+                                                         new Project.Builder().withProjectTypeId(codenvyProjectType != null
+                                                             ? codenvyProjectType : "unknown")
                                                                               .withName(project.getName())
                                                                               .withWorkspaceId(workspaceRef.id)
                                                                               .withWorkspaceName(workspaceRef.name)
@@ -169,7 +176,6 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                      codenvy.project()
                                             .importArchive(workspaceRef, remoteProject, archiveInputStream)
                                             .execute();
-
 
                                      IFolder codenvyFolder = project.getFolder(new Path(".codenvy"));
                                      if (!codenvyFolder.exists()) {
@@ -187,7 +193,8 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                      RepositoryProvider.map(project, CodenvyProvider.PROVIDER_ID);
 
                                      final IProjectDescription newProjectDescription = project.getDescription();
-                                     newProjectDescription.setNatureIds(new String[]{CodenvyNature.NATURE_ID});
+                                     newProjectDescription.setNatureIds(ObjectArrays.concat(newProjectDescription.getNatureIds(),
+                                                                                            CodenvyNature.NATURE_ID));
                                      project.setDescription(newProjectDescription, new NullProgressMonitor());
                                  } catch (CoreException e) {
                                      throw new RuntimeException(e);
@@ -196,8 +203,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                  monitor.worked(1);
                              }
                          }
-                     }
-                     );
+                     });
         } catch (InvocationTargetException | InterruptedException e) {
             throw new RuntimeException(e);
         }

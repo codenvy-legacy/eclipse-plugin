@@ -1,7 +1,7 @@
 /*
  * CODENVY CONFIDENTIAL
  * ________________
- * 
+ *
  * [2012] - [2014] Codenvy, S.A.
  * All Rights Reserved.
  * NOTICE: All information contained herein is, and remains
@@ -17,7 +17,6 @@
 package com.codenvy.eclipse.core;
 
 import static com.codenvy.eclipse.core.CodenvyPlugin.FAMILY_CODENVY;
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 
 import java.io.IOException;
@@ -47,34 +46,38 @@ import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ObjectArrays;
 
 /**
  * The Codenvy project nature.
- * 
+ *
  * @author Kevin Pollet
+ * @author Stéphane Daviet
  */
 public class CodenvyNature implements IProjectNature {
-    public static final String        NATURE_ID            = "com.codenvy.eclipse.core.codenvyNature";
+    public static final String                    NATURE_ID            = "com.codenvy.eclipse.core.codenvyNature";
 
-    private static final String       MAVEN_NATURE_ID      = "org.eclipse.m2e.core.maven2Nature";
-    private static final String       JAVASCRIPT_NATURE_ID = "org.eclipse.wst.jsdt.core.jsNature";
+    private static final String                   MAVEN_NATURE_ID      = "org.eclipse.m2e.core.maven2Nature";
+    private static final String                   JAVASCRIPT_NATURE_ID = "org.eclipse.wst.jsdt.core.jsNature";
 
-    private static final String       BUILDER_NAME_KEY     = "builder.name";
+    private static final String                   BUILDER_NAME_KEY     = "builder.name";
 
-    private static final String       MAVEN_BUILDER_NAME   = "maven";
+    private static final String                   MAVEN_BUILDER_NAME   = "maven";
 
-    private IProject                  codenvyProject;
-    private Map<String, List<String>> natureMappings;
-    private Map<String, List<String>> builderMappings;
+    private IProject                              codenvyProject;
+
+    public static final HashBiMap<String, String> NATURE_MAPPINGS      = HashBiMap.create();
+    public static final HashBiMap<String, String> BUILDER_MAPPINGS     = HashBiMap.create();
+
+    static {
+        NATURE_MAPPINGS.put("maven", JavaCore.NATURE_ID);
+        NATURE_MAPPINGS.put("angularjs", JAVASCRIPT_NATURE_ID);
+
+        BUILDER_MAPPINGS.put("maven", JavaCore.BUILDER_ID);
+    }
 
     public CodenvyNature() {
-        natureMappings = new HashMap<>();
-        natureMappings.put("maven", newArrayList(JavaCore.NATURE_ID));
-        natureMappings.put("angularjs", newArrayList(JAVASCRIPT_NATURE_ID));
-
-        builderMappings = new HashMap<>();
-        builderMappings.put("maven", newArrayList(JavaCore.BUILDER_ID));
     }
 
     @Override
@@ -95,26 +98,22 @@ public class CodenvyNature implements IProjectNature {
                         final ObjectMapper mapper = new ObjectMapper();
                         descriptor = mapper.readValue(codenvyDesciptorFile.getContents(), CodenvyProjectDescriptor.class);
 
-                        final List<String> naturesToAdd = natureMappings.get(descriptor.type.name().toLowerCase());
-                        if (naturesToAdd != null) {
+                        final String oneNature = NATURE_MAPPINGS.get(descriptor.type.name().toLowerCase());
+                        if (oneNature != null) {
                             final List<String> natures = new ArrayList<>(asList(codenvyProjectDescription.getNatureIds()));
-                            for (String oneNature : naturesToAdd) {
-                                if (isNatureWithId(oneNature)) {
-                                    natures.add(oneNature);
-                                }
+                            if (isNatureWithId(oneNature)) {
+                                natures.add(oneNature);
                             }
 
                             codenvyProjectDescription.setNatureIds(natures.toArray(new String[0]));
                         }
 
-                        final List<String> buildersToAdd = builderMappings.get(descriptor.type.name().toLowerCase());
-                        if (buildersToAdd != null) {
+                        final String oneBuilder = BUILDER_MAPPINGS.get(descriptor.type.name().toLowerCase());
+                        if (oneBuilder != null) {
                             final List<ICommand> builders = new ArrayList<>();
-                            for (String oneBuilder : buildersToAdd) {
-                                final ICommand command = codenvyProjectDescription.newCommand();
-                                command.setBuilderName(oneBuilder);
-                                builders.add(command);
-                            }
+                            final ICommand command = codenvyProjectDescription.newCommand();
+                            command.setBuilderName(oneBuilder);
+                            builders.add(command);
 
                             codenvyProjectDescription.setBuildSpec(builders.toArray(new ICommand[0]));
                         }
@@ -169,7 +168,7 @@ public class CodenvyNature implements IProjectNature {
 
     /**
      * Checks if the given nature exists in the workspace.
-     * 
+     *
      * @param natureId the id of the nature.
      * @return {@code true} if the given nature exists, {@code false} otherwise.
      */
@@ -180,7 +179,7 @@ public class CodenvyNature implements IProjectNature {
 
     /**
      * The Codenvy project descriptor.
-     * 
+     *
      * @author Kevin Pollet
      */
     public static class CodenvyProjectDescriptor {
