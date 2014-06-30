@@ -83,6 +83,10 @@ public class SecureStorageDataStore implements DataStore<String, Credentials> {
             final Credentials previousCredentials = get(username);
             final ISecurePreferences node = urlNode.node(username);
 
+            // a put replace all values
+            node.remove(CODENVY_PASSWORD_KEY_NAME);
+            node.remove(CODENVY_TOKEN_KEY_NAME);
+
             if (!credentials.storeOnlyToken) {
                 node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
             }

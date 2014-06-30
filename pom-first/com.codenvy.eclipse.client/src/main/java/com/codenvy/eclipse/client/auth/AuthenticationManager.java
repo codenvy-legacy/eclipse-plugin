@@ -112,12 +112,7 @@ public class AuthenticationManager {
             token = response.readEntity(Token.class);
 
             if (dataStore != null) {
-                final Credentials credentialsToStore = new Credentials.Builder().withPassword(credentials.password)
-                                                                                .withToken(token)
-                                                                                .storeOnlyToken(credentials.storeOnlyToken)
-                                                                                .build();
-
-                dataStore.put(credentials.username, credentialsToStore);
+                storeCredentials(credentials, token);
             }
         }
 
@@ -139,8 +134,12 @@ public class AuthenticationManager {
             return null;
         }
 
-        final Credentials credentials = dataStore.get(username);
-        return credentials == null ? null : credentials.token;
+        final Credentials storedCredentials = dataStore.get(username);
+        if (credentials != null && storedCredentials != null) {
+            storeCredentials(credentials, storedCredentials.token);
+        }
+
+        return storedCredentials == null ? null : storedCredentials.token;
     }
 
     /**
@@ -152,5 +151,22 @@ public class AuthenticationManager {
      */
     public Token refreshToken() throws AuthenticationException {
         return authorize(dataStore == null ? null : dataStore.get(username));
+    }
+
+
+    /**
+     * Stores the given {@link Credentials} in the {@link DataStore}.
+     * 
+     * @param credentials the {@link Credentials} to store.
+     * @param token the negotiated or retrieved {@link Token} to store.
+     */
+    private void storeCredentials(Credentials credentials, Token token) {
+        final Credentials credentialsToStore = new Credentials.Builder().withUsername(credentials.username)
+                                                                        .withPassword(credentials.password)
+                                                                        .withToken(token)
+                                                                        .storeOnlyToken(credentials.storeOnlyToken)
+                                                                        .build();
+
+        dataStore.put(username, credentialsToStore);
     }
 }

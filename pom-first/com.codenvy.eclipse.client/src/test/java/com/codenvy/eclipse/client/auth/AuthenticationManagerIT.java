@@ -16,6 +16,8 @@
  */
 package com.codenvy.eclipse.client.auth;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -42,7 +44,8 @@ public class AuthenticationManagerIT extends AbstractIT {
                                                     .withPassword(DUMMY_PASSWORD)
                                                     .build();
 
-        this.credentialsWithToken = new Credentials.Builder().withPassword(DUMMY_PASSWORD)
+        this.credentialsWithToken = new Credentials.Builder().withUsername(DUMMY_USERNAME)
+                                                             .withPassword(DUMMY_PASSWORD)
                                                              .withToken(new Token(SDK_TOKEN_VALUE))
                                                              .build();
     }
@@ -129,11 +132,12 @@ public class AuthenticationManagerIT extends AbstractIT {
 
         Assert.assertNull(token);
         verify(credentialsStore, times(1)).get(DUMMY_USERNAME);
+        verify(credentialsStore, times(0)).put(anyString(), any(Credentials.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGetTokenWithExistingUsername() {
+    public void testGetTokenWithExistingUsernameAndNullCredentials() {
         final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
         when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(credentialsWithToken);
 
@@ -144,5 +148,23 @@ public class AuthenticationManagerIT extends AbstractIT {
 
         Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
         verify(credentialsStore, times(1)).get(DUMMY_USERNAME);
+        verify(credentialsStore, times(0)).put(anyString(), any(Credentials.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGetTokenWithExistingUsernameAndCredentials() {
+        final DataStore<String, Credentials> credentialsStore = mock(DataStore.class);
+        when(credentialsStore.get(DUMMY_USERNAME)).thenReturn(credentialsWithToken);
+
+        final AuthenticationManager authenticationManager =
+                                                            new AuthenticationManager(REST_API_URL, DUMMY_USERNAME, credentialsWithToken,
+                                                                                      null,
+                                                                                      credentialsStore);
+        final Token token = authenticationManager.getToken();
+
+        Assert.assertEquals(new Token(SDK_TOKEN_VALUE), token);
+        verify(credentialsStore, times(1)).get(DUMMY_USERNAME);
+        verify(credentialsStore, times(1)).put(eq(DUMMY_USERNAME), eq(credentialsWithToken));
     }
 }

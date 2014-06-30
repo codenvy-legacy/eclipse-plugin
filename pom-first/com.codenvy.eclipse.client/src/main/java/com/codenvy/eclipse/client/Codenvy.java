@@ -16,6 +16,7 @@
  */
 package com.codenvy.eclipse.client;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
@@ -137,8 +138,11 @@ public class Codenvy {
          * 
          * @param credentials the provided {@link Credentials}.
          * @return {@link Builder} instance.
+         * @throws IllegalArgumentException if provided {@link Credentials} doesn't match the given username.
          */
         public Builder withCredentials(Credentials credentials) {
+            checkArgument(username.equals(credentials.username));
+
             this.credentials = credentials;
             return this;
         }
