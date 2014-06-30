@@ -22,8 +22,13 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardContainer;
@@ -31,6 +36,7 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -38,7 +44,11 @@ import org.eclipse.ui.PlatformUI;
 import com.codenvy.eclipse.client.Codenvy;
 import com.codenvy.eclipse.client.model.Project;
 import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
+import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
+import com.codenvy.eclipse.core.team.CodenvyMetaProject;
+import com.codenvy.eclipse.core.team.CodenvyProvider;
+import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
 import com.codenvy.eclipse.ui.wizard.common.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.exporter.pages.ExportCodenvyProjectsPage;
@@ -134,30 +144,54 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                                                   .execute();
 
                              for (final IProject project : projects) {
-                                 Project remoteProject =
-                                                         Iterables.tryFind(remoteWorkspaceProjects, new Predicate<Project>() {
-                                                             @Override
-                                                             public boolean apply(Project input) {
-                                                                 return input.name.equals(project.getName());
-                                                             }
-                                                         }).orNull();
+                                 try {
+                                     Project remoteProject =
+                                                             Iterables.tryFind(remoteWorkspaceProjects, new Predicate<Project>() {
+                                                                 @Override
+                                                                 public boolean apply(Project input) {
+                                                                     return input.name.equals(project.getName());
+                                                                 }
+                                                             }).orNull();
 
-                                 if (remoteProject == null) {
-                                     remoteProject = new Project.Builder().withProjectTypeId("unknown")
-                                                                          .withName(project.getName())
-                                                                          .withWorkspaceId(workspaceRef.id)
-                                                                          .withWorkspaceName(workspaceRef.name)
-                                                                          .build();
+                                     if (remoteProject == null) {
+                                         remoteProject = new Project.Builder().withProjectTypeId("unknown")
+                                                                              .withName(project.getName())
+                                                                              .withWorkspaceId(workspaceRef.id)
+                                                                              .withWorkspaceName(workspaceRef.name)
+                                                                              .build();
 
-                                     remoteProject = codenvy.project()
-                                                            .create(remoteProject)
-                                                            .execute();
+                                         remoteProject = codenvy.project()
+                                                                .create(remoteProject)
+                                                                .execute();
+                                     }
+
+                                     final InputStream archiveInputStream = exportIProjectToZipStream(project, monitor);
+                                     codenvy.project()
+                                            .importArchive(workspaceRef, remoteProject, archiveInputStream)
+                                            .execute();
+
+
+                                     IFolder codenvyFolder = project.getFolder(new Path(".codenvy"));
+                                     if (!codenvyFolder.exists()) {
+                                         codenvyFolder.create(true, true, monitor);
+                                     }
+                                     EclipseProjectHelper.createOrUpdateResourcesFromZip(codenvy.project()
+                                                                                                .exportResources(remoteProject,
+                                                                                                                 ".codenvy")
+                                                                                                .execute(),
+                                                                                         codenvyFolder,
+                                                                                         monitor);
+
+                                     CodenvyMetaProject.create(project, new CodenvyMetaProject(platformURL, username, project.getName(),
+                                                                                               workspaceRef.id));
+                                     RepositoryProvider.map(project, CodenvyProvider.PROVIDER_ID);
+
+                                     final IProjectDescription newProjectDescription = project.getDescription();
+                                     newProjectDescription.setNatureIds(new String[]{CodenvyNature.NATURE_ID});
+                                     project.setDescription(newProjectDescription, new NullProgressMonitor());
+                                 } catch (CoreException e) {
+                                     throw new RuntimeException(e);
                                  }
-
-                                 final InputStream archiveInputStream = exportIProjectToZipStream(project, monitor);
-                                 codenvy.project()
-                                        .importArchive(workspaceRef, remoteProject, archiveInputStream)
-                                        .execute();
 
                                  monitor.worked(1);
                              }

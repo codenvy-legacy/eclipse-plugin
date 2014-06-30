@@ -380,7 +380,14 @@ public final class EclipseProjectHelper {
         }
     }
 
-    private static void createOrUpdateResourcesFromZip(ZipInputStream stream, IContainer container, IProgressMonitor monitor) {
+    /**
+     * Create or update an {@link IContainer} content with the provided {@link ZipInputStream}.
+     * 
+     * @param stream the {@link ZipInputStream} containing the resource to create or update.
+     * @param container the {@link IContainer} where the resources will be unzipped.
+     * @param monitor the {@link IProgressMonitor} to follow work progression.
+     */
+    public static void createOrUpdateResourcesFromZip(ZipInputStream stream, IContainer container, IProgressMonitor monitor) {
         final SubMonitor subMonitor = SubMonitor.convert(monitor);
         subMonitor.setTaskName("Create resources");
 

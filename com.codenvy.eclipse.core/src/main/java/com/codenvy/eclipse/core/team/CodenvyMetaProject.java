@@ -1,7 +1,7 @@
 /*
  * CODENVY CONFIDENTIAL
  * ________________
- * 
+ *
  * [2012] - [2014] Codenvy, S.A.
  * All Rights Reserved.
  * NOTICE: All information contained herein is, and remains
@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
@@ -34,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The Codenvy project meta data.
- * 
+ *
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
@@ -51,7 +52,12 @@ public class CodenvyMetaProject {
         try {
 
             final byte[] providerMetaDataBytes = mapper.writeValueAsBytes(providerMetaData);
-            providerMetaDataFile.create(new ByteArrayInputStream(providerMetaDataBytes), true, new NullProgressMonitor());
+            if (!providerMetaDataFile.exists()) {
+                providerMetaDataFile.create(new ByteArrayInputStream(providerMetaDataBytes), true, new NullProgressMonitor());
+            } else {
+                providerMetaDataFile.setContents(new ByteArrayInputStream(providerMetaDataBytes), IResource.FORCE,
+                                                 new NullProgressMonitor());
+            }
 
         } catch (JsonProcessingException | CoreException e) {
             throw new RuntimeException(e);
