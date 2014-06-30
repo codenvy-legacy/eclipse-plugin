@@ -174,7 +174,7 @@
             adaptable="true"
             class="com.codenvy.eclipse.ui.team.CodenvyLightweightLabelDecorator"
             id="com.codenvy.eclipse.ui.team.decorator"
-            label="Codenvy Provider"
+            label="Codenvy"
             lightweight="true"
             location="BOTTOM_RIGHT"
             state="true">
