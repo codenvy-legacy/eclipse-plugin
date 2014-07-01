@@ -26,8 +26,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -40,6 +40,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.codenvy.eclipse.client.auth.AuthenticationException;
+import com.codenvy.eclipse.client.auth.Credentials;
+import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;
 import com.codenvy.eclipse.ui.utils.SecureStorageHelper;
@@ -77,11 +80,8 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
     @Override
     public void createControl(Composite parent) {
-        final GridLayout gridLayout = new GridLayout();
-        gridLayout.numColumns = 2;
-
         final Composite wizardContainer = new Composite(parent, SWT.NONE);
-        wizardContainer.setLayout(gridLayout);
+        wizardContainer.setLayout(new GridLayout(2, false));
 
         final Label hostLabel = new Label(wizardContainer, SWT.NONE);
         hostLabel.setText("URL:");
@@ -138,14 +138,32 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         final IWizardPage targetPage = (IWizardPage)event.getTargetPage();
 
         if (isCurrentPage() && wizard.getProjectWizardPage().getName().equals(targetPage.getName())) {
-            // We add the new location to preferences
-            final IPreferenceStore codenvyPreferenceStore = CodenvyUIPlugin.getDefault().getPreferenceStore();
-            final String[] locations =
-                                       CodenvyPreferencesInitializer.parseString(codenvyPreferenceStore.getString(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME));
+            // check that Codenvy authentication is OK
+            try {
 
-            if (!asList(locations).contains(urls.getText())) {
-                codenvyPreferenceStore.setValue(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME,
-                                                CodenvyPreferencesInitializer.createList(ObjectArrays.concat(urls.getText(), locations)));
+                CodenvyPlugin.getDefault()
+                             .getCodenvyBuilder(getURL(), getUsername())
+                             .withCredentials(new Credentials.Builder().withUsername(getUsername()).withPassword(getPassword()).build())
+                             .build()
+                             .user()
+                             .current()
+                             .execute();
+
+                // add the new location to preferences
+                final IPreferenceStore codenvyPreferenceStore = CodenvyUIPlugin.getDefault().getPreferenceStore();
+                final String[] locations =
+                                           CodenvyPreferencesInitializer.parseString(codenvyPreferenceStore.getString(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME));
+
+                if (!asList(locations).contains(urls.getText())) {
+                    codenvyPreferenceStore.setValue(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME,
+                                                    CodenvyPreferencesInitializer.createList(ObjectArrays.concat(urls.getText(), locations)));
+                }
+
+                setErrorMessage(null);
+
+            } catch (AuthenticationException e) {
+                setErrorMessage("Codenvy authentication failed: verify URL, Username and Password.");
+                event.doit = false;
             }
         }
     }
@@ -218,7 +236,12 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         return isUrlsBlank || isUsernameBlank || isPasswordBlank;
     }
 
-    private class PageCompleteListener implements KeyListener, SelectionListener {
+    private class PageCompleteListener extends KeyAdapter implements SelectionListener {
+        @Override
+        public void widgetDefaultSelected(SelectionEvent e) {
+            setPageComplete(!isBlankFields());
+        }
+
         @Override
         public void widgetSelected(SelectionEvent e) {
             setPageComplete(!isBlankFields());
@@ -227,14 +250,6 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
         @Override
         public void keyReleased(KeyEvent e) {
             setPageComplete(!isBlankFields());
-        }
-
-        @Override
-        public void widgetDefaultSelected(SelectionEvent e) {
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
         }
     }
 
