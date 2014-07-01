@@ -36,10 +36,5 @@
 			<artifactId>com.codenvy.eclipse.client</artifactId>
 			<version>${version.com.codenvy.eclipse.client}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.codenvy.eclipse</groupId>
-			<artifactId>com.codenvy.eclipse.lib</artifactId>
-			<version>${version.com.codenvy.eclipse.lib}</version>
-		</dependency>
 	</dependencies>
 </project>

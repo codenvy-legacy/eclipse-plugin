@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 import com.codenvy.eclipse.client.store.DataStore;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Authentication manager used to authenticate an user with the Codenvy platform.
@@ -72,7 +73,9 @@ public class AuthenticationManager {
                                        .path("login")
                                        .build();
 
-        this.webTarget = ClientBuilder.newClient().target(loginURI);
+        this.webTarget = ClientBuilder.newClient()
+                                      .target(loginURI)
+                                      .register(JacksonJsonProvider.class);
     }
 
     /**

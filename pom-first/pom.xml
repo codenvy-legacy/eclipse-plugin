@@ -34,7 +34,6 @@
 	<name>Codenvy Eclipse Plugin Pom First :: Parent</name>
 
 	<modules>
-		<module>com.codenvy.eclipse.lib</module>
 		<module>com.codenvy.eclipse.client</module>
 	</modules>
 
@@ -45,7 +44,7 @@
 		<version.guava>15.0</version.guava>
 		<version.jackson>2.3.2</version.jackson>
 		<version.javax.ws.rs-api>2.0</version.javax.ws.rs-api>
-		<version.jersey-client>2.7</version.jersey-client>
+		<version.jersey-client>2.8</version.jersey-client>
 		<version.junit>4.11</version.junit>
 		<version.maven-antrun-plugin>1.6</version.maven-antrun-plugin>
 		<version.maven-bundle-plugin>2.4.0</version.maven-bundle-plugin>
@@ -98,17 +97,5 @@
 		        </plugin>
 			</plugins>
 		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
 	</build>
 </project>

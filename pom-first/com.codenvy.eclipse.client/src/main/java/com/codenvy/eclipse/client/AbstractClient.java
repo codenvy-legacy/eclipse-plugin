@@ -24,6 +24,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
 import com.codenvy.eclipse.client.auth.TokenInjectorFilter;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Abstract client class.
@@ -59,7 +60,8 @@ public abstract class AbstractClient {
 
         this.webTarget = ClientBuilder.newClient()
                                       .target(uriBuilder)
-                                      .register(new TokenInjectorFilter());
+                                      .register(JacksonJsonProvider.class)
+                                      .register(TokenInjectorFilter.class);
     }
 
     /**

@@ -37,9 +37,9 @@
 			<version>${version.com.codenvy.eclipse.client}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.codenvy.eclipse</groupId>
-			<artifactId>com.codenvy.eclipse.lib</artifactId>
-			<version>${version.com.codenvy.eclipse.lib}</version>
+			<groupId>com.eclipsesource.jaxrs</groupId>
+			<artifactId>jersey-all</artifactId>
+			<version>${version.jersey-all}</version>
 		</dependency>
 	</dependencies>
 </project>

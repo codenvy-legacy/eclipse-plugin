@@ -103,7 +103,11 @@ public class SimpleRequest<T> implements Request<T> {
         Response response = request.invoke();
 
         if (Status.Family.CLIENT_ERROR == response.getStatusInfo().getFamily()) {
-            authenticationManager.refreshToken();
+            token = authenticationManager.refreshToken();
+
+            // set the token property for token injection
+            request.property(TOKEN_PROPERTY_NAME, token);
+
             response = request.invoke();
         }
 
