@@ -18,6 +18,8 @@ package com.codenvy.eclipse.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.codenvy.eclipse.client.auth.AuthenticationException;
+
 /**
  * {@link Request} implementation adapting an API request response to another type.
  * 
@@ -45,7 +47,7 @@ public class RequestResponseAdaptor<T, S> implements Request<T> {
     }
 
     @Override
-    public T execute() throws CodenvyException {
+    public T execute() throws CodenvyException, AuthenticationException {
         return adaptor.adapt(adaptee.execute());
     }
 

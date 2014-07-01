@@ -22,8 +22,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
-import com.codenvy.eclipse.client.auth.AuthenticationFilter;
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
+import com.codenvy.eclipse.client.auth.TokenInjectorFilter;
 
 /**
  * Abstract client class.
@@ -59,7 +59,7 @@ public abstract class AbstractClient {
 
         this.webTarget = ClientBuilder.newClient()
                                       .target(uriBuilder)
-                                      .register(new AuthenticationFilter(authenticationManager));
+                                      .register(new TokenInjectorFilter());
     }
 
     /**

@@ -16,6 +16,7 @@
  */
 package com.codenvy.eclipse.client;
 
+import static com.codenvy.eclipse.client.auth.TokenInjectorFilter.TOKEN_PROPERTY_NAME;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.ws.rs.client.Invocation;
@@ -23,7 +24,9 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.codenvy.eclipse.client.auth.AuthenticationException;
 import com.codenvy.eclipse.client.auth.AuthenticationManager;
+import com.codenvy.eclipse.client.auth.Token;
 
 /**
  * {@link Request} implementation reading the body of the {@link Response}.
@@ -48,6 +51,7 @@ public class SimpleRequest<T> implements Request<T> {
      */
     SimpleRequest(Invocation request, Class<T> entityType, AuthenticationManager authenticationManager) {
         this(request, entityType, null, authenticationManager);
+        checkNotNull(entityType);
     }
 
     /**
@@ -60,6 +64,7 @@ public class SimpleRequest<T> implements Request<T> {
      */
     SimpleRequest(Invocation request, GenericType<T> genericEntityType, AuthenticationManager authenticationManager) {
         this(request, null, genericEntityType, authenticationManager);
+        checkNotNull(genericEntityType);
     }
 
     /**
@@ -69,15 +74,14 @@ public class SimpleRequest<T> implements Request<T> {
      * @param entityType the request response entity {@linkplain java.lang.reflect.Type Type}.
      * @param genericEntityType the request response entity {@link GenericType}.
      * @param authenticationManager the {@link AuthenticationManager} instance.
-     * @throws NullPointerException if request, entityType, genericEntityType, authenticationManager parameter is {@code null}.
+     * @throws NullPointerException if request or authenticationManager parameter is {@code null}.
      */
     private SimpleRequest(Invocation request,
-                             Class<T> entityType,
-                             GenericType<T> genericEntityType,
-                             AuthenticationManager authenticationManager) {
+                          Class<T> entityType,
+                          GenericType<T> genericEntityType,
+                          AuthenticationManager authenticationManager) {
 
         checkNotNull(request);
-        checkNotNull(entityType != null || genericEntityType != null);
         checkNotNull(authenticationManager);
 
         this.request = request;
@@ -87,14 +91,18 @@ public class SimpleRequest<T> implements Request<T> {
     }
 
     @Override
-    public T execute() throws CodenvyException {
+    public T execute() throws CodenvyException, AuthenticationException {
+        Token token = authenticationManager.getToken();
+        if (token == null) {
+            token = authenticationManager.authorize();
+        }
+
+        // set the token property for token injection
+        request.property(TOKEN_PROPERTY_NAME, token);
+
         Response response = request.invoke();
-        final Status responseStatus = Status.fromStatusCode(response.getStatus());
 
-        if (responseStatus == Status.UNAUTHORIZED
-            || responseStatus == Status.FORBIDDEN
-            || responseStatus == Status.PAYMENT_REQUIRED) {
-
+        if (Status.Family.CLIENT_ERROR == response.getStatusInfo().getFamily()) {
             authenticationManager.refreshToken();
             response = request.invoke();
         }

@@ -16,6 +16,9 @@
  */
 package com.codenvy.eclipse.client;
 
+import com.codenvy.eclipse.client.auth.AuthenticationException;
+
+
 
 /**
  * The API request contract returned by the Codenvy client API.
@@ -30,5 +33,5 @@ public interface Request<T> {
      * @return the API request result.
      * @throws CodenvyException if something goes wrong with the API call.
      */
-    T execute() throws CodenvyException;
+    T execute() throws CodenvyException, AuthenticationException;
 }
