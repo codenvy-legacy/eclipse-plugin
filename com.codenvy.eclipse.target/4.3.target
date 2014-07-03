@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  CODENVY CONFIDENTIAL
+  ________________
+  
+  [2012] - [2014] Codenvy, S.A.
+  All Rights Reserved.
+  NOTICE: All information contained herein is, and remains
+  the property of Codenvy S.A. and its suppliers,
+  if any. The intellectual and technical concepts contained
+  herein are proprietary to Codenvy S.A.
+  and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law.
+  Dissemination of this information or reproduction of this material
+  is strictly forbidden unless prior written permission is obtained
+  from Codenvy S.A..
+-->
+<?pde version="3.8"?>
+<target name="4.3" sequenceNumber="51">
+	<locations>
+		<location path="${system_property:user.home}/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.3.2/" type="Directory"/>
+		<location path="${system_property:user.home}/.m2/repository/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.3.2" type="Directory"/>
+		<location path="${system_property:user.home}/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.3.2/" type="Directory"/>
+		<location path="${system_property:user.home}/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.3.2/" type="Directory"/>
+		<location path="${system_property:user.home}/.m2/repository/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.3.2" type="Directory"/>
+		<location path="${system_property:user.home}/.m2/repository/com/eclipsesource/jaxrs/jersey-all/2.8/" type="Directory"/>
+		<location path="${system_property:user.home}/.m2/repository/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.3.2" type="Directory"/>
+	
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<repository location="http://download.eclipse.org/technology/swtbot/releases/2.2.1/"/>
+			<unit id="org.eclipse.swtbot.eclipse.test.junit.feature.group" version="2.2.1.201402241301"/>
+			<unit id="org.eclipse.swtbot.eclipse.source.feature.group" version="2.2.1.201402241301"/>
+			<unit id="org.eclipse.swtbot.eclipse.feature.group" version="2.2.1.201402241301"/>
+		</location>
+		
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<repository location="http://download.eclipse.org/eclipse/updates/4.3/"/>
+			<unit id="org.eclipse.sdk.ide" version="4.3.2.M20140221-1700"/>
+		</location>
+		
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
+			<unit id="com.google.guava" version="15.0.0.v201403281430"/>
+			<unit id="javax.annotation" version="1.2.0.v201401042248"/>
+			<unit id="org.mockito.source" version="1.9.5.v201311280930"/>
+			<unit id="com.google.guava.source" version="15.0.0.v201403281430"/>
+			<unit id="javax.annotation.source" version="1.2.0.v201401042248"/>
+			<unit id="org.mockito" version="1.9.5.v201311280930"/>
+			<unit id="ch.qos.logback.slf4j.source" version="1.0.7.v20121108-1250"/>
+			<unit id="ch.qos.logback.slf4j" version="1.0.7.v20121108-1250"/>
+		</location>
+		
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<repository location="http://download.eclipse.org/releases/kepler"/>
+			<unit id="org.eclipse.m2e.logback.feature.feature.group" version="1.4.0.20130601-0317"/>
+			<unit id="org.eclipse.m2e.feature.feature.group" version="1.4.0.20130601-0317"/>
+		</location>
+	</locations>
+</target>
