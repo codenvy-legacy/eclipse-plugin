@@ -76,7 +76,7 @@
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
-            locationURI="popup:team.main?before=group1">
+            locationURI="popup:team.main?after=group1">
          <command
                commandId="com.codenvy.eclipse.ui.team.push"
                icon="images/Push.png"
@@ -125,6 +125,18 @@
             </visibleWhen>
          </command>
       </menuContribution>
+      <!-- see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=175693 -->
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <menu
+               id="team.main"
+               label="Team">
+            <separator
+                  name="group1"
+                  visible="true"/>
+         </menu>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.core.expressions.definitions">
@@ -144,9 +156,8 @@
                      </test>
                   </adapt>
                   <test
-                        args="org.eclipse.team.core.repository"
-                        property="org.eclipse.core.resources.projectPersistentProperty"
-                        value="com.codenvy.eclipse.core.team.codenvyprovider">
+                        args="org.eclipse.team.core.repository, com.codenvy.eclipse.core.team.codenvyProvider"
+                        property="org.eclipse.core.resources.projectPersistentProperty">
                   </test>
                </and>
             </adapt>
@@ -160,9 +171,8 @@
             <adapt
                   type="org.eclipse.core.resources.IResource">
                <test
-                     args="org.eclipse.team.core.repository"
-                     property="org.eclipse.core.resources.projectPersistentProperty"
-                     value="com.codenvy.eclipse.core.team.codenvyprovider">
+                     args="org.eclipse.team.core.repository, com.codenvy.eclipse.core.team.codenvyProvider"
+                     property="org.eclipse.core.resources.projectPersistentProperty">
                </test>
             </adapt>
          </iterate>
