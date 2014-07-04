@@ -33,22 +33,37 @@
 	<name>Codenvy Eclipse Plugin :: Parent</name>
 
 	<modules>
+		<module>com.codenvy.eclipse.target</module>
 		<module>com.codenvy.eclipse.core</module>
 		<module>com.codenvy.eclipse.ui</module>
 		<module>com.codenvy.eclipse.feature</module>
 		<module>com.codenvy.eclipse.update</module>
 		<module>com.codenvy.eclipse.core.test</module>
 		<module>com.codenvy.eclipse.ui.test</module>
-		<module>com.codenvy.eclipse.target</module>
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.build-helper-maven-plugin>1.9</version.build-helper-maven-plugin>
 		<version.com.codenvy.eclipse.client>1.0.0-SNAPSHOT</version.com.codenvy.eclipse.client>
 		<version.jackson>2.3.2</version.jackson>
 		<version.jersey-all>2.8</version.jersey-all>
+		<version.target-platform>4.4</version.target-platform>
 		<version.tycho>0.20.0</version.tycho>
 	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.codenvy.eclipse</groupId>
+			<artifactId>com.codenvy.eclipse.client</artifactId>
+			<version>${version.com.codenvy.eclipse.client}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.eclipsesource.jaxrs</groupId>
+			<artifactId>jersey-all</artifactId>
+			<version>${version.jersey-all}</version>
+		</dependency>
+	</dependencies>
 
 	<repositories>
 		<repository>
@@ -56,26 +71,16 @@
 			<name>codenvy public</name>
 			<url>https://maven.codenvycorp.com/content/groups/public/</url>
 		</repository>
-		<repository>
-			<id>kepler</id>
-			<url>http://download.eclipse.org/releases/kepler</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
-			<id>orbit</id>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
-			<id>swtbot</id>
-			<url>http://download.eclipse.org/technology/swtbot/releases/latest</url>
-			<layout>p2</layout>
-		</repository>
 	</repositories>
 
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>${version.build-helper-maven-plugin}</version>
+				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-compiler-plugin</artifactId>
@@ -109,15 +114,16 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<configuration>
 					<pomDependencies>consider</pomDependencies>
-					<dependency-resolution>
-						<extraRequirements>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>org.eclipse.ui.ide</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-						</extraRequirements>
-					</dependency-resolution>
+					<resolver>p2</resolver>
+					<target>
+						<artifact>
+							<groupId>com.codenvy.eclipse</groupId>
+							<artifactId>com.codenvy.eclipse.target</artifactId>
+							<version>${project.version}</version>
+							<type>target</type>
+							<classifier>${version.target-platform}</classifier>
+						</artifact>
+					</target>
 					<environments>
 						<environment>
 							<os>macosx</os>

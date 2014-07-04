@@ -101,9 +101,9 @@ public class SWTBotBaseTest {
     }
 
     public void deleteProject(String projectName) {
-        final SWTBotView projectExplorerView = bot.viewByTitle("Project Explorer");
-        projectExplorerView.show();
-        projectExplorerView.bot().tree().select(projectName);
+        final SWTBotView packageExplorerView = bot.viewByTitle("Package Explorer");
+        packageExplorerView.show();
+        packageExplorerView.bot().tree().select(projectName);
 
         bot.menu("Edit").menu("Delete").click();
 

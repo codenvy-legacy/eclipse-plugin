@@ -30,19 +30,6 @@
 	<packaging>eclipse-test-plugin</packaging>
 	<name>Codenvy Eclipse Plugin :: UI Test</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.codenvy.eclipse</groupId>
-			<artifactId>com.codenvy.eclipse.client</artifactId>
-			<version>${version.com.codenvy.eclipse.client}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.eclipsesource.jaxrs</groupId>
-			<artifactId>jersey-all</artifactId>
-			<version>${version.jersey-all}</version>
-		</dependency>
-	</dependencies>
-
 	<build>
 		<resources>
 			<resource>
@@ -56,14 +43,13 @@
 				<configuration>
 					<useUIHarness>true</useUIHarness>
 					<useUIThread>false</useUIThread>
-					<showEclipseLog>true</showEclipseLog>
-					<product>org.eclipse.platform.ide</product>
+					<product>org.eclipse.sdk.ide</product>
 					<systemProperties>
 						<org.eclipse.swtbot.screenshots.dir>${project.build.directory}/screenshots</org.eclipse.swtbot.screenshots.dir>
 					</systemProperties>
 					<dependencies>
 						<dependency>
-							<artifactId>org.eclipse.platform.ide</artifactId>
+							<artifactId>org.eclipse.sdk.ide</artifactId>
 							<type>p2-installable-unit</type>
 						</dependency>
 						<dependency>

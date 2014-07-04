@@ -29,17 +29,4 @@
 	<artifactId>com.codenvy.eclipse.feature</artifactId>
 	<packaging>eclipse-feature</packaging>
 	<name>Codenvy Eclipse Plugin :: Feature</name>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.codenvy.eclipse</groupId>
-			<artifactId>com.codenvy.eclipse.client</artifactId>
-			<version>${version.com.codenvy.eclipse.client}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.eclipsesource.jaxrs</groupId>
-			<artifactId>jersey-all</artifactId>
-			<version>${version.jersey-all}</version>
-		</dependency>
-	</dependencies>
 </project>

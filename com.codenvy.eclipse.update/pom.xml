@@ -29,17 +29,4 @@
 	<artifactId>com.codenvy.eclipse.update</artifactId>
 	<packaging>eclipse-repository</packaging>
 	<name>Codenvy Eclipse Plugin :: Update</name>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.codenvy.eclipse</groupId>
-			<artifactId>com.codenvy.eclipse.client</artifactId>
-			<version>${version.com.codenvy.eclipse.client}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.eclipsesource.jaxrs</groupId>
-			<artifactId>jersey-all</artifactId>
-			<version>${version.jersey-all}</version>
-		</dependency>
-	</dependencies>
 </project>

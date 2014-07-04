@@ -59,11 +59,11 @@ public class ImportWizardTest extends SWTBotBaseTest {
     }
 
     @Test
-    public void testThatImportedProjectIsAvailableInProjectExplorerView() throws CoreException {
+    public void testThatImportedProjectIsAvailableInPackageExplorerView() throws CoreException {
         importCodenvyProject(MOCK_WORKSPACE_NAME, MOCK_PROJECT_NAME);
 
-        final SWTBotView projectExplorerView = bot.viewByTitle("Project Explorer");
-        projectExplorerView.show();
-        projectExplorerView.bot().tree().getTreeItem(MOCK_PROJECT_NAME);
+        final SWTBotView packageExplorerView = bot.viewByTitle("Package Explorer");
+        packageExplorerView.show();
+        packageExplorerView.bot().tree().getTreeItem(MOCK_PROJECT_NAME);
     }
 }
