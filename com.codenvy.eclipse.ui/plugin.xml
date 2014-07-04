@@ -58,7 +58,7 @@
             class="com.codenvy.eclipse.ui.wizard.exporter.ExportProjectToCodenvyWizard"
             icon="images/Export.gif"
             id="com.codenvy.eclipse.ui.wizard.export"
-            name="Codenvy project">
+            name="Project to Codenvy">
       </wizard>
    </extension>
    <extension

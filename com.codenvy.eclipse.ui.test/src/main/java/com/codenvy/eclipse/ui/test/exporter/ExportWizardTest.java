@@ -1,7 +1,7 @@
 /*
  * CODENVY CONFIDENTIAL
  * ________________
- * 
+ *
  * [2012] - [2014] Codenvy, S.A.
  * All Rights Reserved.
  * NOTICE: All information contained herein is, and remains
@@ -24,7 +24,7 @@ import com.codenvy.eclipse.ui.test.SWTBotBaseTest;
 
 /**
  * Export wizard tests.
- * 
+ *
  * @author Kevin Pollet
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
@@ -34,6 +34,6 @@ public class ExportWizardTest extends SWTBotBaseTest {
         bot.menu("File").menu("Export...").click();
 
         bot.shell("Export").activate();
-        bot.tree().expandNode("Codenvy").select("Codenvy project");
+        bot.tree().expandNode("Codenvy").select("Project to Codenvy");
     }
 }
