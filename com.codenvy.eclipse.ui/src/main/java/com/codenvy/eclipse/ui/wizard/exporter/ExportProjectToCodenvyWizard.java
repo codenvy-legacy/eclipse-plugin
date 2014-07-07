@@ -15,7 +15,9 @@ import static com.google.common.base.Predicates.notNull;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -62,12 +64,11 @@ import com.google.common.collect.ObjectArrays;
  * @author Stéphane Daviet
  */
 public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizard, CredentialsProviderWizard {
-    private final ExportCodenvyProjectsPage exportToCodenvyProjectsSelectionPage;
-    private final AuthenticationWizardPage  authenticationWizardPage;
-    private final WorkspaceWizardPage       workspaceWizardPage;
+    private ExportCodenvyProjectsPage      exportToCodenvyProjectsSelectionPage;
+    private final AuthenticationWizardPage authenticationWizardPage;
+    private final WorkspaceWizardPage      workspaceWizardPage;
 
     public ExportProjectToCodenvyWizard() {
-        this.exportToCodenvyProjectsSelectionPage = new ExportCodenvyProjectsPage();
         this.authenticationWizardPage = new AuthenticationWizardPage();
         this.workspaceWizardPage = new WorkspaceWizardPage();
 
@@ -78,19 +79,19 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
         @SuppressWarnings("unchecked")
-        final List<IProject> selectedProjects = FluentIterable.from((List<Object>)selection.toList())
-                                                              .transform(new Function<Object, IProject>() {
-                                                                  @Override
-                                                                  public IProject apply(Object input) {
-                                                                      return (IProject)(input instanceof IAdaptable
-                                                                          ? ((IAdaptable)input).getAdapter(IProject.class) : null);
-                                                                  }
+        final Set<IProject> selectedProjects = FluentIterable.from((List<Object>)selection.toList())
+                                                             .transform(new Function<Object, IProject>() {
+                                                                 @Override
+                                                                 public IProject apply(Object input) {
+                                                                     return (IProject)(input instanceof IAdaptable
+                                                                         ? ((IAdaptable)input).getAdapter(IProject.class) : null);
+                                                                 }
 
-                                                              })
-                                                              .filter(notNull())
-                                                              .toList();
+                                                             })
+                                                             .filter(notNull())
+                                                             .copyInto(new HashSet<IProject>());
 
-        exportToCodenvyProjectsSelectionPage.setSelectedProjects(selectedProjects);
+        this.exportToCodenvyProjectsSelectionPage = new ExportCodenvyProjectsPage(selectedProjects);
     }
 
     @Override
@@ -132,7 +133,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
         final String platformURL = getUrl();
         final String username = getUsername();
         final IWorkbench workbench = PlatformUI.getWorkbench();
-        final List<IProject> projects = exportToCodenvyProjectsSelectionPage.getSelectedProjects();
+        final Set<IProject> projects = exportToCodenvyProjectsSelectionPage.getSelectedProjects();
         final WorkspaceRef workspaceRef = workspaceWizardPage.getSelectedWorkspace();
 
         try {

@@ -10,12 +10,12 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.wizard.exporter.pages;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.jface.viewers.CheckboxTableViewer.newCheckList;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -42,15 +42,17 @@ import com.codenvy.eclipse.ui.Images;
  */
 public class ExportCodenvyProjectsPage extends WizardPage {
     private CheckboxTableViewer projectsTableViewer;
-    private List<IProject>      selectedProjects;
+    private Set<IProject>       selectedProjects;
 
-    public ExportCodenvyProjectsPage() {
+    public ExportCodenvyProjectsPage(Set<IProject> selectedProjects) {
         super(ExportCodenvyProjectsPage.class.getSimpleName());
+
+        this.selectedProjects = checkNotNull(selectedProjects);
 
         setTitle("Select workspaces project");
         setDescription("Select local projects that you want to push to a remote Codenvy repository.");
         setImageDescriptor(CodenvyUIPlugin.getDefault().getImageRegistry().getDescriptor(Images.WIZARD_LOGO));
-        setPageComplete(false);
+        setPageComplete(selectedProjects.size() > 0);
     }
 
     @Override
@@ -99,9 +101,8 @@ public class ExportCodenvyProjectsPage extends WizardPage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 projectsTableViewer.setAllChecked(true);
-                selectedProjects.clear();
                 selectedProjects.addAll((Collection< ? extends IProject>)Arrays.asList(projectsTableViewer.getCheckedElements()));
-                setPageComplete(projectsTableViewer.getCheckedElements().length > 0);
+                setPageComplete(true);
             }
         });
 
@@ -113,18 +114,14 @@ public class ExportCodenvyProjectsPage extends WizardPage {
             public void widgetSelected(SelectionEvent e) {
                 projectsTableViewer.setAllChecked(false);
                 selectedProjects.clear();
-                setPageComplete(projectsTableViewer.getCheckedElements().length > 0);
+                setPageComplete(false);
             }
         });
 
         setControl(wizardContainer);
     }
 
-    public void setSelectedProjects(List<IProject> selectedProjects) {
-        this.selectedProjects = new ArrayList<IProject>(selectedProjects);
-    }
-
-    public List<IProject> getSelectedProjects() {
+    public Set<IProject> getSelectedProjects() {
         return selectedProjects;
     }
 }
