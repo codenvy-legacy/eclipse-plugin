@@ -126,7 +126,7 @@ public class AuthenticationWizardPage extends WizardPage implements IPageChangin
 
     @Override
     public void handlePageChanging(final PageChangingEvent event) {
-        if (isCurrentPage()) {
+        if (isCurrentPage() && !event.getTargetPage().equals(getPreviousPage())) {
             // Check that Codenvy authentication is OK
             try {
 
