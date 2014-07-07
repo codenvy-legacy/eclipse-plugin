@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Label;
 
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
-import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
 
 /**
  * @author Stéphane Daviet
@@ -46,7 +45,7 @@ public class ExportCodenvyProjectsPage extends WizardPage {
     private List<IProject>      selectedProjects;
 
     public ExportCodenvyProjectsPage() {
-        super(ProjectWizardPage.class.getSimpleName());
+        super(ExportCodenvyProjectsPage.class.getSimpleName());
 
         setTitle("Select workspaces project");
         setDescription("Select local projects that you want to push to a remote Codenvy repository.");

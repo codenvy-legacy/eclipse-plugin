@@ -34,7 +34,6 @@ import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
 import com.codenvy.eclipse.ui.wizard.common.jobs.LoadWorkspacesJob;
-import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
 
 /**
  * @author Stéphane Daviet
@@ -43,7 +42,7 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangedListe
     private ListViewer workspaceListViewer;
 
     public WorkspaceWizardPage() {
-        super(ProjectWizardPage.class.getSimpleName());
+        super(WorkspaceWizardPage.class.getSimpleName());
 
         setTitle("Codenvy Workspaces");
         setDescription("Select Codenvy workspace where project should be imported.");
