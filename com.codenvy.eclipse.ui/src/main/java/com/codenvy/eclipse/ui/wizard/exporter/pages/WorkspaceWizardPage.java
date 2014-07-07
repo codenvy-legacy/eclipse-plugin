@@ -19,9 +19,9 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -39,7 +39,7 @@ import com.codenvy.eclipse.ui.wizard.common.jobs.LoadWorkspacesJob;
  * @author Stéphane Daviet
  */
 public class WorkspaceWizardPage extends WizardPage implements IPageChangedListener {
-    private ListViewer workspaceListViewer;
+    private TableViewer workspaceTableViewer;
 
     public WorkspaceWizardPage() {
         super(WorkspaceWizardPage.class.getSimpleName());
@@ -60,20 +60,19 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangedListe
         workspaceTableLabel.setText("Remote Codenvy Workspaces:");
         workspaceTableLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-        workspaceListViewer = new ListViewer(wizardContainer, SWT.BORDER | SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
-        workspaceListViewer.setLabelProvider(new LabelProvider() {
+        workspaceTableViewer = new TableViewer(wizardContainer, SWT.BORDER | SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+        workspaceTableViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
                 return element instanceof WorkspaceRef ? ((WorkspaceRef)element).name : super.getText(element);
             }
         });
-        workspaceListViewer.setContentProvider(ArrayContentProvider.getInstance());
-        workspaceListViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-        workspaceListViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        workspaceTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        workspaceTableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        workspaceTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                setPageComplete(!workspaceListViewer.getSelection().isEmpty());
+                setPageComplete(!workspaceTableViewer.getSelection().isEmpty());
             }
         });
 
@@ -83,14 +82,14 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangedListe
     @Override
     public void pageChanged(PageChangedEvent event) {
         if (isCurrentPage()) {
-            workspaceListViewer.setInput(null);
+            workspaceTableViewer.setInput(null);
             loadWorkspaces();
-            setPageComplete(!workspaceListViewer.getSelection().isEmpty());
+            setPageComplete(!workspaceTableViewer.getSelection().isEmpty());
         }
     }
 
     public WorkspaceRef getSelectedWorkspace() {
-        return (WorkspaceRef)((IStructuredSelection)workspaceListViewer.getSelection()).getFirstElement();
+        return (WorkspaceRef)((IStructuredSelection)workspaceTableViewer.getSelection()).getFirstElement();
     }
 
     /**
@@ -102,11 +101,11 @@ public class WorkspaceWizardPage extends WizardPage implements IPageChangedListe
             getContainer().run(true, false, new LoadWorkspacesJob(getWizard()) {
                 @Override
                 public void postLoadCallback(List<WorkspaceRef> workspaceRefs) {
-                    workspaceListViewer.setInput(workspaceRefs.toArray());
+                    workspaceTableViewer.setInput(workspaceRefs.toArray());
                     if (!workspaceRefs.isEmpty()) {
-                        workspaceListViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
+                        workspaceTableViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
                     }
-                    workspaceListViewer.refresh();
+                    workspaceTableViewer.refresh();
                 }
             });
 
