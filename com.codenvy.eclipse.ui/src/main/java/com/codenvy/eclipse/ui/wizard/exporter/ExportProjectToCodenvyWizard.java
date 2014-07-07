@@ -11,6 +11,7 @@
 package com.codenvy.eclipse.ui.wizard.exporter;
 
 import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.exportIProjectToZipStream;
+import static com.google.common.base.Predicates.notNull;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -20,6 +21,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -47,7 +49,9 @@ import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
 import com.codenvy.eclipse.ui.wizard.common.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.exporter.pages.ExportCodenvyProjectsPage;
 import com.codenvy.eclipse.ui.wizard.exporter.pages.WorkspaceWizardPage;
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ObjectArrays;
 
@@ -61,7 +65,6 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
     private final ExportCodenvyProjectsPage exportToCodenvyProjectsSelectionPage;
     private final AuthenticationWizardPage  authenticationWizardPage;
     private final WorkspaceWizardPage       workspaceWizardPage;
-    private IStructuredSelection            selection;
 
     public ExportProjectToCodenvyWizard() {
         this.exportToCodenvyProjectsSelectionPage = new ExportCodenvyProjectsPage();
@@ -74,17 +77,27 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
 
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-        this.selection = selection;
+        @SuppressWarnings("unchecked")
+        final List<IProject> selectedProjects = FluentIterable.from((List<Object>)selection.toList())
+                                                              .transform(new Function<Object, IProject>() {
+                                                                  @Override
+                                                                  public IProject apply(Object input) {
+                                                                      return (IProject)(input instanceof IAdaptable
+                                                                          ? ((IAdaptable)input).getAdapter(IProject.class) : null);
+                                                                  }
+
+                                                              })
+                                                              .filter(notNull())
+                                                              .toList();
+
+        exportToCodenvyProjectsSelectionPage.setSelectedProjects(selectedProjects);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void addPages() {
         addPage(exportToCodenvyProjectsSelectionPage);
         addPage(authenticationWizardPage);
         addPage(workspaceWizardPage);
-
-        exportToCodenvyProjectsSelectionPage.setSelectedProjects(selection.toList());
     }
 
     @Override
@@ -100,7 +113,6 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
 
         if (wizardContainer != null) {
             final WizardDialog wizardDialog = (WizardDialog)wizardContainer;
-            wizardDialog.addPageChangedListener(exportToCodenvyProjectsSelectionPage);
             wizardDialog.addPageChangingListener(authenticationWizardPage);
             wizardDialog.addPageChangedListener(workspaceWizardPage);
         }

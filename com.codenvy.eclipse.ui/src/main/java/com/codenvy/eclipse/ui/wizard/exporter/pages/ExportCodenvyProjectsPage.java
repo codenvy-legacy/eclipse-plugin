@@ -19,8 +19,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.jface.dialogs.IPageChangedListener;
-import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -43,7 +41,7 @@ import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
 /**
  * @author Stéphane Daviet
  */
-public class ExportCodenvyProjectsPage extends WizardPage implements IPageChangedListener {
+public class ExportCodenvyProjectsPage extends WizardPage {
     private CheckboxTableViewer projectsTableViewer;
     private List<IProject>      selectedProjects;
 
@@ -83,9 +81,12 @@ public class ExportCodenvyProjectsPage extends WizardPage implements IPageChange
                 } else {
                     selectedProjects.remove(event.getElement());
                 }
-                setPageComplete(projectsTableViewer.getCheckedElements().length > 0);
+                setPageComplete(selectedProjects.size() > 0);
             }
         });
+
+        projectsTableViewer.setInput(ResourcesPlugin.getWorkspace().getRoot().getProjects());
+        projectsTableViewer.setCheckedElements(selectedProjects.toArray());
 
         final Composite projectTableButtonsContainer = new Composite(wizardContainer, SWT.NONE);
         projectTableButtonsContainer.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, true));
@@ -117,27 +118,7 @@ public class ExportCodenvyProjectsPage extends WizardPage implements IPageChange
             }
         });
 
-        initializeProjects();
-
         setControl(wizardContainer);
-    }
-
-    @Override
-    public void pageChanged(PageChangedEvent event) {
-        if (isCurrentPage()) {
-            projectsTableViewer.setInput(null);
-            initializeProjects();
-            setPageComplete(projectsTableViewer.getCheckedElements().length > 0);
-        }
-    }
-
-    private void initializeProjects() {
-        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-        projectsTableViewer.setInput(projects);
-        // Check any necessary projects
-        if (selectedProjects != null) {
-            projectsTableViewer.setCheckedElements(selectedProjects.toArray(new IProject[selectedProjects.size()]));
-        }
     }
 
     public void setSelectedProjects(List<IProject> selectedProjects) {
