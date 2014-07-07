@@ -41,12 +41,12 @@ import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 /**
  * @author Stéphane Daviet
  */
-public class ExportCodenvyProjectsPage extends WizardPage {
+public class ProjectWizardPage extends WizardPage {
     private CheckboxTableViewer projectsTableViewer;
     private Set<IProject>       selectedProjects;
 
-    public ExportCodenvyProjectsPage(Set<IProject> selectedProjects) {
-        super(ExportCodenvyProjectsPage.class.getSimpleName());
+    public ProjectWizardPage(Set<IProject> selectedProjects) {
+        super(ProjectWizardPage.class.getSimpleName());
 
         this.selectedProjects = checkNotNull(selectedProjects);
 

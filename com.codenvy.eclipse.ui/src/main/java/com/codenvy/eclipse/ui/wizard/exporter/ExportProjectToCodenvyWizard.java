@@ -49,7 +49,7 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
 import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
 import com.codenvy.eclipse.ui.wizard.common.pages.AuthenticationWizardPage;
-import com.codenvy.eclipse.ui.wizard.exporter.pages.ExportCodenvyProjectsPage;
+import com.codenvy.eclipse.ui.wizard.exporter.pages.ProjectWizardPage;
 import com.codenvy.eclipse.ui.wizard.exporter.pages.WorkspaceWizardPage;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -64,7 +64,7 @@ import com.google.common.collect.ObjectArrays;
  * @author Stéphane Daviet
  */
 public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizard, CredentialsProviderWizard {
-    private ExportCodenvyProjectsPage      exportToCodenvyProjectsSelectionPage;
+    private ProjectWizardPage      exportToCodenvyProjectsSelectionPage;
     private final AuthenticationWizardPage authenticationWizardPage;
     private final WorkspaceWizardPage      workspaceWizardPage;
 
@@ -91,7 +91,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                              .filter(notNull())
                                                              .copyInto(new HashSet<IProject>());
 
-        this.exportToCodenvyProjectsSelectionPage = new ExportCodenvyProjectsPage(selectedProjects);
+        this.exportToCodenvyProjectsSelectionPage = new ProjectWizardPage(selectedProjects);
     }
 
     @Override
