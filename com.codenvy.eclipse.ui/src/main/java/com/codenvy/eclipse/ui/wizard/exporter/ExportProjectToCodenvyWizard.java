@@ -207,17 +207,17 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
 
     @Override
     public String getUrl() {
-        return authenticationWizardPage != null ? authenticationWizardPage.getURL() : null;
+        return authenticationWizardPage.getURL();
     }
 
     @Override
     public String getUsername() {
-        return authenticationWizardPage != null ? authenticationWizardPage.getUsername() : null;
+        return authenticationWizardPage.getUsername();
     }
 
     @Override
     public String getPassword() {
-        return authenticationWizardPage != null ? authenticationWizardPage.getPassword() : null;
+        return authenticationWizardPage.getPassword();
     }
 
     @Override
