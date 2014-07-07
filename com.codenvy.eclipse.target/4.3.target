@@ -25,6 +25,7 @@
 		<location path="${M2_REPO}/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.3.2" type="Directory"/>
 		<location path="${M2_REPO}/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.3.2" type="Directory"/>
 		<location path="${M2_REPO}/com/eclipsesource/jaxrs/jersey-all/2.8/" type="Directory"/>
+		<location path="${M2_REPO}/com/codenvy/platform-api-client-java/codenvy-platform-api-client-java-core/1.0.0-SNAPSHOT" type="Directory"/>
 
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="http://download.eclipse.org/technology/swtbot/releases/2.2.1/"/>

@@ -64,7 +64,7 @@
 		<license_years>2014</license_years>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.build-helper-maven-plugin>1.9</version.build-helper-maven-plugin>
-		<version.com.codenvy.eclipse.client>1.0.0-SNAPSHOT</version.com.codenvy.eclipse.client>
+		<version.codenvy-platform-api-client-java>1.0.0-SNAPSHOT</version.codenvy-platform-api-client-java>
 		<version.jackson>2.3.2</version.jackson>
 		<version.jersey-all>2.8</version.jersey-all>
 		<version.tycho>0.20.0</version.tycho>
@@ -72,9 +72,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.codenvy.eclipse</groupId>
-			<artifactId>com.codenvy.eclipse.client</artifactId>
-			<version>${version.com.codenvy.eclipse.client}</version>
+			<groupId>com.codenvy.platform-api-client-java</groupId>
+			<artifactId>codenvy-platform-api-client-java</artifactId>
+			<version>${version.codenvy-platform-api-client-java}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.eclipsesource.jaxrs</groupId>
