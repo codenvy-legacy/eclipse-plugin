@@ -181,7 +181,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
 
                                      final InputStream archiveInputStream = exportIProjectToZipStream(project, monitor);
                                      codenvy.project()
-                                            .importArchive(workspaceRef, remoteProject, archiveInputStream)
+                                            .importArchive(workspaceRef.id, remoteProject, archiveInputStream)
                                             .execute();
 
                                      IFolder codenvyFolder = project.getFolder(new Path(".codenvy"));

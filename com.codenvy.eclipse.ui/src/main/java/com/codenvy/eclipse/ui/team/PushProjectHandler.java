@@ -10,23 +10,20 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.team;
 
-import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.updateCodenvyProjectResource;
+import static com.codenvy.eclipse.core.team.CodenvyProvider.PROVIDER_ID;
+import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.updateProjectOnCodenvy;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.PlatformUI;
 
-import com.codenvy.client.Codenvy;
-import com.codenvy.client.model.Project;
-import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 
@@ -35,14 +32,10 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
  * 
  * @author Kevin Pollet
  */
-public class PushHandler extends AbstractResourceHandler {
+public class PushProjectHandler extends AbstractProjectHandler {
     @Override
-    public Object execute(final List<IResource> resources, ExecutionEvent event) throws ExecutionException {
-        if (!resources.isEmpty()) {
-            final IProject project = resources.get(0).getProject();
-            final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(project);
-            final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
-
+    public Object execute(final Set<IProject> projects, ExecutionEvent event) throws ExecutionException {
+        if (!projects.isEmpty()) {
             try {
 
                 PlatformUI.getWorkbench()
@@ -50,21 +43,15 @@ public class PushHandler extends AbstractResourceHandler {
                           .run(true, false, new IRunnableWithProgress() {
                               @Override
                               public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-
-                                  monitor.beginTask("Update resources", resources.size());
+                                  monitor.beginTask("Push projects", projects.size());
 
                                   try {
 
-                                      final Codenvy codenvy = CodenvyPlugin.getDefault()
-                                                                           .getCodenvyBuilder(metaProject.url, metaProject.username)
-                                                                           .build();
+                                      for (IProject oneProject : projects) {
+                                          final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(oneProject, PROVIDER_ID);
+                                          final CodenvyMetaProject codenvyMetaProject = codenvyProvider.getMetaProject();
 
-                                      for (IResource oneResource : resources) {
-                                          final Project codenvyProject = new Project.Builder().withName(metaProject.projectName)
-                                                                                              .withWorkspaceId(metaProject.workspaceId)
-                                                                                              .build();
-
-                                          updateCodenvyProjectResource(codenvyProject, oneResource, codenvy, monitor);
+                                          updateProjectOnCodenvy(oneProject, codenvyMetaProject, monitor);
                                           monitor.worked(1);
                                       }
 
@@ -73,7 +60,6 @@ public class PushHandler extends AbstractResourceHandler {
                                   }
                               }
                           });
-
 
             } catch (InvocationTargetException | InterruptedException e) {
                 throw new RuntimeException(e);

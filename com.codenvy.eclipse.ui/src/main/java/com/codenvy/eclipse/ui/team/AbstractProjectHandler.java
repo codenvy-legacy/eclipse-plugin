@@ -10,37 +10,39 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.team;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.eclipse.ui.ide.ResourceUtil.getResource;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.ide.ResourceUtil;
 
 /**
- * Handler working with {@link IResource}.
+ * Handler working with {@link IProject}.
  * 
  * @author Kevin Pollet
  */
-public abstract class AbstractResourceHandler extends AbstractHandler {
+public abstract class AbstractProjectHandler extends AbstractHandler {
     @Override
     public final Object execute(ExecutionEvent event) throws ExecutionException {
-        final List<IResource> resources = new ArrayList<>();
-
+        final Set<IProject> projects = new HashSet<>();
         final ISelection selection = HandlerUtil.getCurrentSelection(event);
+
         if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
             final IStructuredSelection structuredSelection = (IStructuredSelection)selection;
 
             for (Object oneObject : structuredSelection.toArray()) {
-                final IResource oneResource = ResourceUtil.getResource(oneObject);
+                final IResource oneResource = getResource(oneObject);
                 if (oneResource != null) {
-                    resources.add(oneResource);
+                    projects.add(oneResource.getProject());
                 }
             }
         }
@@ -48,23 +50,23 @@ public abstract class AbstractResourceHandler extends AbstractHandler {
         // if resource are selected the active editor input is null
         final IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(event);
         if (activeEditorInput != null) {
-            final IResource editorResource = ResourceUtil.getResource(activeEditorInput);
+            final IResource editorResource = getResource(activeEditorInput);
 
             if (editorResource != null) {
-                resources.add(editorResource);
+                projects.add(editorResource.getProject());
             }
         }
 
-        return execute(resources, event);
+        return execute(projects, event);
     }
 
     /**
-     * Executes this handler on the selected resources.
+     * Executes this handler on the selected projects.
      * 
-     * @param resources the selected resources.
+     * @param projects the selected projects.
      * @param event the event containing all the information about the current state of the application; must not be null
      * @return the result of the execution. Reserved for future use, must be {@code null}.
      * @throws ExecutionException if an exception occurred during execution.
      */
-    public abstract Object execute(List<IResource> resources, ExecutionEvent event) throws ExecutionException;
+    public abstract Object execute(Set<IProject> projects, ExecutionEvent event) throws ExecutionException;
 }

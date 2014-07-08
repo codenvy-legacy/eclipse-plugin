@@ -10,23 +10,20 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.team;
 
-import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.updateIResource;
+import static com.codenvy.eclipse.core.team.CodenvyProvider.PROVIDER_ID;
+import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.updateProjectFromCodenvy;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.PlatformUI;
 
-import com.codenvy.client.Codenvy;
-import com.codenvy.client.model.Project;
-import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 
@@ -35,34 +32,26 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
  * 
  * @author Kevin Pollet
  */
-public class UpdateHandler extends AbstractResourceHandler {
+public class UpdateProjectHandler extends AbstractProjectHandler {
     @Override
-    public Object execute(final List<IResource> resources, ExecutionEvent event) throws ExecutionException {
-        if (!resources.isEmpty()) {
-            final IProject project = resources.get(0).getProject();
-            final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(project);
-            final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
-
+    public Object execute(final Set<IProject> projects, ExecutionEvent event) throws ExecutionException {
+        if (!projects.isEmpty()) {
             try {
 
                 PlatformUI.getWorkbench()
-                          .getProgressService().run(true, false, new IRunnableWithProgress() {
+                          .getProgressService()
+                          .run(true, false, new IRunnableWithProgress() {
                               @Override
                               public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                                  monitor.beginTask("Update resources", resources.size());
+                                  monitor.beginTask("Update projects", projects.size());
 
                                   try {
 
-                                      for (IResource oneResource : resources) {
-                                          final Project codenvyProject = new Project.Builder().withName(metaProject.projectName)
-                                                                                              .withWorkspaceId(metaProject.workspaceId)
-                                                                                              .build();
+                                      for (IProject oneProject : projects) {
+                                          final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(oneProject, PROVIDER_ID);
+                                          final CodenvyMetaProject codenvyMetaProject = codenvyProvider.getMetaProject();
 
-                                          final Codenvy codenvy = CodenvyPlugin.getDefault()
-                                                                               .getCodenvyBuilder(metaProject.url, metaProject.username)
-                                                                               .build();
-
-                                          updateIResource(codenvyProject, oneResource, codenvy, monitor);
+                                          updateProjectFromCodenvy(oneProject, codenvyMetaProject, monitor);
                                           monitor.worked(1);
                                       }
 
