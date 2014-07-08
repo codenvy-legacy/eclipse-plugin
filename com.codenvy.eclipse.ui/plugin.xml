@@ -77,7 +77,7 @@
                commandId="com.codenvy.eclipse.ui.team.push"
                icon="images/Push.png"
                id="com.codenvy.eclipse.ui.team.popup.push"
-               label="Push"
+               label="Push project"
                style="push">
             <visibleWhen
                   checkEnabled="false">
@@ -100,7 +100,7 @@
                commandId="com.codenvy.eclipse.ui.team.update"
                icon="images/Update.png"
                id="com.codenvy.eclipse.ui.team.popup.update"
-               label="Update"
+               label="Update project"
                style="push">
             <visibleWhen
                   checkEnabled="false">
