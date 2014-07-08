@@ -16,9 +16,9 @@ import static org.eclipse.equinox.security.storage.EncodingUtils.encodeSlashes;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 
-import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.store.DataStore;
-import com.codenvy.eclipse.client.store.DataStoreFactory;
+import com.codenvy.client.auth.Credentials;
+import com.codenvy.client.store.DataStore;
+import com.codenvy.client.store.DataStoreFactory;
 
 /**
  * The Eclipse secure storage data store factory.

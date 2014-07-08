@@ -18,9 +18,9 @@ import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.store.DataStore;
-import com.codenvy.eclipse.client.store.DataStoreFactory;
+import com.codenvy.client.auth.Credentials;
+import com.codenvy.client.store.DataStore;
+import com.codenvy.client.store.DataStoreFactory;
 
 /**
  * {@link SecureStorageDataStoreFactory} tests.

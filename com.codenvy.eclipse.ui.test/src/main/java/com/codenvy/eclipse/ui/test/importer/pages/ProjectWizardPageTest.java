@@ -10,10 +10,10 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.test.importer.pages;
 
-import static com.codenvy.eclipse.client.MockConstants.MOCK_PROJECT_DESCRIPTION;
-import static com.codenvy.eclipse.client.MockConstants.MOCK_PROJECT_NAME;
-import static com.codenvy.eclipse.client.MockConstants.MOCK_PROJECT_TYPE_NAME;
-import static com.codenvy.eclipse.client.MockConstants.MOCK_WORKSPACE_NAME;
+import static com.codenvy.client.MockConstants.MOCK_PROJECT_DESCRIPTION;
+import static com.codenvy.client.MockConstants.MOCK_PROJECT_NAME;
+import static com.codenvy.client.MockConstants.MOCK_PROJECT_TYPE_NAME;
+import static com.codenvy.client.MockConstants.MOCK_WORKSPACE_NAME;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;

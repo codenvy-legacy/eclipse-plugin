@@ -18,10 +18,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 
-import com.codenvy.eclipse.client.Codenvy;
-import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.model.Workspace;
-import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
+import com.codenvy.client.Codenvy;
+import com.codenvy.client.auth.Credentials;
+import com.codenvy.client.model.Workspace;
+import com.codenvy.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProvider;
 

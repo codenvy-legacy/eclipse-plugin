@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.widgets.Display;
 
-import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.CredentialsProvider;
+import com.codenvy.client.auth.Credentials;
+import com.codenvy.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.ui.widgets.CredentialsDialog;
 
 /**

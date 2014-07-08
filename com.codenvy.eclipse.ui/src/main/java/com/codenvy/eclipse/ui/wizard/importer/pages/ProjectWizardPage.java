@@ -54,10 +54,10 @@ import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.registry.WorkingSetDescriptor;
 
-import com.codenvy.eclipse.client.Codenvy;
-import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.model.Project;
-import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
+import com.codenvy.client.Codenvy;
+import com.codenvy.client.auth.Credentials;
+import com.codenvy.client.model.Project;
+import com.codenvy.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;

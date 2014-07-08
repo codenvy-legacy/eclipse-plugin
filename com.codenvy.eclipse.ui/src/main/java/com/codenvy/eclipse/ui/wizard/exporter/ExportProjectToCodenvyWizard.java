@@ -39,9 +39,9 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
-import com.codenvy.eclipse.client.Codenvy;
-import com.codenvy.eclipse.client.model.Project;
-import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
+import com.codenvy.client.Codenvy;
+import com.codenvy.client.model.Project;
+import com.codenvy.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;

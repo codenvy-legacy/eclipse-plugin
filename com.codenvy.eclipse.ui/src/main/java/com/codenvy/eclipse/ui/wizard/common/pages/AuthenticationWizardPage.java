@@ -33,8 +33,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.codenvy.eclipse.client.auth.AuthenticationException;
-import com.codenvy.eclipse.client.auth.Credentials;
+import com.codenvy.client.auth.AuthenticationException;
+import com.codenvy.client.auth.Credentials;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;

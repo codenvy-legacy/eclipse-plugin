@@ -29,7 +29,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
+import com.codenvy.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;

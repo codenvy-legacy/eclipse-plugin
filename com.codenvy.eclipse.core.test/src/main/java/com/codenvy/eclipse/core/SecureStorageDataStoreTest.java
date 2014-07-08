@@ -23,9 +23,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.Token;
-import com.codenvy.eclipse.client.store.DataStore;
+import com.codenvy.client.auth.Credentials;
+import com.codenvy.client.auth.Token;
+import com.codenvy.client.store.DataStore;
 
 /**
  * {@link SecureStorageDataStore} tests.

@@ -44,8 +44,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.team.core.RepositoryProvider;
 
-import com.codenvy.eclipse.client.Codenvy;
-import com.codenvy.eclipse.client.model.Project;
+import com.codenvy.client.Codenvy;
+import com.codenvy.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;

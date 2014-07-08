@@ -17,8 +17,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
-import com.codenvy.eclipse.client.Codenvy;
-import com.codenvy.eclipse.client.auth.CredentialsProvider;
+import com.codenvy.client.Codenvy;
+import com.codenvy.client.auth.CredentialsProvider;
 
 /**
  * The activator class controls the plug-in life cycle.

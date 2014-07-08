@@ -8,15 +8,15 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.eclipse.client;
+package com.codenvy.client;
 
-import static com.codenvy.eclipse.client.MockConstants.MOCK_PROJECT_DESCRIPTION;
-import static com.codenvy.eclipse.client.MockConstants.MOCK_PROJECT_NAME;
-import static com.codenvy.eclipse.client.MockConstants.MOCK_PROJECT_TYPE_NAME;
-import static com.codenvy.eclipse.client.MockConstants.MOCK_USERNAME;
-import static com.codenvy.eclipse.client.MockConstants.MOCK_USER_ID;
-import static com.codenvy.eclipse.client.MockConstants.MOCK_WORKSPACE_ID;
-import static com.codenvy.eclipse.client.MockConstants.MOCK_WORKSPACE_NAME;
+import static com.codenvy.client.MockConstants.MOCK_PROJECT_DESCRIPTION;
+import static com.codenvy.client.MockConstants.MOCK_PROJECT_NAME;
+import static com.codenvy.client.MockConstants.MOCK_PROJECT_TYPE_NAME;
+import static com.codenvy.client.MockConstants.MOCK_USERNAME;
+import static com.codenvy.client.MockConstants.MOCK_USER_ID;
+import static com.codenvy.client.MockConstants.MOCK_WORKSPACE_ID;
+import static com.codenvy.client.MockConstants.MOCK_WORKSPACE_NAME;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -33,13 +33,21 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.codenvy.eclipse.client.auth.Credentials;
-import com.codenvy.eclipse.client.auth.CredentialsProvider;
-import com.codenvy.eclipse.client.model.Project;
-import com.codenvy.eclipse.client.model.User;
-import com.codenvy.eclipse.client.model.Workspace;
-import com.codenvy.eclipse.client.model.Workspace.WorkspaceRef;
-import com.codenvy.eclipse.client.store.DataStoreFactory;
+import com.codenvy.client.BuilderClient;
+import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyException;
+import com.codenvy.client.ProjectClient;
+import com.codenvy.client.Request;
+import com.codenvy.client.RunnerClient;
+import com.codenvy.client.UserClient;
+import com.codenvy.client.WorkspaceClient;
+import com.codenvy.client.auth.Credentials;
+import com.codenvy.client.auth.CredentialsProvider;
+import com.codenvy.client.model.Project;
+import com.codenvy.client.model.User;
+import com.codenvy.client.model.Workspace;
+import com.codenvy.client.model.Workspace.WorkspaceRef;
+import com.codenvy.client.store.DataStoreFactory;
 
 /**
  * Codenvy mock used for UI tests.
