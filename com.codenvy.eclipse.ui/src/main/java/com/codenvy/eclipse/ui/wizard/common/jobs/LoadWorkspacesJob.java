@@ -26,7 +26,9 @@ import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProvider;
 
 /**
- * @author stephane
+ * Job to load workspaces list from a remote Codenvy repository.
+ * 
+ * @author Stéphane Daviet
  */
 public abstract class LoadWorkspacesJob implements IRunnableWithProgress {
     private final CredentialsProvider credentialsProvider;
