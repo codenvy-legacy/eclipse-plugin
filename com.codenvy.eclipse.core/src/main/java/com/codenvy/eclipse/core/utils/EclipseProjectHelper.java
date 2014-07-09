@@ -20,7 +20,9 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -304,9 +306,53 @@ public final class EclipseProjectHelper {
 
             createOrUpdateResourcesFromZip(stream, eclipseProject, subMonitor);
 
+            for (IResource oneResource : getResources(eclipseProject)) {
+                final boolean exists = codenvy.project()
+                                              .isResource(codenvyProject, oneResource.getProjectRelativePath().toString())
+                                              .execute();
+
+                if (!exists
+                    && oneResource.exists()
+                    && !excludedResources.contains(oneResource.getName())) {
+
+                    try {
+
+                        oneResource.delete(true, null);
+
+                    } catch (CoreException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
         } finally {
             subMonitor.done();
         }
+    }
+
+    /**
+     * Get all {@link IResource} of the given {@link IContainer}.
+     * 
+     * @param container the {@link IContainer} to get {@link IResource} for.
+     * @return the {@link IContainer} resources {@link Set}, never {@code null}.
+     */
+    private static Set<IResource> getResources(IContainer container) {
+        final Set<IResource> resources = new HashSet<>();
+        try {
+            resources.add(container);
+
+            for (IResource oneResource : container.members(IContainer.EXCLUDE_DERIVED)) {
+                if (oneResource.getType() == IResource.FOLDER) {
+                    resources.addAll(getResources((IContainer)oneResource));
+                } else {
+                    resources.add(oneResource);
+                }
+            }
+
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+        return resources;
     }
 
     /**
@@ -352,8 +398,7 @@ public final class EclipseProjectHelper {
      * @param monitor the {@link IProgressMonitor} to follow work progression.
      */
     public static void createOrUpdateResourcesFromZip(ZipInputStream stream, IContainer container, IProgressMonitor monitor) {
-        final SubMonitor subMonitor = SubMonitor.convert(monitor);
-        subMonitor.setTaskName("Create resources");
+        final SubMonitor subMonitor = SubMonitor.convert(monitor, "Create resources", 1);
 
         try (ZipInputStream zipInputStream = stream) {
 
