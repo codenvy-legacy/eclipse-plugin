@@ -252,6 +252,38 @@ public final class EclipseProjectHelper {
                    .importArchive(codenvyMetaProject.workspaceId, projectToUpdate, eclipseProjectZip)
                    .execute();
 
+            final InputStream codenvyProjectZip =
+                                                  codenvy.project()
+                                                         .exportResources(projectToUpdate,
+                                                                          eclipseProject.getProjectRelativePath().toString())
+                                                         .execute();
+
+            try (ZipInputStream zipInputStream = (ZipInputStream)codenvyProjectZip) {
+
+                ZipEntry entry;
+                while ((entry = zipInputStream.getNextEntry()) != null) {
+                    if (entry.isDirectory()) {
+                        final IFolder folder = eclipseProject.getFolder(entry.getName());
+                        if (!folder.exists() && folder.getParent().exists()) {
+                            codenvy.project()
+                                   .deleteResources(projectToUpdate, folder.getProjectRelativePath().toString())
+                                   .execute();
+                        }
+                    }
+                    else {
+                        final IFile file = eclipseProject.getFile(entry.getName());
+                        if (!file.exists() && file.getParent().exists()) {
+                            codenvy.project()
+                                   .deleteResources(projectToUpdate, file.getProjectRelativePath().toString())
+                                   .execute();
+                        }
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             subMonitor.worked(1);
 
         } finally {
