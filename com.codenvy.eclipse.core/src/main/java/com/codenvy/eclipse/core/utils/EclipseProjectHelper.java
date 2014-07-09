@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -186,27 +185,27 @@ public final class EclipseProjectHelper {
                     writeStartLock.countDown();
                     final ZipOutputStream outputStream = new ZipOutputStream(pipedOutputStream);
 
-                    final List<IResource> files = getFiles(project);
-
-                    for (int i = 0; i < files.size(); i++) {
-                        final IResource resource = files.get(i);
-                        if (excludedResources.contains(resource.getName())) {
+                    int i = 0;
+                    final Set<IResource> resources = getResources(project);
+                    for (IResource oneResource : resources) {
+                        if (excludedResources.contains(oneResource.getName())) {
                             continue;
                         }
 
                         final ZipEntry entry =
-                                               new ZipEntry(resource.getProjectRelativePath().toString()
-                                                            + (resource instanceof IContainer ? '/' : ""));
+                                               new ZipEntry(oneResource.getProjectRelativePath().toString()
+                                                            + (oneResource instanceof IContainer ? '/' : ""));
                         outputStream.putNextEntry(entry);
 
-                        if (resource instanceof IFile) {
-                            try (InputStream inputStream = ((IFile)resource).getContents()) {
+                        if (oneResource instanceof IFile) {
+                            try (InputStream inputStream = ((IFile)oneResource).getContents()) {
                                 ByteStreams.copy(inputStream, outputStream);
                             }
                         }
                         outputStream.flush();
 
-                        subMonitor.worked((int)Math.floor(i / files.size()));
+                        subMonitor.worked((int)Math.floor(i / resources.size()));
+                        i++;
                     }
                     outputStream.closeEntry();
                     outputStream.flush();
@@ -222,21 +221,6 @@ public final class EclipseProjectHelper {
         });
 
         return pipedInputStream;
-    }
-
-    private static List<IResource> getFiles(IContainer root) throws CoreException {
-        checkNotNull(root);
-
-        List<IResource> files = new ArrayList<>();
-        files.add(root);
-        for (IResource file : root.members(IContainer.EXCLUDE_DERIVED)) {
-            if (file instanceof IContainer) {
-                files.addAll(getFiles((IContainer)file));
-            } else {
-                files.add(file);
-            }
-        }
-        return files;
     }
 
     /**
