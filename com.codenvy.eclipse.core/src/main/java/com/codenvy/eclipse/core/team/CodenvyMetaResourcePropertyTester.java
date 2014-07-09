@@ -17,16 +17,16 @@ import org.eclipse.core.expressions.PropertyTester;
  * 
  * @author Kevin Pollet
  */
-public class CodenvyMetaResourcePropertyTester extends PropertyTester {
+public final class CodenvyMetaResourcePropertyTester extends PropertyTester {
     private static final String TRACKED_PROPERTY_NAME = "tracked";
-    
+
     @Override
     public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
         if (receiver instanceof CodenvyMetaResource) {
             final CodenvyMetaResource metaResource = (CodenvyMetaResource)receiver;
-            
+
             if (TRACKED_PROPERTY_NAME.equals(property) && expectedValue instanceof Boolean) {
-                return metaResource.isTracked() == (boolean) expectedValue;
+                return expectedValue.equals(metaResource.isTracked());
             }
         }
         return false;

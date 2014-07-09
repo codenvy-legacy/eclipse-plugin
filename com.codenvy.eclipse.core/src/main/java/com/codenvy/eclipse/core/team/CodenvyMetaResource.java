@@ -10,12 +10,12 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core.team;
 
+import static com.codenvy.eclipse.core.team.CodenvyProvider.PROVIDER_ID;
 import static org.eclipse.core.resources.IResource.ROOT;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
-import com.codenvy.client.Codenvy;
 import com.codenvy.client.auth.AuthenticationException;
 import com.codenvy.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
@@ -25,7 +25,7 @@ import com.codenvy.eclipse.core.CodenvyPlugin;
  * 
  * @author Kevin Pollet
  */
-public class CodenvyMetaResource {
+public final class CodenvyMetaResource {
     private final IResource resource;
     private boolean         tracked;
 
@@ -34,9 +34,7 @@ public class CodenvyMetaResource {
         this.tracked = false;
 
         if (resource.getType() != ROOT) {
-            final CodenvyProvider codenvyProvider =
-                                                    (CodenvyProvider)RepositoryProvider.getProvider(resource.getProject(),
-                                                                                                    CodenvyProvider.PROVIDER_ID);
+            final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(resource.getProject(), PROVIDER_ID);
 
             if (codenvyProvider != null) {
                 final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
@@ -46,16 +44,14 @@ public class CodenvyMetaResource {
                                                                         .withWorkspaceId(metaProject.workspaceId)
                                                                         .build();
 
-                    final Codenvy codenvy = CodenvyPlugin.getDefault()
-                                                         .getCodenvyBuilder(metaProject.url, metaProject.username)
-                                                         .build();
-
                     try {
 
-                        final String resourcePath = resource.getProjectRelativePath().toString();
-                        this.tracked = codenvy.project()
-                                              .isResource(codenvyProject, resourcePath)
-                                              .execute();
+                        this.tracked = CodenvyPlugin.getDefault()
+                                                    .getCodenvyBuilder(metaProject.url, metaProject.username)
+                                                    .build()
+                                                    .project()
+                                                    .isResource(codenvyProject, resource.getProjectRelativePath().toString())
+                                                    .execute();
 
                     } catch (AuthenticationException e) {
                         this.tracked = false;

@@ -21,7 +21,7 @@ import com.codenvy.client.store.DataStore;
 import com.codenvy.client.store.DataStoreFactory;
 
 /**
- * The Eclipse secure storage data store factory.
+ * Implementation of {@link DataStoreFactory} backed by Eclipse secure storage.
  * 
  * @author Kevin Pollet
  */

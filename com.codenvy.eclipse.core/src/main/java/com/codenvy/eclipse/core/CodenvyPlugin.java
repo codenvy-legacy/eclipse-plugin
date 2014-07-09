@@ -25,12 +25,12 @@ import com.codenvy.client.auth.CredentialsProvider;
  * 
  * @author Kevin Pollet
  */
-public class CodenvyPlugin extends Plugin {
+public final class CodenvyPlugin extends Plugin {
     // the plug-in ID
     public static final String   PLUGIN_ID                         = "com.codenvy.eclipse.core";        //$NON-NLS-1$
     public static final String   CREDENTIALS_PROVIDER_EXTENSION_ID = PLUGIN_ID + ".credentialsProvider"; //$NON-NLS-1$
-    private CredentialsProvider  credentialsProvider;
 
+    private CredentialsProvider  credentialsProvider;
 
     /**
      * Constant identifying the job family identifier for Codenvy jobs.
@@ -77,7 +77,7 @@ public class CodenvyPlugin extends Plugin {
      * 
      * @param url the Codenvy platform URL.
      * @param username the username.
-     * @return an instance of the Codenvy API builder.
+     * @return an instance of the {@link Codenvy.Builder}.
      */
     public Codenvy.Builder getCodenvyBuilder(String url, String username) {
         return new Codenvy.Builder(url, username).withCredentialsStoreFactory(SecureStorageDataStoreFactory.INSTANCE)

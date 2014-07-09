@@ -10,7 +10,10 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core.launcher;
 
+import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
 import static com.codenvy.eclipse.core.launcher.LaunchConstants.CODENVY_PROJECT_NAME_ATTRIBUTE_NAME;
+import static com.codenvy.eclipse.core.team.CodenvyProvider.PROVIDER_ID;
+import static org.eclipse.core.runtime.IStatus.ERROR;
 import static org.eclipse.debug.core.ILaunchManager.RUN_MODE;
 
 import org.eclipse.core.resources.IProject;
@@ -22,22 +25,19 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.eclipse.team.core.RepositoryProvider;
 
-import com.codenvy.client.Codenvy;
-import com.codenvy.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.team.CodenvyMetaProject;
+import com.codenvy.eclipse.core.team.CodenvyProvider;
 
 /**
- * The build on codenvy delegate.
+ * The build on Codenvy delegate.
  * 
  * @author Kevin Pollet
  */
-// TODO push project modifications before run
 public final class BuildOnCodenvyDelegate implements ILaunchConfigurationDelegate {
     @Override
     public void launch(ILaunchConfiguration configuration, String mode, final ILaunch launch, IProgressMonitor monitor) throws CoreException {
-        // this delegate handle only the run mode
         if (RUN_MODE.equalsIgnoreCase(mode)) {
             final String projectName = configuration.getAttribute(CODENVY_PROJECT_NAME_ATTRIBUTE_NAME, (String)null);
             if (projectName == null) {
@@ -50,17 +50,12 @@ public final class BuildOnCodenvyDelegate implements ILaunchConfigurationDelegat
                                                                                            + " in the workspace"));
             }
 
+            final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(project, PROVIDER_ID);
+            if (codenvyProvider == null) {
+                throw new CoreException(new Status(ERROR, PLUGIN_ID, "Project named " + projectName + " isn't a Codenvy project"));
+            }
 
-            final CodenvyMetaProject metaProject = CodenvyMetaProject.get(project);
-            final Project codenvyProject = new Project.Builder().withName(metaProject.projectName)
-                                                                .withWorkspaceId(metaProject.workspaceId)
-                                                                .build();
-
-            final Codenvy codenvy = CodenvyPlugin.getDefault()
-                                                 .getCodenvyBuilder(metaProject.url, metaProject.username)
-                                                 .build();
-
-            new CodenvyBuilderProcess(launch, codenvy, codenvyProject);
+            new CodenvyBuilderProcess(launch, codenvyProvider.getMetaProject());
         }
     }
 }

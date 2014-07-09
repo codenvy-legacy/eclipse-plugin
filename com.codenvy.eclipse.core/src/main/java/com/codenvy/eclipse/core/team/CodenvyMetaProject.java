@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class CodenvyMetaProject {
+public final class CodenvyMetaProject {
     private static final String                                      CODENVY_FOLDER_NAME     = ".codenvy";
     private static final String                                      CODENVY_TEAM_FILE_NAME  = "team";
     private static final ConcurrentMap<IProject, CodenvyMetaProject> repositoryProviderCache = new ConcurrentHashMap<>();

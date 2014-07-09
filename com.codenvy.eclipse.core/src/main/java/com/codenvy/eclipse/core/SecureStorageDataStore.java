@@ -20,11 +20,11 @@ import com.codenvy.client.auth.Token;
 import com.codenvy.client.store.DataStore;
 
 /**
- * Stores user credentials in Eclipse secure storage.
+ * Implementation of {@link SecureStorageDataStore} backed by Eclipse secure storage.
  * 
  * @author Kevin Pollet
  */
-public class SecureStorageDataStore implements DataStore<String, Credentials> {
+public final class SecureStorageDataStore implements DataStore<String, Credentials> {
     public static final String       CODENVY_PASSWORD_KEY_NAME = "password";
     public static final String       CODENVY_TOKEN_KEY_NAME    = "token";
 
@@ -37,9 +37,7 @@ public class SecureStorageDataStore implements DataStore<String, Credentials> {
      * @throws NullPointerException if urlNode is {@code null}.
      */
     SecureStorageDataStore(ISecurePreferences urlNode) {
-        checkNotNull(urlNode);
-
-        this.urlNode = urlNode;
+        this.urlNode = checkNotNull(urlNode);
     }
 
     @Override

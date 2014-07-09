@@ -17,12 +17,9 @@ package com.codenvy.eclipse.core.launcher;
  */
 public final class LaunchConstants {
     public static final String CODENVY_PROJECT_NAME_ATTRIBUTE_NAME      = "codenvy.project.name";
-
     public static final String LAUNCH_CONFIGURATION_TYPE_ID             = "com.codenvy.eclipse.core.launcher.launchConfigurationType";
-
     public static final String RUNNER_LAUNCH_DELEGATE_ID                = "com.codenvy.eclipse.core.launcher.runLaunchDelegate";
     public static final String RUNNER_LAUNCH_CONFIGURATION_NAME_PREFIX  = "Run_";
-
     public static final String BUILDER_LAUNCH_DELEGATE_ID               = "com.codenvy.eclipse.core.launcher.buildLaunchDelegate";
     public static final String BUILDER_LAUNCH_CONFIGURATION_NAME_PREFIX = "Build_";
 

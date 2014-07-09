@@ -12,7 +12,6 @@ package com.codenvy.eclipse.core.utils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-
 /**
  * Helper class providing utility methods for {@link String}.
  * 
@@ -39,9 +38,7 @@ public final class StringHelper {
      * @throws NullPointerException if string parameter is {@code null}.
      */
     public static boolean isEmpty(String string) {
-        checkNotNull(string);
-
-        return string.trim().isEmpty();
+        return checkNotNull(string).trim().isEmpty();
     }
 
     /**

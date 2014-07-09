@@ -21,7 +21,7 @@ import org.eclipse.debug.core.model.IStreamMonitor;
  * 
  * @author Kevin Pollet
  */
-class StringBufferStreamMonitor implements IStreamMonitor {
+final class StringBufferStreamMonitor implements IStreamMonitor {
     private final StringBuffer         stream;
     private final Set<IStreamListener> listeners;
 

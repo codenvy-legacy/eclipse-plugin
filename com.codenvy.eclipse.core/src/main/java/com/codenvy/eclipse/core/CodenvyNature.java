@@ -49,7 +49,7 @@ import com.google.common.collect.ObjectArrays;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class CodenvyNature implements IProjectNature {
+public final class CodenvyNature implements IProjectNature {
     public static final String                    NATURE_ID            = "com.codenvy.eclipse.core.codenvyNature";
 
     private static final String                   MAVEN_NATURE_ID      = "org.eclipse.m2e.core.maven2Nature";
@@ -69,9 +69,6 @@ public class CodenvyNature implements IProjectNature {
         NATURE_MAPPINGS.put("angularjs", JAVASCRIPT_NATURE_ID);
 
         BUILDER_MAPPINGS.put("maven", JavaCore.BUILDER_ID);
-    }
-
-    public CodenvyNature() {
     }
 
     @Override

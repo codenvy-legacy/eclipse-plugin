@@ -14,6 +14,7 @@ import static com.codenvy.client.model.RunnerStatus.Status.CANCELLED;
 import static com.codenvy.client.model.RunnerStatus.Status.FAILED;
 import static com.codenvy.client.model.RunnerStatus.Status.STOPPED;
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
@@ -40,13 +41,15 @@ import com.codenvy.client.CodenvyException;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.RunnerStatus;
+import com.codenvy.eclipse.core.CodenvyPlugin;
+import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 
 /**
  * The codenvy runner process.
  * 
  * @author Kevin Pollet
  */
-public class CodenvyRunnerProcess implements IProcess {
+public final class CodenvyRunnerProcess implements IProcess {
     private static final int                TICK_DELAY     = 500;
     private static final TimeUnit           TICK_TIME_UNIT = MILLISECONDS;
 
@@ -67,14 +70,22 @@ public class CodenvyRunnerProcess implements IProcess {
      * Constructs an instance of {@link CodenvyRunnerProcess}.
      * 
      * @param launch the {@link ILaunch} object.
-     * @param codenvy the {@link Codenvy} client API.
+     * @param codenvyMetaProject the {@link CodenvyMetaProject}.
      * @param project the {@link Project} to run.
-     * @throws NullPointerException if launch, runnerService or project parameter is {@code null}.
+     * @throws NullPointerException if launch or codenvyMetaProject parameter is {@code null}.
      */
-    public CodenvyRunnerProcess(ILaunch launch, Codenvy codenvy, Project project) {
-        this.launch = launch;
-        this.codenvy = codenvy;
-        this.project = project;
+    public CodenvyRunnerProcess(ILaunch launch, CodenvyMetaProject codenvyMetaProject) {
+        checkNotNull(codenvyMetaProject);
+
+        this.launch = checkNotNull(launch);
+        this.project = new Project.Builder().withName(codenvyMetaProject.projectName)
+                                            .withWorkspaceId(codenvyMetaProject.workspaceId)
+                                            .build();
+
+        this.codenvy = CodenvyPlugin.getDefault()
+                                    .getCodenvyBuilder(codenvyMetaProject.url, codenvyMetaProject.username)
+                                    .build();
+
         this.attributes = new HashMap<>();
         this.executorService = Executors.newScheduledThreadPool(4);
         this.outputStream = new StringBufferStreamMonitor();

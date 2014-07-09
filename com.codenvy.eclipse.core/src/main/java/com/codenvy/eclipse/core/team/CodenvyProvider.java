@@ -19,8 +19,8 @@ import org.eclipse.team.core.RepositoryProvider;
  * 
  * @author Kevin Pollet
  */
-public class CodenvyProvider extends RepositoryProvider {
-    public static final String      PROVIDER_ID = "com.codenvy.eclipse.core.team.codenvyProvider";
+public final class CodenvyProvider extends RepositoryProvider {
+    public static final String PROVIDER_ID = "com.codenvy.eclipse.core.team.codenvyProvider";
 
     private CodenvyMetaProject metaProject;
 
@@ -50,7 +50,7 @@ public class CodenvyProvider extends RepositoryProvider {
     /**
      * Defines the '.codenvy' folder as team private.
      * 
-     * @param isTeamPrivate {@code true} if the '.codenvy' folder is team private, {@code false} otherwise.
+     * @param isTeamPrivate {@code true} if '.codenvy' folder is team private, {@code false} otherwise.
      * @throws CoreException if this method fails.
      */
     private void setCodenvyFolderAsTeamPrivate(boolean isTeamPrivate) throws CoreException {
