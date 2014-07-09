@@ -26,19 +26,17 @@ import com.codenvy.client.auth.CredentialsProvider;
  * @author Kevin Pollet
  */
 public final class CodenvyPlugin extends Plugin {
-    // the plug-in ID
     public static final String   PLUGIN_ID                         = "com.codenvy.eclipse.core";        //$NON-NLS-1$
     public static final String   CREDENTIALS_PROVIDER_EXTENSION_ID = PLUGIN_ID + ".credentialsProvider"; //$NON-NLS-1$
-
-    private CredentialsProvider  credentialsProvider;
 
     /**
      * Constant identifying the job family identifier for Codenvy jobs.
      */
     public static final Object   FAMILY_CODENVY                    = new Object();
 
-    // the shared instance
     private static CodenvyPlugin plugin;
+
+    private CredentialsProvider  credentialsProvider;
 
     public void start(BundleContext context) throws Exception {
         super.start(context);
