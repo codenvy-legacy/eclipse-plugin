@@ -64,7 +64,7 @@ import com.google.common.collect.ObjectArrays;
  * @author Stéphane Daviet
  */
 public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizard, CredentialsProviderWizard {
-    private ProjectWizardPage      exportToCodenvyProjectsSelectionPage;
+    private ProjectWizardPage              exportToCodenvyProjectsSelectionPage;
     private final AuthenticationWizardPage authenticationWizardPage;
     private final WorkspaceWizardPage      workspaceWizardPage;
 
@@ -174,9 +174,9 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                                               .withWorkspaceName(workspaceRef.name)
                                                                               .build();
 
-                                         remoteProject = codenvy.project()
-                                                                .create(remoteProject)
-                                                                .execute();
+                                         codenvy.project()
+                                                .create(remoteProject)
+                                                .execute();
                                      }
 
                                      final InputStream archiveInputStream = exportIProjectToZipStream(project, monitor);
