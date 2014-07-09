@@ -351,14 +351,17 @@ public final class EclipseProjectHelper {
      * 
      * @param container the {@link IContainer} to get {@link IResource} for.
      * @return the {@link IContainer} resources {@link Set}, never {@code null}.
+     * @throws NullPointerException if container parameter is {@code null}.
      */
     private static Set<IResource> getResources(IContainer container) {
+        checkNotNull(container);
+
         final Set<IResource> resources = new HashSet<>();
         try {
             resources.add(container);
 
             for (IResource oneResource : container.members(IContainer.EXCLUDE_DERIVED)) {
-                if (oneResource.getType() == IResource.FOLDER) {
+                if (oneResource instanceof IContainer) {
                     resources.addAll(getResources((IContainer)oneResource));
                 } else {
                     resources.add(oneResource);
