@@ -32,7 +32,7 @@ import com.codenvy.eclipse.ui.widgets.CredentialsDialog;
  * 
  * @author Kevin Pollet
  */
-public class CredentialsProviderWithPrompt implements CredentialsProvider {
+public final class CredentialsProviderWithPrompt implements CredentialsProvider {
     private final ExecutorService                            executorService;
     private final ConcurrentMap<String, Future<Credentials>> credentialsMap;
 
@@ -72,6 +72,12 @@ public class CredentialsProviderWithPrompt implements CredentialsProvider {
         }
     }
 
+    /**
+     * Shows the {@link CredentialsDialog} used to collect user credentials.
+     * 
+     * @param username the user name to ask {@link Credentials} for.
+     * @return the {@link Credentials} entered by the user or {@code null} if none.
+     */
     private Credentials showCredentialsDialog(final String username) {
         final AtomicReference<Credentials> credentials = new AtomicReference<>();
 

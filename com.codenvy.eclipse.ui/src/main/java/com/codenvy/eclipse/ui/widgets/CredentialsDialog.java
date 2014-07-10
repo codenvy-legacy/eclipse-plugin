@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Text;
  * 
  * @author Kevin Pollet
  */
-public class CredentialsDialog extends TitleAreaDialog {
+public final class CredentialsDialog extends TitleAreaDialog {
     private Text    passwordText;
     private Button  storeUserCredentialsButton;
     private String  username;
@@ -100,21 +100,27 @@ public class CredentialsDialog extends TitleAreaDialog {
     }
 
     /**
-     * @return
+     * Returns the user password.
+     * 
+     * @return the user password.
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * @return
+     * Returns if the user {@linkplain com.codenvy.client.auth.Credentials Credentials} should be stored.
+     * 
+     * @return {@code true} if user {@linkplain com.codenvy.client.auth.Credentials Credentials} should be stored, {@code false} otherwise.
      */
     public boolean isStoreUserCredentials() {
         return storeUserCredentials;
     }
 
     /**
-     * @return
+     * Returns the username.
+     * 
+     * @return the username.
      */
     public String getUsername() {
         return username;

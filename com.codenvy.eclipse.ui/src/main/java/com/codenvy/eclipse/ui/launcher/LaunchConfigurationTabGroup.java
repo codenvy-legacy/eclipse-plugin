@@ -20,11 +20,11 @@ import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 
 /**
- * The codenvy launch configuration tab group.
+ * The Codenvy launch configuration tab group.
  * 
  * @author Kevin Pollet
  */
-public class LaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
+public final class LaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
     @Override
     public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
         final List<ILaunchConfigurationTab> configurationTabs = new ArrayList<>();

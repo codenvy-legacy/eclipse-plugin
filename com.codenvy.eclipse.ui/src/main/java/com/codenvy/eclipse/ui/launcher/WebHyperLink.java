@@ -20,11 +20,11 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.console.IHyperlink;
 
 /**
- * A Web hyper link implementation.
+ * A Web {@link IHyperlink} implementation.
  * 
  * @author Kevin Pollet
  */
-public class WebHyperLink implements IHyperlink {
+public final class WebHyperLink implements IHyperlink {
     private final String url;
 
     public WebHyperLink(String url) {

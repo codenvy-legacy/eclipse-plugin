@@ -43,11 +43,11 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 
 /**
- * The codenvy launch configuration main tab.
+ * The Codenvy launch configuration main tab.
  * 
  * @author Kevin Pollet
  */
-public class RunMainConfigurationTab extends AbstractLaunchConfigurationTab {
+public final class RunMainConfigurationTab extends AbstractLaunchConfigurationTab {
     private static final String TAB_NAME = "Main";
 
     private Text                projectName;

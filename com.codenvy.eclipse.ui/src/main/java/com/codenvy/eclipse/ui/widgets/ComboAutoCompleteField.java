@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.widgets;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -25,21 +27,28 @@ import org.eclipse.swt.widgets.Combo;
  * 
  * @author Stéphane Daviet
  */
-public class ComboAutoCompleteField {
-
+public final class ComboAutoCompleteField {
     private final ContentProposalAdapter adapter;
     private final Combo                  combo;
-    private String[]                     proposalStrings = null;
+    private String[]                     proposalStrings;
 
-    public ComboAutoCompleteField(Combo c) {
-        this.combo = c;
-        adapter = new ContentProposalAdapter(combo, new ComboContentAdapter(), getProposalProvider(), null, null);
-        adapter.setPropagateKeys(true);
-        adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+    /**
+     * Constructs an instance of {@link ComboAutoCompleteField}
+     * 
+     * @param combo the {@link Combo} to auto-complete.
+     * @throws NullPointerException if combo parameter is {@code null}
+     */
+    public ComboAutoCompleteField(Combo combo) {
+        this.combo = checkNotNull(combo);
+        this.adapter = new ContentProposalAdapter(combo, new ComboContentAdapter(), getProposalProvider(), null, null);
+        this.adapter.setPropagateKeys(true);
+        this.adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+        this.proposalStrings = null;
     }
 
     /**
-     * Get a way to set your own completion proposals, for instance after getting a {@linkplain org.eclipse.core.runtime.jobs.Job Job} processing result.
+     * Get a way to set your own completion proposals, for instance after getting a {@linkplain org.eclipse.core.runtime.jobs.Job Job}
+     * processing result.
      * 
      * @param proposals the proposals to add instead those of the {@link Combo}.
      */

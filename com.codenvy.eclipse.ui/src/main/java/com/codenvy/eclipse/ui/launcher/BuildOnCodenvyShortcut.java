@@ -38,11 +38,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleConstants;
 
 /**
- * The codenvy build shortcut implementation.
+ * Codenvy build {@link ILaunchShortcut} implementation.
  * 
  * @author Kevin Pollet
  */
-public class BuildOnCodenvyShortcut implements ILaunchShortcut {
+public final class BuildOnCodenvyShortcut implements ILaunchShortcut {
     @Override
     public void launch(ISelection selection, String mode) {
         if (selection instanceof IStructuredSelection && RUN_MODE.equalsIgnoreCase(mode)) {

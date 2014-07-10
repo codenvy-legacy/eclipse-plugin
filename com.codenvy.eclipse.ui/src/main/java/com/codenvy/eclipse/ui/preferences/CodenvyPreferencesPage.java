@@ -10,15 +10,17 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.preferences;
 
+import static com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME;
+
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import com.codenvy.eclipse.core.utils.StringHelper;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 
 /**
@@ -30,59 +32,47 @@ import com.codenvy.eclipse.ui.CodenvyUIPlugin;
  * @see CodenvyPreferencesInitializer
  * @author Stéphane Daviet
  */
-public class CodenvyPreferencesPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public final class CodenvyPreferencesPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
     @Override
     public void init(IWorkbench workbench) {
         setTitle("Codenvy Preferences");
         setDescription("Manage here the URL of remote Codenvy repositories you want to keep in memory for type assist when you create a new project.\n"
                        + "Credentials for those repositories are managed through the Secure Storage preferences page.");
-        setPreferenceStore(CodenvyUIPlugin.getDefault()
-                                          .getPreferenceStore());
+        setPreferenceStore(CodenvyUIPlugin.getDefault().getPreferenceStore());
     }
 
     @Override
     protected void createFieldEditors() {
-        Composite parent = getFieldEditorParent();
-        ListEditor locations =
-                               new ListEditor(CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME,
-                                              "Remote repositories locations:", parent) {
-                                   @Override
-                                   protected String getNewInputObject() {
-                                       // Give the user an input dialog to enter its new location
-                                       InputDialog dialog =
-                                                            new InputDialog(getShell(), "Add a remote Codenvy repository location",
-                                                                            "Enter the URL of the repository", null, null) {
-                                                                @Override
-                                                                protected Control createDialogArea(Composite parent) {
-                                                                    Control control = super.createDialogArea(parent);
-                                                                    return control;
-                                                                }
-                                                            };
+        final Composite parent = getFieldEditorParent();
+        final ListEditor locations = new ListEditor(REMOTE_REPOSITORIES_LOCATION_KEY_NAME, "Remote repositories locations:", parent) {
+            @Override
+            protected String getNewInputObject() {
+                // Give the user an input dialog to enter its new location
+                final InputDialog dialog = new InputDialog(getShell(), "Add a remote Codenvy repository location",
+                                                           "Enter the URL of the repository", null, null);
+                if (dialog.open() != Window.OK) {
+                    return null;
+                }
 
-                                       dialog.open();
-                                       if (dialog.getReturnCode() != Window.OK) {
-                                           return null;
-                                       }
-                                       String newRepositoryLocation = dialog.getValue();
-                                       if ("".equals(newRepositoryLocation)) {
-                                           return null; //$NON-NLS-1$
-                                       }
+                final String newRepositoryLocation = dialog.getValue();
+                if (StringHelper.isNullOrEmpty(newRepositoryLocation)) {
+                    return null;
+                }
 
-                                       return newRepositoryLocation;
-                                   }
+                return newRepositoryLocation;
+            }
 
-                                   @Override
-                                   protected String[] parseString(String stringList) {
-                                       // Delegate to util method
-                                       return CodenvyPreferencesInitializer.parseString(stringList);
-                                   }
+            @Override
+            protected String[] parseString(String stringList) {
+                return CodenvyPreferencesInitializer.parseString(stringList);
+            }
 
-                                   @Override
-                                   protected String createList(String[] items) {
-                                       // Delegate to util method
-                                       return CodenvyPreferencesInitializer.createList(items);
-                                   }
-                               };
+            @Override
+            protected String createList(String[] items) {
+                return CodenvyPreferencesInitializer.createList(items);
+            }
+        };
+
         locations.loadDefault();
         addField(locations);
     }

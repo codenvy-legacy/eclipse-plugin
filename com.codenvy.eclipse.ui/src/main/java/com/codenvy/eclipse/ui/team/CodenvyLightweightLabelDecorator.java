@@ -33,7 +33,7 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
  * @author Kevin Pollet
  * @see CodenvyProvider
  */
-public class CodenvyLightweightLabelDecorator extends LabelProvider implements ILightweightLabelDecorator {
+public final class CodenvyLightweightLabelDecorator extends LabelProvider implements ILightweightLabelDecorator {
     private final ImageDescriptor trackedImageDescriptor;
 
     public CodenvyLightweightLabelDecorator() {

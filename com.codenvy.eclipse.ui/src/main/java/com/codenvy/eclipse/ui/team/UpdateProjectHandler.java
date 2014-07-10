@@ -32,7 +32,7 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
  * 
  * @author Kevin Pollet
  */
-public class UpdateProjectHandler extends AbstractProjectHandler {
+public final class UpdateProjectHandler extends AbstractProjectHandler {
     @Override
     public Object execute(final Set<IProject> projects, ExecutionEvent event) throws ExecutionException {
         if (!projects.isEmpty()) {

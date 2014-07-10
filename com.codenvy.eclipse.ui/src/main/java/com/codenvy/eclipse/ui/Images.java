@@ -16,7 +16,7 @@ package com.codenvy.eclipse.ui;
  * @author Kevin Pollet
  */
 public final class Images {
-    public static final String WIZARD_LOGO = "WizardLogo";
+    public static final String WIZARD_LOGO       = "WizardLogo";
     public static final String RUN_MAIN_TAB_ICON = "RunMainTab";
 
     /**

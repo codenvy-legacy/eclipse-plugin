@@ -38,7 +38,7 @@ import com.codenvy.eclipse.ui.wizard.common.jobs.LoadWorkspacesJob;
 /**
  * @author Stéphane Daviet
  */
-public class WorkspaceWizardPage extends WizardPage implements IPageChangedListener {
+public final class WorkspaceWizardPage extends WizardPage implements IPageChangedListener {
     private TableViewer workspaceTableViewer;
 
     public WorkspaceWizardPage() {

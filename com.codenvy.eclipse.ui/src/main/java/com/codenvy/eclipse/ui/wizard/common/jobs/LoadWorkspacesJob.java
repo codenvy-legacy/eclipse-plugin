@@ -23,7 +23,7 @@ import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.model.Workspace;
 import com.codenvy.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.ui.wizard.common.CredentialsProvider;
+import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
 
 /**
  * Job to load workspaces list from a remote Codenvy repository.
@@ -31,9 +31,9 @@ import com.codenvy.eclipse.ui.wizard.common.CredentialsProvider;
  * @author Stéphane Daviet
  */
 public abstract class LoadWorkspacesJob implements IRunnableWithProgress {
-    private final CredentialsProvider credentialsProvider;
+    private final CredentialsProviderWizard credentialsProvider;
 
-    public LoadWorkspacesJob(CredentialsProvider credentialsProvider) {
+    public LoadWorkspacesJob(CredentialsProviderWizard credentialsProvider) {
         this.credentialsProvider = credentialsProvider;
     }
 
@@ -68,7 +68,6 @@ public abstract class LoadWorkspacesJob implements IRunnableWithProgress {
                         workspaceRefs.add(codenvy.workspace().withName(workspace.workspaceRef.name).execute());
                         monitor.worked(1);
                     }
-
 
                     postLoadCallback(workspaceRefs);
                 }

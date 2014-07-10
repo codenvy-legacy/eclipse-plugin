@@ -38,11 +38,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleConstants;
 
 /**
- * The codenvy run shortcut implementation.
+ * The Codenvy run shortcut implementation.
  * 
  * @author Kevin Pollet
  */
-// TODO error handling
 public class RunOnCodenvyShortcut implements ILaunchShortcut {
     @Override
     public void launch(ISelection selection, String mode) {

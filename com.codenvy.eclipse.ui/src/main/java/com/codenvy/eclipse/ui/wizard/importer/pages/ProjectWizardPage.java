@@ -61,7 +61,6 @@ import com.codenvy.client.model.Workspace.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
-import com.codenvy.eclipse.ui.wizard.common.CredentialsProvider;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
 import com.codenvy.eclipse.ui.wizard.common.jobs.LoadWorkspacesJob;
 import com.google.common.base.Function;
@@ -75,7 +74,7 @@ import com.google.common.collect.ImmutableList;
  * @author Stéphane Daviet
  */
 @SuppressWarnings("restriction")
-public class ProjectWizardPage extends WizardPage implements IPageChangedListener {
+public final class ProjectWizardPage extends WizardPage implements IPageChangedListener {
     private ComboViewer         workspaceComboViewer;
     private CheckboxTableViewer projectTableViewer;
     private WorkingSetGroup     workingSetGroup;
@@ -261,7 +260,7 @@ public class ProjectWizardPage extends WizardPage implements IPageChangedListene
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    final CredentialsProvider wizard = getWizard();
+                    final CredentialsProviderWizard wizard = getWizard();
 
                     try {
 

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.preferences;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
@@ -21,14 +23,15 @@ import com.google.common.base.Joiner;
  * 
  * @author Stéphane Daviet
  */
-public class CodenvyPreferencesInitializer extends AbstractPreferenceInitializer {
+public final class CodenvyPreferencesInitializer extends AbstractPreferenceInitializer {
     /**
      * Separator used when storing a list as a concatenated {@link String}.
      */
     private static final String LOCATION_SEPARATOR                    = ";";
 
     /**
-     * Key where the locations of remote repositories are stored in the {@linkplain org.eclipse.jface.preference.PreferenceStore PreferenceStore} of the plugin.
+     * Key where the locations of remote repositories are stored in the {@linkplain org.eclipse.jface.preference.PreferenceStore
+     * PreferenceStore} of the plugin.
      */
     public final static String  REMOTE_REPOSITORIES_LOCATION_KEY_NAME = "remoteRepositoriesLocation";
 
@@ -39,21 +42,20 @@ public class CodenvyPreferencesInitializer extends AbstractPreferenceInitializer
 
     @Override
     public void initializeDefaultPreferences() {
-        IPreferenceStore codenvyUIPreferenceStore = CodenvyUIPlugin.getDefault()
-                                                                   .getPreferenceStore();
-        codenvyUIPreferenceStore
-                                .setDefault(REMOTE_REPOSITORIES_LOCATION_KEY_NAME, DEFAULT_LOCATION);
+        IPreferenceStore codenvyUIPreferenceStore = CodenvyUIPlugin.getDefault().getPreferenceStore();
+        codenvyUIPreferenceStore.setDefault(REMOTE_REPOSITORIES_LOCATION_KEY_NAME, DEFAULT_LOCATION);
     }
 
     /**
-     * Util method to get an {@link Array} of {@link String} from a value. Needed for values where a list is stored as a joined
-     * {@link String}.
+     * Util method to get an {@linkplain java.lang.reflect.Array Array} of {@link String} from a value. Needed for values where a list is
+     * stored as a joined {@link String}.
      * 
      * @param stringList the concatenated {@link String} representing a list of values.
-     * @return the associated {@link Array} of values.
+     * @return the associated {@linkplain java.lang.reflect.Array Array} of values.
+     * @throws NullPointerException if stringList parameter is {@code null}.
      */
     public static String[] parseString(String stringList) {
-        return stringList.split(LOCATION_SEPARATOR);
+        return checkNotNull(stringList).split(LOCATION_SEPARATOR);
     }
 
     /**

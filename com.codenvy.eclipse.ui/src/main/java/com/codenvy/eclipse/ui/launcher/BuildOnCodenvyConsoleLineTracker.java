@@ -18,13 +18,12 @@ import org.eclipse.debug.ui.console.IConsoleLineTracker;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 
-
 /**
  * Track the build on codenvy console output.
  * 
  * @author Kevin Pollet
  */
-public class BuildOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
+public final class BuildOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
     private static final String  DOWNLOAD_LINK_PREFIX = "Link to download build result: ";
     private static final Pattern downloadLinkPattern  = Pattern.compile("^" + DOWNLOAD_LINK_PREFIX + "(.+)$");
 
@@ -48,7 +47,6 @@ public class BuildOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
         } catch (BadLocationException e1) {
             throw new RuntimeException(e1);
         }
-
     }
 
     @Override

@@ -52,7 +52,7 @@ import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class ImportProjectFromCodenvyWizard extends Wizard implements IImportWizard, INewWizard, CredentialsProviderWizard {
+public final class ImportProjectFromCodenvyWizard extends Wizard implements IImportWizard, INewWizard, CredentialsProviderWizard {
     private final AuthenticationWizardPage authenticationWizardPage;
     private final ProjectWizardPage        projectWizardPage;
 

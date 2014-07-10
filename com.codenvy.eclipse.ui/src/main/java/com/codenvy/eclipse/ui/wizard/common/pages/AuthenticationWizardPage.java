@@ -48,7 +48,7 @@ import com.google.common.collect.ObjectArrays;
  * @author Kevin Pollet
  * @author Stéphane Daviet
  */
-public class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
+public final class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
     @SuppressWarnings("unused")
     private ComboAutoCompleteField urlProposals;
     private Combo                  urls;

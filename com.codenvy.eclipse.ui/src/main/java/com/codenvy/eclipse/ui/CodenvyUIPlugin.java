@@ -23,12 +23,9 @@ import org.osgi.framework.BundleContext;
  * 
  * @author Kevin Pollet
  */
-public class CodenvyUIPlugin extends AbstractUIPlugin {
-
-    // the plug-in ID
+public final class CodenvyUIPlugin extends AbstractUIPlugin {
     public static final String     PLUGIN_ID = "com.codenvy.eclipse.ui"; //$NON-NLS-1$
 
-    // the shared instance
     private static CodenvyUIPlugin plugin;
 
     public void start(BundleContext context) throws Exception {

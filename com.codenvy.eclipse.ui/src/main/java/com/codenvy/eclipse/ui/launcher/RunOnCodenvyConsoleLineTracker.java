@@ -33,11 +33,11 @@ import org.eclipse.ui.browser.IWebBrowser;
 import com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess;
 
 /**
- * Track the run on codenvy console output.
+ * Track the run on Codenvy console output.
  * 
  * @author Kevin Pollet
  */
-public class RunOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
+public final class RunOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
     private static final Pattern serverStartedPattern = Pattern.compile("(.)*(Server startup|Started connect web server)(.)*");
 
     private IConsole             console;

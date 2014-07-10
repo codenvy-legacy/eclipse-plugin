@@ -41,7 +41,7 @@ import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 /**
  * @author Stéphane Daviet
  */
-public class ProjectWizardPage extends WizardPage {
+public final class ProjectWizardPage extends WizardPage {
     private CheckboxTableViewer projectsTableViewer;
     private Set<IProject>       selectedProjects;
 

@@ -13,8 +13,38 @@ package com.codenvy.eclipse.ui.wizard.common;
 import org.eclipse.jface.wizard.IWizard;
 
 /**
+ * Interface for {@link IWizard} providing Codenvy credentials.
+ * 
  * @author Stéphane Daviet
+ * @author Kevin Pollet
  */
-public interface CredentialsProviderWizard extends CredentialsProvider, IWizard {
+public interface CredentialsProviderWizard extends IWizard {
+    /**
+     * Returns the Codenvy platform URL.
+     * 
+     * @return the Codenvy platform URL.
+     */
+    String getUrl();
 
+    /**
+     * Returns the Codenvy username.
+     * 
+     * @return the Codenvy username.
+     */
+    String getUsername();
+
+    /**
+     * Returns the Codenvy user password.
+     * 
+     * @return the Codenvy user password.
+     */
+    String getPassword();
+
+    /**
+     * Returns if the user {@linkplain com.codenvy.client.auth.Credentials Credentials} must be stored.
+     * 
+     * @return {@code true} if the user {@linkplain com.codenvy.client.auth.Credentials Credentials} must be stored, {@code false}
+     *         otherwise.
+     */
+    boolean isStoreUserCredentials();
 }
