@@ -12,6 +12,10 @@ package com.codenvy.eclipse.ui.preferences;
 
 import static com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.ListEditor;
@@ -31,6 +35,7 @@ import com.codenvy.eclipse.ui.CodenvyUIPlugin;
  * 
  * @see CodenvyPreferencesInitializer
  * @author Stéphane Daviet
+ * @author Kevin Pollet
  */
 public final class CodenvyPreferencesPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
     @Override
@@ -48,8 +53,9 @@ public final class CodenvyPreferencesPage extends FieldEditorPreferencePage impl
             @Override
             protected String getNewInputObject() {
                 // Give the user an input dialog to enter its new location
-                final InputDialog dialog = new InputDialog(getShell(), "Add a remote Codenvy repository location",
-                                                           "Enter the URL of the repository", null, null);
+                final InputDialog dialog =
+                                           new InputDialog(getShell(), "Add a remote Codenvy repository location",
+                                                           "Enter the URL of the repository", null, new CodenvyRepositoryValidator());
                 if (dialog.open() != Window.OK) {
                     return null;
                 }
@@ -75,5 +81,36 @@ public final class CodenvyPreferencesPage extends FieldEditorPreferencePage impl
 
         locations.loadDefault();
         addField(locations);
+    }
+
+    /**
+     * {@link IInputValidator} used to validate that the input text is an URL.
+     * 
+     * @author Kevin Pollet
+     */
+    private static class CodenvyRepositoryValidator implements IInputValidator {
+        private static final String ERROR_MESSAGE = "This is not a valid Codenvy repository URL";
+
+        @Override
+        public String isValid(String newText) {
+            if (StringHelper.isNullOrEmpty(newText)) {
+                return ERROR_MESSAGE;
+            }
+
+            try {
+
+                final URL codenvyRepositoryURL = new URL(newText);
+                final String protocol = codenvyRepositoryURL.getProtocol();
+
+                if (!(protocol.equals("http") || protocol.equals("https"))) {
+                    return ERROR_MESSAGE;
+                }
+
+            } catch (MalformedURLException e) {
+                return ERROR_MESSAGE;
+            }
+
+            return null;
+        }
     }
 }
