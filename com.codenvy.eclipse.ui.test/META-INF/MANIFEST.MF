@@ -6,8 +6,6 @@ Bundle-Name: Codenvy Eclipse Plugin :: UI Test
 Bundle-Vendor: Codenvy
 Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
-Bundle-ClassPath: patch.jar,
- .
 Fragment-Host: com.codenvy.platform-api-client-java.codenvy-platform-api-client-java-core;bundle-version="1.0.0.SNAPSHOT"
 Comment: import org.junit.runner see https://bugs.eclipse.org/bugs/show_bug.cgi?id=369266
 Import-Package: com.codenvy.eclipse.core;version="1.0.0.qualifier",

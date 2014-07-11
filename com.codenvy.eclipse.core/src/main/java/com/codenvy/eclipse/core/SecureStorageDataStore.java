@@ -17,7 +17,6 @@ import org.eclipse.equinox.security.storage.StorageException;
 
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.Credentials;
-import com.codenvy.client.auth.Token;
 import com.codenvy.client.store.DataStore;
 
 /**
@@ -57,9 +56,9 @@ public final class SecureStorageDataStore implements DataStore<String, Credentia
             final String token = node.get(CODENVY_TOKEN_KEY_NAME, null);
 
             return CodenvyAPI.getClient().newCredentialsBuilder().withUsername(username)
-                                            .withPassword(password)
-                                            .withToken(CodenvyAPI.getClient().newTokenBuilder(token).build())
-                                            .build();
+                             .withPassword(password)
+                             .withToken(CodenvyAPI.getClient().newTokenBuilder(token).build())
+                             .build();
 
         } catch (StorageException e) {
             throw new RuntimeException(e);

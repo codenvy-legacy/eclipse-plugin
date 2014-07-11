@@ -13,8 +13,6 @@ package com.codenvy.eclipse.core.utils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.codenvy.eclipse.core.utils.StringHelper;
-
 /**
  * {@link StringHelper} test.
  * 

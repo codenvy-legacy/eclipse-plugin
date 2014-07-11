@@ -37,7 +37,6 @@ import org.eclipse.swt.widgets.Text;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyUnknownHostException;
 import com.codenvy.client.auth.CodenvyAuthenticationException;
-import com.codenvy.client.auth.Credentials;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;

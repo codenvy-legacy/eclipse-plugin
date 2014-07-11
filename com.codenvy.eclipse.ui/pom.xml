@@ -25,22 +25,4 @@
 	<artifactId>com.codenvy.eclipse.ui</artifactId>
 	<packaging>eclipse-plugin</packaging>
 	<name>Codenvy Eclipse Plugin :: UI</name>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-compiler-plugin</artifactId>
-				<configuration>
-					<extraClasspathElements>
-						<dependency>
-							<groupId>com.fasterxml.jackson.core</groupId>
-							<artifactId>jackson-annotations</artifactId>
-							<version>${version.jackson}</version>
-						</dependency>
-					</extraClasspathElements>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

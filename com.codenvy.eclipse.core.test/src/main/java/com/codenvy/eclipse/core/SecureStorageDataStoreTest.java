@@ -26,7 +26,6 @@ import org.junit.Test;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyClient;
 import com.codenvy.client.auth.Credentials;
-import com.codenvy.client.auth.Token;
 import com.codenvy.client.store.DataStore;
 
 /**
