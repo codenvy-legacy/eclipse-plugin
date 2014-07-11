@@ -74,6 +74,7 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
         setTitle("Codenvy Authentication");
         setDescription("Authenticate with your Codenvy account.");
         setImageDescriptor(CodenvyUIPlugin.getDefault().getImageRegistry().getDescriptor(WIZARD_LOGO));
+        setPageComplete(false);
     }
 
     @Override

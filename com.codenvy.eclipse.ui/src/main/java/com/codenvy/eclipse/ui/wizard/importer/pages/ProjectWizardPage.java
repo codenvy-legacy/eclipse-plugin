@@ -75,6 +75,8 @@ import com.google.common.collect.ImmutableList;
  */
 @SuppressWarnings("restriction")
 public final class ProjectWizardPage extends WizardPage implements IPageChangedListener {
+    private static final String NO_SELECTED_PROJECTS_ERROR_MESSAGE = "Select a Codenvy project to import.";
+
     private ComboViewer         workspaceComboViewer;
     private CheckboxTableViewer projectTableViewer;
     private WorkingSetGroup     workingSetGroup;
@@ -163,7 +165,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
                 setCheckedProjects();
-                setPageComplete(projectTableViewer.getCheckedElements().length > 0);
+                validatePage();
             }
         });
 
@@ -185,7 +187,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
                 projectTableViewer.setAllChecked(true);
 
                 setCheckedProjects();
-                setPageComplete(projectTableViewer.getCheckedElements().length > 0);
+                validatePage();
             }
         });
 
@@ -198,7 +200,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
                 projectTableViewer.setAllChecked(false);
 
                 setCheckedProjects();
-                setPageComplete(projectTableViewer.getCheckedElements().length > 0);
+                validatePage();
             }
         });
 
@@ -223,7 +225,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
             projectTableViewer.setInput(null);
             workspaceComboViewer.setInput(null);
             loadWorkspaces();
-            setPageComplete(!getProjects().isEmpty());
+            validatePage();
         }
     }
 
@@ -256,6 +258,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         try {
 
             projectTableViewer.setInput(null);
+            validatePage();
 
             getContainer().run(true, false, new IRunnableWithProgress() {
                 @Override
@@ -277,7 +280,6 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
                                                                                          .withPassword(password)
                                                                                          .storeOnlyToken(!isStoreUserCredentials)
                                                                                          .build();
-
 
                                 final Codenvy codenvy = CodenvyPlugin.getDefault()
                                                                      .getCodenvyBuilder(platformURL, username)
@@ -346,6 +348,11 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
             selectedProjects.add((Project)oneProject);
         }
         return selectedProjects;
+    }
+
+    private void validatePage() {
+        setErrorMessage(projectTableViewer.getCheckedElements().length <= 0 ? NO_SELECTED_PROJECTS_ERROR_MESSAGE : null);
+        setPageComplete(projectTableViewer.getCheckedElements().length > 0);
     }
 
     /**
