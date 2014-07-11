@@ -30,7 +30,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardContainer;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Composite;
@@ -117,15 +116,6 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
             wizardDialog.addPageChangingListener(authenticationWizardPage);
             wizardDialog.addPageChangedListener(workspaceWizardPage);
         }
-    }
-
-    @Override
-    public boolean canFinish() {
-        final IWizardPage currentWizardPage = getContainer().getCurrentPage();
-
-        return currentWizardPage != null
-               && currentWizardPage.getName().equals(workspaceWizardPage.getName())
-               && currentWizardPage.isPageComplete();
     }
 
     @Override
