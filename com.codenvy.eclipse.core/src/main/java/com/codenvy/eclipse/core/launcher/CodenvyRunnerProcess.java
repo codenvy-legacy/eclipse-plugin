@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core.launcher;
 
-import static com.codenvy.client.model.RunnerStatus.Status.CANCELLED;
-import static com.codenvy.client.model.RunnerStatus.Status.FAILED;
-import static com.codenvy.client.model.RunnerStatus.Status.STOPPED;
+import static com.codenvy.client.model.RunnerState.CANCELLED;
+import static com.codenvy.client.model.RunnerState.FAILED;
+import static com.codenvy.client.model.RunnerState.STOPPED;
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -37,9 +37,11 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -57,7 +59,7 @@ public final class CodenvyRunnerProcess implements IProcess {
     private final Codenvy                   codenvy;
     private final Project                   project;
     private final Map<String, String>       attributes;
-    private volatile RunnerStatus.Status    status;
+    private volatile RunnerState            status;
     private long                            processId;
     private final ScheduledExecutorService  executorService;
     private Link                            webLink;
@@ -78,7 +80,7 @@ public final class CodenvyRunnerProcess implements IProcess {
         checkNotNull(codenvyMetaProject);
 
         this.launch = checkNotNull(launch);
-        this.project = new Project.Builder().withName(codenvyMetaProject.projectName)
+        this.project = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
                                             .withWorkspaceId(codenvyMetaProject.workspaceId)
                                             .build();
 
@@ -102,8 +104,8 @@ public final class CodenvyRunnerProcess implements IProcess {
                                                      .run(project)
                                                      .execute();
 
-            this.processId = runnerStatus.processId;
-            this.status = runnerStatus.status;
+            this.processId = runnerStatus.processId();
+            this.status = runnerStatus.status();
             synchronized (webLinkLock) {
                 this.webLink = runnerStatus.getWebLink();
             }
@@ -241,7 +243,7 @@ public final class CodenvyRunnerProcess implements IProcess {
                                                          .status(project, processId)
                                                          .execute();
 
-                status = runnerStatus.status;
+                status = runnerStatus.status();
                 synchronized (webLinkLock) {
                     webLink = runnerStatus.getWebLink();
                 }

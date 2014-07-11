@@ -70,7 +70,7 @@ public final class RunOnCodenvyConsoleLineTracker implements IConsoleLineTracker
                                 final IWebBrowser browser = workbench.getBrowserSupport()
                                                                      .createBrowser(NAVIGATION_BAR | LOCATION_BAR, null, null, null);
 
-                                browser.openURL(new URL(runnerProcess.getWebLink().href));
+                                browser.openURL(new URL(runnerProcess.getWebLink().href()));
 
                                 debugPlugin.addDebugEventListener(new IDebugEventSetListener() {
                                     @Override

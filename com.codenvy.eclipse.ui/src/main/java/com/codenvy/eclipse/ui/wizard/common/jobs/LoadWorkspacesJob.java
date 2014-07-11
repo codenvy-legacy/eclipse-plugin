@@ -19,9 +19,10 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.Workspace.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
 
@@ -47,7 +48,7 @@ public abstract class LoadWorkspacesJob implements IRunnableWithProgress {
                     final String username = credentialsProvider.getUsername();
                     final String password = credentialsProvider.getPassword();
 
-                    final Credentials credentials = new Credentials.Builder().withUsername(username)
+                    final Credentials credentials = CodenvyAPI.getClient().newCredentialsBuilder().withUsername(username)
                                                                              .withPassword(password)
                                                                              .storeOnlyToken(!credentialsProvider.isStoreUserCredentials())
                                                                              .build();
@@ -57,7 +58,7 @@ public abstract class LoadWorkspacesJob implements IRunnableWithProgress {
                                                          .withCredentials(credentials)
                                                          .build();
 
-                    final List<Workspace> workspaces = codenvy.workspace()
+                    final List<? extends Workspace> workspaces = codenvy.workspace()
                                                               .all()
                                                               .execute();
 
@@ -65,7 +66,7 @@ public abstract class LoadWorkspacesJob implements IRunnableWithProgress {
 
                     final List<WorkspaceRef> workspaceRefs = new ArrayList<>();
                     for (Workspace workspace : workspaces) {
-                        workspaceRefs.add(codenvy.workspace().withName(workspace.workspaceRef.name).execute());
+                        workspaceRefs.add(codenvy.workspace().withName(workspace.workspaceRef().name()).execute());
                         monitor.worked(1);
                     }
 

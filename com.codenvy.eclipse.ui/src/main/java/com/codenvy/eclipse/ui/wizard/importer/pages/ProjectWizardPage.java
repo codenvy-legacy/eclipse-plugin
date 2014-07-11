@@ -55,9 +55,10 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.registry.WorkingSetDescriptor;
 
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.model.Project;
-import com.codenvy.client.model.Workspace.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
@@ -112,7 +113,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         workspaceComboViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                return element instanceof WorkspaceRef ? ((WorkspaceRef)element).name : super.getText(element);
+                return element instanceof WorkspaceRef ? ((WorkspaceRef)element).name() : super.getText(element);
             }
         });
         workspaceComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -137,7 +138,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         projectNameColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof Project ? ((Project)element).name : super.getText(element);
+                return element instanceof Project ? ((Project)element).name() : super.getText(element);
             }
         });
 
@@ -147,7 +148,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         projectTypeNameColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof Project ? ((Project)element).projectTypeName : super.getText(element);
+                return element instanceof Project ? ((Project)element).projectTypeName() : super.getText(element);
             }
         });
 
@@ -157,7 +158,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         projectDescriptionColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof Project ? ((Project)element).description : super.getText(element);
+                return element instanceof Project ? ((Project)element).description() : super.getText(element);
             }
         });
         projectTableViewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -276,7 +277,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
                                 final String username = wizard.getUsername();
                                 final String password = wizard.getPassword();
                                 final boolean isStoreUserCredentials = wizard.isStoreUserCredentials();
-                                final Credentials credentials = new Credentials.Builder().withUsername(username)
+                                final Credentials credentials = CodenvyAPI.getClient().newCredentialsBuilder().withUsername(username)
                                                                                          .withPassword(password)
                                                                                          .storeOnlyToken(!isStoreUserCredentials)
                                                                                          .build();
@@ -286,15 +287,15 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
                                                                      .withCredentials(credentials)
                                                                      .build();
 
-                                final List<Project> projects = codenvy.project()
-                                                                      .getWorkspaceProjects(workspaceRef.id)
+                                final List<? extends Project> projects = codenvy.project()
+                                                                      .getWorkspaceProjects(workspaceRef.id())
                                                                       .execute();
 
                                 projectTableViewer.setInput(projects);
 
                                 final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
                                 for (Project oneProject : projects) {
-                                    final IProject workspaceProject = workspaceRoot.getProject(oneProject.name);
+                                    final IProject workspaceProject = workspaceRoot.getProject(oneProject.name());
                                     projectTableViewer.setGrayed(oneProject, workspaceProject.exists());
                                 }
 

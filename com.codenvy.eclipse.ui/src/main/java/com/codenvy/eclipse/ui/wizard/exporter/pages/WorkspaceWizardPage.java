@@ -29,7 +29,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import com.codenvy.client.model.Workspace.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceRef;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
@@ -64,7 +64,7 @@ public final class WorkspaceWizardPage extends WizardPage implements IPageChange
         workspaceTableViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                return element instanceof WorkspaceRef ? ((WorkspaceRef)element).name : super.getText(element);
+                return element instanceof WorkspaceRef ? ((WorkspaceRef)element).name() : super.getText(element);
             }
         });
         workspaceTableViewer.setContentProvider(ArrayContentProvider.getInstance());
