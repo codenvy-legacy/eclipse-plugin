@@ -11,9 +11,7 @@
 package com.codenvy.eclipse.ui.preferences;
 
 import static com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer.REMOTE_REPOSITORIES_LOCATION_KEY_NAME;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import static com.google.common.collect.Sets.newHashSet;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -26,6 +24,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.codenvy.eclipse.core.utils.StringHelper;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
+import com.codenvy.eclipse.ui.utils.URLValidator;
 
 /**
  * Preferences for the Codenvy plugin. Use a {@link FieldEditorPreferencePage}, a {@link ListEditor} and an
@@ -91,25 +90,17 @@ public final class CodenvyPreferencesPage extends FieldEditorPreferencePage impl
     private static class CodenvyRepositoryValidator implements IInputValidator {
         private static final String ERROR_MESSAGE = "This is not a valid Codenvy repository URL";
 
+        private final URLValidator  urlValidator;
+
+        public CodenvyRepositoryValidator() {
+            this.urlValidator = new URLValidator(newHashSet("http", "https"));
+        }
+
         @Override
         public String isValid(String newText) {
-            if (StringHelper.isNullOrEmpty(newText)) {
+            if (!urlValidator.isValid(newText)) {
                 return ERROR_MESSAGE;
             }
-
-            try {
-
-                final URL codenvyRepositoryURL = new URL(newText);
-                final String protocol = codenvyRepositoryURL.getProtocol();
-
-                if (!(protocol.equals("http") || protocol.equals("https"))) {
-                    return ERROR_MESSAGE;
-                }
-
-            } catch (MalformedURLException e) {
-                return ERROR_MESSAGE;
-            }
-
             return null;
         }
     }

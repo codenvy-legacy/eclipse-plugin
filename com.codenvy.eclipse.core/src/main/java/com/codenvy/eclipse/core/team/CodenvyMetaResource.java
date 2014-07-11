@@ -16,7 +16,7 @@ import static org.eclipse.core.resources.IResource.ROOT;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
-import com.codenvy.client.auth.AuthenticationException;
+import com.codenvy.client.auth.CodenvyAuthenticationException;
 import com.codenvy.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 
@@ -53,7 +53,7 @@ public final class CodenvyMetaResource {
                                                     .isResource(codenvyProject, resource.getProjectRelativePath().toString())
                                                     .execute();
 
-                    } catch (AuthenticationException e) {
+                    } catch (CodenvyAuthenticationException e) {
                         this.tracked = false;
                     }
                 }

@@ -12,6 +12,7 @@ package com.codenvy.eclipse.ui.wizard.common.pages;
 
 import static com.codenvy.eclipse.core.utils.StringHelper.isNullOrEmpty;
 import static com.codenvy.eclipse.ui.Images.WIZARD_LOGO;
+import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 
 import org.eclipse.jface.dialogs.IPageChangingListener;
@@ -33,12 +34,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.codenvy.client.auth.AuthenticationException;
+import com.codenvy.client.CodenvyUnknownHostException;
+import com.codenvy.client.auth.CodenvyAuthenticationException;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;
 import com.codenvy.eclipse.ui.utils.SecureStorageHelper;
+import com.codenvy.eclipse.ui.utils.URLValidator;
 import com.codenvy.eclipse.ui.widgets.ComboAutoCompleteField;
 import com.google.common.collect.ObjectArrays;
 
@@ -49,6 +52,10 @@ import com.google.common.collect.ObjectArrays;
  * @author Stéphane Daviet
  */
 public final class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
+    private static final String    CODENVY_REPOSITORY_ERROR_MESSAGE       = "This is not a valid Codenvy repository URL.";
+    private static final String    CODENVY_MANDATORY_FIELDS_ERROR_MESSAGE = "Username, Password and URL are mandatory.";
+    private static final String    CODENVY_AUTHENTIFICATION_ERROR_MESSAGE = "Authentication failed: verify URL, Username and Password.";
+
     @SuppressWarnings("unused")
     private ComboAutoCompleteField urlProposals;
     private Combo                  urls;
@@ -65,9 +72,8 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
         super(AuthenticationWizardPage.class.getSimpleName());
 
         setTitle("Codenvy Authentication");
-        setDescription("Authenticate with your Codenvy account");
+        setDescription("Authenticate with your Codenvy account.");
         setImageDescriptor(CodenvyUIPlugin.getDefault().getImageRegistry().getDescriptor(WIZARD_LOGO));
-        setPageComplete(false);
     }
 
     @Override
@@ -108,19 +114,19 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
         storeUserCredentials.setSelection(true);
         storeUserCredentials.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-        final PageCompleteListener pageCompleteListener = new PageCompleteListener();
-        urls.addKeyListener(pageCompleteListener);
-        urls.addSelectionListener(pageCompleteListener);
-        usernames.addKeyListener(pageCompleteListener);
-        usernames.addSelectionListener(pageCompleteListener);
-        password.addKeyListener(pageCompleteListener);
-        storeUserCredentials.addKeyListener(pageCompleteListener);
-
         final AutofillFieldsListener autofillFieldsListener = new AutofillFieldsListener();
         urls.addModifyListener(autofillFieldsListener);
         usernames.addModifyListener(autofillFieldsListener);
 
+        final PageValidator pageValidator = new PageValidator();
+        urls.addKeyListener(pageValidator);
+        urls.addSelectionListener(pageValidator);
+        usernames.addKeyListener(pageValidator);
+        usernames.addSelectionListener(pageValidator);
+        password.addKeyListener(pageValidator);
+
         setControl(wizardContainer);
+        validatePage();
     }
 
 
@@ -150,8 +156,8 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
 
                 setErrorMessage(null);
 
-            } catch (AuthenticationException e) {
-                setErrorMessage("Codenvy authentication failed: verify URL, Username and Password.");
+            } catch (CodenvyAuthenticationException | CodenvyUnknownHostException e) {
+                setErrorMessage(CODENVY_AUTHENTIFICATION_ERROR_MESSAGE);
                 event.doit = false;
             }
         }
@@ -209,11 +215,28 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
     }
 
     private void autoFillPassword() {
-        if (!isNullOrEmpty(usernames.getText())) {
+        if (!isNullOrEmpty(usernames.getText()) && !isNullOrEmpty(urls.getText())) {
             final String storedPassword = SecureStorageHelper.getPassword(urls.getText(), usernames.getText());
             if (storedPassword != null && !storedPassword.isEmpty()) {
                 password.setText(storedPassword);
             }
+        }
+    }
+
+    private void validatePage() {
+        final URLValidator urlValidator = new URLValidator(newHashSet("http", "https"));
+
+        if (isBlankFields()) {
+            setPageComplete(false);
+            setErrorMessage(CODENVY_MANDATORY_FIELDS_ERROR_MESSAGE);
+
+        } else if (!urlValidator.isValid(urls.getText())) {
+            setPageComplete(false);
+            setErrorMessage(CODENVY_REPOSITORY_ERROR_MESSAGE);
+
+        } else {
+            setPageComplete(true);
+            setErrorMessage(null);
         }
     }
 
@@ -225,24 +248,24 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
         return isUrlsBlank || isUsernameBlank || isPasswordBlank;
     }
 
-    private class PageCompleteListener extends KeyAdapter implements SelectionListener {
+    private final class PageValidator extends KeyAdapter implements SelectionListener {
         @Override
         public void widgetDefaultSelected(SelectionEvent e) {
-            setPageComplete(!isBlankFields());
+            validatePage();
         }
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            setPageComplete(!isBlankFields());
+            validatePage();
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            setPageComplete(!isBlankFields());
+            validatePage();
         }
     }
 
-    private class AutofillFieldsListener implements ModifyListener {
+    private final class AutofillFieldsListener implements ModifyListener {
         @Override
         public void modifyText(ModifyEvent e) {
             if (e.widget == urls) {
@@ -251,7 +274,6 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
             if (e.widget == urls || e.widget == usernames) {
                 autoFillPassword();
             }
-            setPageComplete(!isBlankFields());
         }
     }
 }

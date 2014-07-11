@@ -35,7 +35,7 @@ import org.mockito.stubbing.Answer;
 
 import com.codenvy.client.BuilderClient;
 import com.codenvy.client.Codenvy;
-import com.codenvy.client.CodenvyException;
+import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.ProjectClient;
 import com.codenvy.client.Request;
 import com.codenvy.client.RunnerClient;
@@ -100,7 +100,7 @@ public class Codenvy {
         final UserClient userClientMock = Mockito.mock(UserClient.class);
         when(userClientMock.current()).thenReturn(new Request<User>() {
             @Override
-            public User execute() throws CodenvyException {
+            public User execute() throws CodenvyErrorException {
                 return new User(MOCK_USER_ID, "<none>", MOCK_USERNAME);
             }
         });
@@ -123,7 +123,7 @@ public class Codenvy {
             public Request<List<Project>> answer(final InvocationOnMock invocation) throws Throwable {
                 return new Request<List<Project>>() {
                     @Override
-                    public List<Project> execute() throws CodenvyException {
+                    public List<Project> execute() throws CodenvyErrorException {
                         if (MOCK_WORKSPACE_ID.equals(invocation.getArguments()[0])) {
                             return projects;
                         }
@@ -138,7 +138,7 @@ public class Codenvy {
             public Request<ZipInputStream> answer(final InvocationOnMock invocation) throws Throwable {
                 return new Request<ZipInputStream>() {
                     @Override
-                    public ZipInputStream execute() throws CodenvyException {
+                    public ZipInputStream execute() throws CodenvyErrorException {
                         final Project project = (Project)invocation.getArguments()[0];
                         if (MOCK_WORKSPACE_ID.equals(project.workspaceId) && MOCK_PROJECT_NAME.equals(project.name)) {
                             return new ZipInputStream(getClass().getResourceAsStream("/prj1.zip"));
@@ -154,7 +154,7 @@ public class Codenvy {
             public Request<Boolean> answer(final InvocationOnMock invocation) throws Throwable {
                 return new Request<Boolean>() {
                     @Override
-                    public Boolean execute() throws CodenvyException {
+                    public Boolean execute() throws CodenvyErrorException {
                         Boolean exists = Boolean.FALSE;
                         final Project project = (Project)invocation.getArguments()[0];
                         final String resourcePath = (String)invocation.getArguments()[1];
@@ -194,7 +194,7 @@ public class Codenvy {
 
         when(workspaceClientMock.all()).thenReturn(new Request<List<Workspace>>() {
             @Override
-            public List<Workspace> execute() throws CodenvyException {
+            public List<Workspace> execute() throws CodenvyErrorException {
                 return workspaces;
             }
         });
@@ -204,7 +204,7 @@ public class Codenvy {
             public Request<WorkspaceRef> answer(final InvocationOnMock invocation) throws Throwable {
                 return new Request<Workspace.WorkspaceRef>() {
                     @Override
-                    public WorkspaceRef execute() throws CodenvyException {
+                    public WorkspaceRef execute() throws CodenvyErrorException {
                         for (Workspace workspace : workspaces) {
                             if (workspace.workspaceRef.name.equals(invocation.getArguments()[0])) {
                                 return workspace.workspaceRef;

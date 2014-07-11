@@ -37,7 +37,7 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
 import com.codenvy.client.Codenvy;
-import com.codenvy.client.CodenvyException;
+import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.RunnerStatus;
@@ -110,7 +110,7 @@ public final class CodenvyRunnerProcess implements IProcess {
 
             executorService.scheduleAtFixedRate(new CodenvyRunnerStatusThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
 
-        } catch (CodenvyException e) {
+        } catch (CodenvyErrorException e) {
             terminateWithAnError(e);
         }
     }
@@ -144,12 +144,12 @@ public final class CodenvyRunnerProcess implements IProcess {
             status = STOPPED;
             stopProcess();
 
-        } catch (CodenvyException e) {
+        } catch (CodenvyErrorException e) {
             terminateWithAnError(e);
         }
     }
 
-    private void terminateWithAnError(CodenvyException exception) {
+    private void terminateWithAnError(CodenvyErrorException exception) {
         errorStream.append("Error: " + exception.getMessage());
         exitValue = exception.getStatus();
         status = FAILED;
@@ -281,7 +281,7 @@ public final class CodenvyRunnerProcess implements IProcess {
                     }
                 }
 
-            } catch (CodenvyException e) {
+            } catch (CodenvyErrorException e) {
                 terminateWithAnError(e);
 
             } catch (IOException e) {
