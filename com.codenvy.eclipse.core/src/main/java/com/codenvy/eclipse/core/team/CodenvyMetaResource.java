@@ -16,6 +16,7 @@ import static org.eclipse.core.resources.IResource.ROOT;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.CodenvyAuthenticationException;
 import com.codenvy.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyPlugin;
@@ -40,7 +41,7 @@ public final class CodenvyMetaResource {
                 final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
 
                 if (metaProject != null) {
-                    final Project codenvyProject = new Project.Builder().withName(metaProject.projectName)
+                    final Project codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(metaProject.projectName)
                                                                         .withWorkspaceId(metaProject.workspaceId)
                                                                         .build();
 

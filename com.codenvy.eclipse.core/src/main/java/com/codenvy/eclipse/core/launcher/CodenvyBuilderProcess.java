@@ -10,10 +10,10 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core.launcher;
 
-import static com.codenvy.client.model.BuilderStatus.Status.CANCELLED;
-import static com.codenvy.client.model.BuilderStatus.Status.FAILED;
-import static com.codenvy.client.model.BuilderStatus.Status.IN_PROGRESS;
-import static com.codenvy.client.model.BuilderStatus.Status.SUCCESSFUL;
+import static com.codenvy.client.model.BuilderState.CANCELLED;
+import static com.codenvy.client.model.BuilderState.FAILED;
+import static com.codenvy.client.model.BuilderState.IN_PROGRESS;
+import static com.codenvy.client.model.BuilderState.SUCCESSFUL;
 import static com.codenvy.eclipse.core.CodenvyPlugin.PLUGIN_ID;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -36,7 +36,9 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyErrorException;
+import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
@@ -61,7 +63,7 @@ public final class CodenvyBuilderProcess implements IProcess {
     private final StringBufferStreamMonitor outputStream;
     private final StringBufferStreamMonitor errorStream;
     private int                             exitValue;
-    private volatile BuilderStatus.Status   status;
+    private volatile BuilderState           status;
 
     /**
      * Constructs an instance of {@link CodenvyBuilderProcess}.
@@ -75,7 +77,7 @@ public final class CodenvyBuilderProcess implements IProcess {
         checkNotNull(codenvyMetaProject);
 
         this.launch = checkNotNull(launch);
-        this.project = new Project.Builder().withName(codenvyMetaProject.projectName)
+        this.project = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
                                             .withWorkspaceId(codenvyMetaProject.workspaceId)
                                             .build();
 
@@ -98,8 +100,8 @@ public final class CodenvyBuilderProcess implements IProcess {
                                                        .build(project)
                                                        .execute();
 
-            this.taskId = builderStatus.taskId;
-            this.status = builderStatus.status;
+            this.taskId = builderStatus.taskId();
+            this.status = builderStatus.status();
 
             executorService.scheduleAtFixedRate(new CodenvyBuilderThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
 
@@ -230,7 +232,7 @@ public final class CodenvyBuilderProcess implements IProcess {
                 final Link downloadLink = builderStatus.getDownloadLink();
                 boolean isLogsAppended = false;
 
-                status = builderStatus.status;
+                status = builderStatus.status();
 
                 if (status == IN_PROGRESS || status == SUCCESSFUL || status == FAILED) {
                     isLogsAppended = appendLogsToOutputStream();
@@ -238,7 +240,7 @@ public final class CodenvyBuilderProcess implements IProcess {
 
                 if (isTerminated() && !isLogsAppended) {
                     if (downloadLink != null) {
-                        outputStream.append("\n\nLink to download build result: " + downloadLink.href + "\n");
+                        outputStream.append("\n\nLink to download build result: " + downloadLink.href() + "\n");
                     }
 
                     stopProcess();

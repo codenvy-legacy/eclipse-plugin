@@ -23,6 +23,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codenvy.client.CodenvyAPI;
+import com.codenvy.client.CodenvyClient;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.auth.Token;
 import com.codenvy.client.store.DataStore;
@@ -45,10 +47,12 @@ public class SecureStorageDataStoreTest {
 
     private final ISecurePreferences codenvyNode;
     private ISecurePreferences       urlNode;
+    private CodenvyClient            codenvyClient;
 
     public SecureStorageDataStoreTest() {
         final ISecurePreferences root = SecurePreferencesFactory.getDefault();
         this.codenvyNode = root.node(CODENVY_NODE_NAME);
+        this.codenvyClient = CodenvyAPI.getClient();
     }
 
     @Before
@@ -86,14 +90,14 @@ public class SecureStorageDataStoreTest {
         final Credentials storedCredentials = dataStore.get(BAR_USERNAME);
 
         Assert.assertNotNull(storedCredentials);
-        Assert.assertEquals(BAR_PASSWORD, storedCredentials.password);
-        Assert.assertEquals(new Token(BAR_TOKEN), storedCredentials.token);
+        Assert.assertEquals(BAR_PASSWORD, storedCredentials.password());
+        Assert.assertEquals(codenvyClient.newTokenBuilder(BAR_TOKEN).build(), storedCredentials.token());
     }
 
     @Test(expected = NullPointerException.class)
     public void testPutWithNullUsername() {
-        final Credentials credentials = new Credentials.Builder().withPassword(BAR_PASSWORD)
-                                                                 .withToken(new Token(BAR_TOKEN))
+        final Credentials credentials = codenvyClient.newCredentialsBuilder().withPassword(BAR_PASSWORD)
+                                                                 .withToken(codenvyClient.newTokenBuilder(BAR_TOKEN).build())
                                                                  .build();
 
         new SecureStorageDataStore(urlNode).put(null, credentials);
@@ -107,8 +111,8 @@ public class SecureStorageDataStoreTest {
     @Test
     public void testPut() throws StorageException {
         final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
-        final Credentials credentials = new Credentials.Builder().withPassword(FOO_PASSWORD)
-                                                                 .withToken(new Token(FOO_TOKEN))
+        final Credentials credentials = codenvyClient.newCredentialsBuilder().withPassword(FOO_PASSWORD)
+                                                                 .withToken(codenvyClient.newTokenBuilder(FOO_TOKEN).build())
                                                                  .build();
 
         final Credentials storedCredentials = dataStore.put(FOO_USERNAME, credentials);
@@ -122,8 +126,8 @@ public class SecureStorageDataStoreTest {
     @Test
     public void testPutWithStoreOnlyToken() throws StorageException {
         final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
-        final Credentials credentials = new Credentials.Builder().withPassword(FOO_PASSWORD)
-                                                                 .withToken(new Token(FOO_TOKEN))
+        final Credentials credentials = codenvyClient.newCredentialsBuilder().withPassword(FOO_PASSWORD)
+                                                                 .withToken(codenvyClient.newTokenBuilder(FOO_TOKEN).build())
                                                                  .storeOnlyToken(true)
                                                                  .build();
 
@@ -139,14 +143,14 @@ public class SecureStorageDataStoreTest {
     @Test
     public void testPutOnExitingNode() throws StorageException {
         final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
-        final Credentials fooCredentials = new Credentials.Builder().withUsername(FOO_USERNAME)
+        final Credentials fooCredentials = codenvyClient.newCredentialsBuilder().withUsername(FOO_USERNAME)
                                                                     .withPassword(FOO_PASSWORD)
-                                                                    .withToken(new Token(FOO_TOKEN))
+                                                                    .withToken(codenvyClient.newTokenBuilder(FOO_TOKEN).build())
                                                                     .build();
 
-        final Credentials barCredentials = new Credentials.Builder().withUsername(BAR_USERNAME)
+        final Credentials barCredentials = codenvyClient.newCredentialsBuilder().withUsername(BAR_USERNAME)
                                                                     .withPassword(BAR_PASSWORD)
-                                                                    .withToken(new Token(BAR_TOKEN))
+                                                                    .withToken(codenvyClient.newTokenBuilder(BAR_TOKEN).build())
                                                                     .build();
 
         final Credentials storedCredentials = dataStore.put(BAR_USERNAME, fooCredentials);
@@ -174,9 +178,9 @@ public class SecureStorageDataStoreTest {
     public void testDelete() {
         final DataStore<String, Credentials> dataStore = new SecureStorageDataStore(urlNode);
         final Credentials storedCredentials = dataStore.delete(BAR_USERNAME);
-        final Credentials credentials = new Credentials.Builder().withUsername(BAR_USERNAME)
+        final Credentials credentials = codenvyClient.newCredentialsBuilder().withUsername(BAR_USERNAME)
                                                                  .withPassword(BAR_PASSWORD)
-                                                                 .withToken(new Token(BAR_TOKEN))
+                                                                 .withToken(codenvyClient.newTokenBuilder(BAR_TOKEN).build())
                                                                  .build();
 
         Assert.assertNotNull(storedCredentials);

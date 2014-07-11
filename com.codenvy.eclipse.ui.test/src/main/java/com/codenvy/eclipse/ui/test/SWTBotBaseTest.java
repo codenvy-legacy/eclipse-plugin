@@ -37,6 +37,8 @@ import org.eclipse.ui.PlatformUI;
 import org.junit.After;
 import org.junit.Before;
 
+import com.codenvy.client.CodenvyAPI;
+import com.codenvy.eclipse.client.fake.FakeCodenvyClient;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 
 /**
@@ -55,6 +57,9 @@ public class SWTBotBaseTest {
 
     @Before
     public void baseBeforeTest() {
+    	// Sets codenvy fake API
+    	CodenvyAPI.setClient(new FakeCodenvyClient());
+    	    	
         UIThreadRunnable.syncExec(new VoidResult() {
             @Override
             public void run() {
