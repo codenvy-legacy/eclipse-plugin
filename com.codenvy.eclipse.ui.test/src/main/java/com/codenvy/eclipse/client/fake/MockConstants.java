@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.client;
+package com.codenvy.eclipse.client.fake;
 
 /**
  * Mock constants.

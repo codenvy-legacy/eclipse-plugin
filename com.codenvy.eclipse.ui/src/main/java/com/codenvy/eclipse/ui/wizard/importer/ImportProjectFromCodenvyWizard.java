@@ -121,13 +121,13 @@ public final class ImportProjectFromCodenvyWizard extends Wizard implements IImp
                     final List<IProject> importedProjects = new ArrayList<>();
                     for (final Project oneProject : projects) {
                         final IPath workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-                        final IPath newProjectLocation = workspaceLocation != null ? workspaceLocation.append(oneProject.name) : null;
+                        final IPath newProjectLocation = workspaceLocation != null ? workspaceLocation.append(oneProject.name()) : null;
 
                         if (newProjectLocation != null && newProjectLocation.toFile().exists()) {
                             Display.getDefault().syncExec(new Runnable() {
                                 @Override
                                 public void run() {
-                                    final String message = "Project with name '" + oneProject.name + "' exists in workspace, override?";
+                                    final String message = "Project with name '" + oneProject.name() + "' exists in workspace, override?";
                                     final boolean override = MessageDialog.openQuestion(getShell(), "Override existing project", message);
                                     if (override) {
                                         deleteDirectory(newProjectLocation.toFile());
@@ -197,7 +197,7 @@ public final class ImportProjectFromCodenvyWizard extends Wizard implements IImp
                                                            .execute();
 
         return createIProjectFromZipStream(zipInputStream,
-                                           new CodenvyMetaProject(platformURL, username, project.name, project.workspaceId), monitor);
+                                           new CodenvyMetaProject(platformURL, username, project.name(), project.workspaceId()), monitor);
     }
 
     /**

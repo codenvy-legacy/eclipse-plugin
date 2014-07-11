@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.test.importer;
 
-import static com.codenvy.client.MockConstants.MOCK_PROJECT_NAME;
-import static com.codenvy.client.MockConstants.MOCK_WORKSPACE_NAME;
+import static com.codenvy.eclipse.client.fake.MockConstants.MOCK_PROJECT_NAME;
+import static com.codenvy.eclipse.client.fake.MockConstants.MOCK_WORKSPACE_NAME;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;

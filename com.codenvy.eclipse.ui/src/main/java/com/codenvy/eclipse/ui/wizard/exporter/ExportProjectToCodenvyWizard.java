@@ -40,8 +40,9 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.model.Project;
-import com.codenvy.client.model.Workspace.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceRef;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -147,8 +148,8 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                                   .getCodenvyBuilder(platformURL, username)
                                                                   .build();
 
-                             final List<Project> remoteWorkspaceProjects = codenvy.project()
-                                                                                  .getWorkspaceProjects(workspaceRef.id)
+                             final List<? extends Project> remoteWorkspaceProjects = codenvy.project()
+                                                                                  .getWorkspaceProjects(workspaceRef.id())
                                                                                   .execute();
 
                              for (final IProject project : projects) {
@@ -157,7 +158,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                              Iterables.tryFind(remoteWorkspaceProjects, new Predicate<Project>() {
                                                                  @Override
                                                                  public boolean apply(Project input) {
-                                                                     return input.name.equals(project.getName());
+                                                                     return input.name().equals(project.getName());
                                                                  }
                                                              }).orNull();
 
@@ -167,11 +168,11 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                              codenvyProjectType = CodenvyNature.NATURE_MAPPINGS.inverse().get(project.getNature(natureId));
                                          }
                                          remoteProject =
-                                                         new Project.Builder().withProjectTypeId(codenvyProjectType != null
+                                                         CodenvyAPI.getClient().newProjectBuilder().withProjectTypeId(codenvyProjectType != null
                                                              ? codenvyProjectType : "unknown")
                                                                               .withName(project.getName())
-                                                                              .withWorkspaceId(workspaceRef.id)
-                                                                              .withWorkspaceName(workspaceRef.name)
+                                                                              .withWorkspaceId(workspaceRef.id())
+                                                                              .withWorkspaceName(workspaceRef.name())
                                                                               .build();
 
                                          codenvy.project()
@@ -181,7 +182,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
 
                                      final InputStream archiveInputStream = exportIProjectToZipStream(project, monitor);
                                      codenvy.project()
-                                            .importArchive(workspaceRef.id, remoteProject, archiveInputStream)
+                                            .importArchive(workspaceRef.id(), remoteProject, archiveInputStream)
                                             .execute();
 
                                      IFolder codenvyFolder = project.getFolder(new Path(".codenvy"));
@@ -196,7 +197,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                                                          monitor);
 
                                      CodenvyMetaProject.create(project, new CodenvyMetaProject(platformURL, username, project.getName(),
-                                                                                               workspaceRef.id));
+                                                                                               workspaceRef.id()));
                                      RepositoryProvider.map(project, CodenvyProvider.PROVIDER_ID);
 
                                      final IProjectDescription newProjectDescription = project.getDescription();

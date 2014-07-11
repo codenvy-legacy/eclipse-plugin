@@ -15,6 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.StorageException;
 
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.auth.Token;
 import com.codenvy.client.store.DataStore;
@@ -55,9 +56,9 @@ public final class SecureStorageDataStore implements DataStore<String, Credentia
             final String password = node.get(CODENVY_PASSWORD_KEY_NAME, null);
             final String token = node.get(CODENVY_TOKEN_KEY_NAME, null);
 
-            return new Credentials.Builder().withUsername(username)
+            return CodenvyAPI.getClient().newCredentialsBuilder().withUsername(username)
                                             .withPassword(password)
-                                            .withToken(new Token(token))
+                                            .withToken(CodenvyAPI.getClient().newTokenBuilder(token).build())
                                             .build();
 
         } catch (StorageException e) {
@@ -79,10 +80,10 @@ public final class SecureStorageDataStore implements DataStore<String, Credentia
             node.remove(CODENVY_PASSWORD_KEY_NAME);
             node.remove(CODENVY_TOKEN_KEY_NAME);
 
-            if (!credentials.storeOnlyToken) {
-                node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password, true);
+            if (!credentials.isStoreOnlyToken()) {
+                node.put(CODENVY_PASSWORD_KEY_NAME, credentials.password(), true);
             }
-            node.put(CODENVY_TOKEN_KEY_NAME, credentials.token.value, true);
+            node.put(CODENVY_TOKEN_KEY_NAME, credentials.token().value(), true);
 
             return previousCredentials;
 

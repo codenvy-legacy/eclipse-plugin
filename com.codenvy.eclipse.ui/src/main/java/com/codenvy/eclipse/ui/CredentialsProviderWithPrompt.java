@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.widgets.Display;
 
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.auth.CredentialsProvider;
 import com.codenvy.eclipse.ui.widgets.CredentialsDialog;
@@ -86,7 +87,7 @@ public final class CredentialsProviderWithPrompt implements CredentialsProvider 
             public void run() {
                 final CredentialsDialog credentialsDialog = new CredentialsDialog(username, Display.getDefault().getActiveShell());
                 if (credentialsDialog.open() == OK) {
-                    credentials.set(new Credentials.Builder().withUsername(credentialsDialog.getUsername())
+                    credentials.set(CodenvyAPI.getClient().newCredentialsBuilder().withUsername(credentialsDialog.getUsername())
                                                              .withPassword(credentialsDialog.getPassword())
                                                              .storeOnlyToken(!credentialsDialog.isStoreUserCredentials())
                                                              .build());

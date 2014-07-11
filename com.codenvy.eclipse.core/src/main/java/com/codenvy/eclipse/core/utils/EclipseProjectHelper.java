@@ -46,6 +46,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.model.Project;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
@@ -244,7 +245,7 @@ public final class EclipseProjectHelper {
                                                  .build();
 
             final InputStream eclipseProjectZip = exportIProjectToZipStream(eclipseProject, monitor);
-            final Project projectToUpdate = new Project.Builder().withName(codenvyMetaProject.projectName)
+            final Project projectToUpdate = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
                                                                  .withWorkspaceId(codenvyMetaProject.workspaceId)
                                                                  .build();
 
@@ -311,7 +312,7 @@ public final class EclipseProjectHelper {
                                                  .getCodenvyBuilder(codenvyMetaProject.url, codenvyMetaProject.username)
                                                  .build();
 
-            final Project codenvyProject = new Project.Builder().withName(codenvyMetaProject.projectName)
+            final Project codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
                                                                 .withWorkspaceId(codenvyMetaProject.workspaceId)
                                                                 .build();
 

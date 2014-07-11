@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyUnknownHostException;
 import com.codenvy.client.auth.CodenvyAuthenticationException;
 import com.codenvy.client.auth.Credentials;
@@ -138,7 +139,7 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
 
                 CodenvyPlugin.getDefault()
                              .getCodenvyBuilder(getURL(), getUsername())
-                             .withCredentials(new Credentials.Builder().withUsername(getUsername()).withPassword(getPassword()).build())
+                             .withCredentials(CodenvyAPI.getClient().newCredentialsBuilder().withUsername(getUsername()).withPassword(getPassword()).build())
                              .build()
                              .user()
                              .current()
