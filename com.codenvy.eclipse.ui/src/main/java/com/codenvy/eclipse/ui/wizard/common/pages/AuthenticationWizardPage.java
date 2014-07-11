@@ -274,6 +274,7 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
             if (e.widget == urls || e.widget == usernames) {
                 autoFillPassword();
             }
+            validatePage();
         }
     }
 }
