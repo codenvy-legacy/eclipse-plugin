@@ -127,7 +127,6 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
         password.addKeyListener(pageValidator);
 
         setControl(wizardContainer);
-        validatePage();
     }
 
 
