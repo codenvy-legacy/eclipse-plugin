@@ -52,9 +52,9 @@ import com.google.common.collect.ObjectArrays;
  * @author Stéphane Daviet
  */
 public final class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
-    private static final String    CODENVY_REPOSITORY_ERROR_MESSAGE       = "This is not a valid Codenvy repository URL.";
-    private static final String    CODENVY_MANDATORY_FIELDS_ERROR_MESSAGE = "Username, Password and URL are mandatory.";
-    private static final String    CODENVY_AUTHENTIFICATION_ERROR_MESSAGE = "Authentication failed: verify URL, Username and Password.";
+    private static final String    REPOSITORY_URL_ERROR_MESSAGE   = "This is not a valid Codenvy repository URL.";
+    private static final String    MANDATORY_FIELDS_ERROR_MESSAGE = "Username, Password and URL are mandatory.";
+    private static final String    AUTHENTICATION_ERROR_MESSAGE   = "Authentication failed: verify URL, Username and Password.";
 
     @SuppressWarnings("unused")
     private ComboAutoCompleteField urlProposals;
@@ -157,7 +157,7 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
                 setErrorMessage(null);
 
             } catch (CodenvyAuthenticationException | CodenvyUnknownHostException e) {
-                setErrorMessage(CODENVY_AUTHENTIFICATION_ERROR_MESSAGE);
+                setErrorMessage(AUTHENTICATION_ERROR_MESSAGE);
                 event.doit = false;
             }
         }
@@ -228,11 +228,11 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
 
         if (isBlankFields()) {
             setPageComplete(false);
-            setErrorMessage(CODENVY_MANDATORY_FIELDS_ERROR_MESSAGE);
+            setErrorMessage(MANDATORY_FIELDS_ERROR_MESSAGE);
 
         } else if (!urlValidator.isValid(urls.getText())) {
             setPageComplete(false);
-            setErrorMessage(CODENVY_REPOSITORY_ERROR_MESSAGE);
+            setErrorMessage(REPOSITORY_URL_ERROR_MESSAGE);
 
         } else {
             setPageComplete(true);
