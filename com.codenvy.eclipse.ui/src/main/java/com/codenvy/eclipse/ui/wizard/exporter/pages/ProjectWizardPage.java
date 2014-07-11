@@ -42,6 +42,8 @@ import com.codenvy.eclipse.ui.CodenvyUIPlugin;
  * @author Stéphane Daviet
  */
 public final class ProjectWizardPage extends WizardPage {
+    public static final String  NO_SELECTED_PROJECTS_ERROR_MESSAGE = "Select a project to push to a remote Codenvy repository.";
+
     private CheckboxTableViewer projectsTableViewer;
     private Set<IProject>       selectedProjects;
 
@@ -53,7 +55,7 @@ public final class ProjectWizardPage extends WizardPage {
         setTitle("Select workspaces project");
         setDescription("Select local projects that you want to push to a remote Codenvy repository");
         setImageDescriptor(CodenvyUIPlugin.getDefault().getImageRegistry().getDescriptor(WIZARD_LOGO));
-        setPageComplete(selectedProjects.size() > 0);
+        validatePage();
     }
 
     @Override
@@ -87,7 +89,7 @@ public final class ProjectWizardPage extends WizardPage {
                 } else {
                     selectedProjects.remove(event.getElement());
                 }
-                setPageComplete(selectedProjects.size() > 0);
+                validatePage();
             }
         });
 
@@ -107,7 +109,7 @@ public final class ProjectWizardPage extends WizardPage {
             public void widgetSelected(SelectionEvent e) {
                 projectsTableViewer.setAllChecked(true);
                 selectedProjects.addAll((Collection< ? extends IProject>)Arrays.asList(projectsTableViewer.getCheckedElements()));
-                setPageComplete(true);
+                validatePage();
             }
         });
 
@@ -119,7 +121,7 @@ public final class ProjectWizardPage extends WizardPage {
             public void widgetSelected(SelectionEvent e) {
                 projectsTableViewer.setAllChecked(false);
                 selectedProjects.clear();
-                setPageComplete(false);
+                validatePage();
             }
         });
 
@@ -133,5 +135,10 @@ public final class ProjectWizardPage extends WizardPage {
      */
     public Set<IProject> getSelectedProjects() {
         return selectedProjects;
+    }
+
+    private void validatePage() {
+        setPageComplete(selectedProjects.size() > 0);
+        setErrorMessage(selectedProjects.size() > 0 ? null : NO_SELECTED_PROJECTS_ERROR_MESSAGE);
     }
 }
