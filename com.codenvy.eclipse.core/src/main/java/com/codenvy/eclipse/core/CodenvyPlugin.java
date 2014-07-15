@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
-import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyBuilder;
 import com.codenvy.client.auth.CredentialsProvider;
@@ -77,10 +76,12 @@ public final class CodenvyPlugin extends Plugin {
      * 
      * @param url the Codenvy platform URL.
      * @param username the username.
-     * @return an instance of the {@link Codenvy.Builder}.
+     * @return an instance of the {@link CodenvyBuilder}.
      */
     public CodenvyBuilder getCodenvyBuilder(String url, String username) {
-        return CodenvyAPI.getClient().newCodenvyBuilder(url, username).withCredentialsStoreFactory(SecureStorageDataStoreFactory.INSTANCE)
-                                                 .withCredentialsProvider(credentialsProvider);
+        return CodenvyAPI.getClient()
+                         .newCodenvyBuilder(url, username)
+                         .withCredentialsStoreFactory(SecureStorageDataStoreFactory.INSTANCE)
+                         .withCredentialsProvider(credentialsProvider);
     }
 }
