@@ -24,7 +24,7 @@ Steps:
 
 2. Execute the following commands:
 
-        cd plugin-eclipse
+        cd eclipse-plugin
         mvn clean install
 
 **Warning:** It will launch UI integration tests with SWTBot, be careful not to
