@@ -20,12 +20,12 @@ Steps:
 
 1. Clone the project:
 
-    git clone https://github.com/codenvy/eclipse-plugin.git
+        git clone https://github.com/codenvy/eclipse-plugin.git
     
 2. Execute the following commands:
 
-    cd plugin-eclipse
-    mvn clean install
+        cd plugin-eclipse
+        mvn clean install
 
 **Warning:** It will launch UI integration tests with SWTBot, be careful not to
 preempt focus when those tests are running to avoid a test failure.
