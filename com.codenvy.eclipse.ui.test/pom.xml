@@ -42,6 +42,7 @@
 					<product>org.eclipse.sdk.ide</product>
 					<systemProperties>
 						<org.eclipse.swtbot.screenshots.dir>${project.build.directory}/screenshots</org.eclipse.swtbot.screenshots.dir>
+						<org.eclipse.swtbot.search.timeout>30000</org.eclipse.swtbot.search.timeout>
 					</systemProperties>
 					<dependencies>
 						<dependency>
