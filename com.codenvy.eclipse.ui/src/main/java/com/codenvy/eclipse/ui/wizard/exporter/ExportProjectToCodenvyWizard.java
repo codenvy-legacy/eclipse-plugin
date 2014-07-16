@@ -138,32 +138,36 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                                   .getCodenvyBuilder(platformURL, username)
                                                                   .build();
 
-                             final List<? extends Project> remoteWorkspaceProjects = codenvy.project()
-                                                                                  .getWorkspaceProjects(workspaceRef.id())
-                                                                                  .execute();
+                             final List< ? extends Project> remoteWorkspaceProjects = codenvy.project()
+                                                                                             .getWorkspaceProjects(workspaceRef.id())
+                                                                                             .execute();
 
                              for (final IProject project : projects) {
                                  try {
-                                     Project remoteProject =
-                                                             Iterables.tryFind(remoteWorkspaceProjects, new Predicate<Project>() {
-                                                                 @Override
-                                                                 public boolean apply(Project input) {
-                                                                     return input.name().equals(project.getName());
-                                                                 }
-                                                             }).orNull();
+                                     Project remoteProject = Iterables.tryFind(remoteWorkspaceProjects, new Predicate<Project>() {
+                                         @Override
+                                         public boolean apply(Project input) {
+                                             return input.name().equals(project.getName());
+                                         }
+                                     }).orNull();
 
                                      if (remoteProject == null) {
                                          String codenvyProjectType = null;
                                          for (String natureId : project.getDescription().getNatureIds()) {
-                                             codenvyProjectType = CodenvyNature.NATURE_MAPPINGS.inverse().get(project.getNature(natureId));
+                                             codenvyProjectType = CodenvyNature.NATURE_MAPPINGS.inverse().get(natureId);
+                                             if (codenvyProjectType != null) {
+                                                 break;
+                                             }
                                          }
+
                                          remoteProject =
-                                                         CodenvyAPI.getClient().newProjectBuilder().withProjectTypeId(codenvyProjectType != null
-                                                             ? codenvyProjectType : "unknown")
-                                                                              .withName(project.getName())
-                                                                              .withWorkspaceId(workspaceRef.id())
-                                                                              .withWorkspaceName(workspaceRef.name())
-                                                                              .build();
+                                                         CodenvyAPI.getClient()
+                                                                   .newProjectBuilder()
+                                                                   .withProjectTypeId(codenvyProjectType != null ? codenvyProjectType : "unknown")
+                                                                   .withName(project.getName())
+                                                                   .withWorkspaceId(workspaceRef.id())
+                                                                   .withWorkspaceName(workspaceRef.name())
+                                                                   .build();
 
                                          codenvy.project()
                                                 .create(remoteProject)
