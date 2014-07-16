@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.wizard.exporter;
 
+import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.createOrUpdateResourcesFromZip;
 import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.exportIProjectToZipStream;
 import static com.google.common.base.Predicates.notNull;
 
@@ -18,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.ZipInputStream;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -25,7 +27,6 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -46,15 +47,13 @@ import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
-import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
+import com.codenvy.eclipse.ui.team.CodenvyLightweightLabelDecorator;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
 import com.codenvy.eclipse.ui.wizard.common.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.exporter.pages.ProjectWizardPage;
 import com.codenvy.eclipse.ui.wizard.exporter.pages.WorkspaceWizardPage;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.ObjectArrays;
 
 /**
@@ -132,80 +131,91 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                      .run(true, true, new IRunnableWithProgress() {
                          @Override
                          public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                             monitor.beginTask("Exporting project", 1);
+                             monitor.beginTask("Exporting projects", projects.size());
 
-                             final Codenvy codenvy = CodenvyPlugin.getDefault()
-                                                                  .getCodenvyBuilder(platformURL, username)
-                                                                  .build();
+                             try {
 
-                             final List< ? extends Project> remoteWorkspaceProjects = codenvy.project()
-                                                                                             .getWorkspaceProjects(workspaceRef.id())
-                                                                                             .execute();
+                                 final Codenvy codenvy = CodenvyPlugin.getDefault()
+                                                                      .getCodenvyBuilder(platformURL, username)
+                                                                      .build();
 
-                             for (final IProject project : projects) {
-                                 try {
-                                     Project remoteProject = Iterables.tryFind(remoteWorkspaceProjects, new Predicate<Project>() {
-                                         @Override
-                                         public boolean apply(Project input) {
-                                             return input.name().equals(project.getName());
-                                         }
-                                     }).orNull();
+                                 final List< ? extends Project> remoteWorkspaceProjects = codenvy.project()
+                                                                                                 .getWorkspaceProjects(workspaceRef.id())
+                                                                                                 .execute();
 
-                                     if (remoteProject == null) {
+                                 for (final IProject oneProject : projects) {
+
+                                     if (!remoteWorkspaceProjects.contains(projects)) {
+
                                          String codenvyProjectType = null;
-                                         for (String natureId : project.getDescription().getNatureIds()) {
+                                         for (String natureId : oneProject.getDescription().getNatureIds()) {
                                              codenvyProjectType = CodenvyNature.NATURE_MAPPINGS.inverse().get(natureId);
                                              if (codenvyProjectType != null) {
                                                  break;
                                              }
                                          }
 
-                                         remoteProject =
-                                                         CodenvyAPI.getClient()
-                                                                   .newProjectBuilder()
-                                                                   .withProjectTypeId(codenvyProjectType != null ? codenvyProjectType : "unknown")
-                                                                   .withName(project.getName())
-                                                                   .withWorkspaceId(workspaceRef.id())
-                                                                   .withWorkspaceName(workspaceRef.name())
-                                                                   .build();
+                                         final Project projectToExport =
+                                                                         CodenvyAPI.getClient()
+                                                                                   .newProjectBuilder()
+                                                                                   .withProjectTypeId(codenvyProjectType != null
+                                                                                       ? codenvyProjectType : "unknown")
+                                                                                   .withName(oneProject.getName())
+                                                                                   .withWorkspaceId(workspaceRef.id())
+                                                                                   .withWorkspaceName(workspaceRef.name())
+                                                                                   .build();
 
                                          codenvy.project()
-                                                .create(remoteProject)
+                                                .create(projectToExport)
                                                 .execute();
+
+                                         final InputStream archiveInputStream = exportIProjectToZipStream(oneProject, monitor);
+                                         codenvy.project()
+                                                .importArchive(workspaceRef.id(), projectToExport, archiveInputStream)
+                                                .execute();
+
+                                         final IFolder codenvyFolder = oneProject.getFolder(new Path(".codenvy"));
+                                         if (!codenvyFolder.exists()) {
+                                             codenvyFolder.create(true, true, monitor);
+                                         }
+
+                                         final ZipInputStream codenvyFolderZip = codenvy.project()
+                                                                                        .exportResources(projectToExport, ".codenvy")
+                                                                                        .execute();
+
+                                         createOrUpdateResourcesFromZip(codenvyFolderZip, codenvyFolder, monitor);
+
+                                         CodenvyMetaProject.create(oneProject,
+                                                                   new CodenvyMetaProject(platformURL, username, oneProject.getName(),
+                                                                                          workspaceRef.id()));
+                                         RepositoryProvider.map(oneProject, CodenvyProvider.PROVIDER_ID);
+
+                                         final IProjectDescription newProjectDescription = oneProject.getDescription();
+                                         newProjectDescription.setNatureIds(ObjectArrays.concat(newProjectDescription.getNatureIds(),
+                                                                                                CodenvyNature.NATURE_ID));
+                                         oneProject.setDescription(newProjectDescription, monitor);
+
+                                         // force Codenvy provider label decoration refresh
+                                         workbench.getDisplay().syncExec(new Runnable() {
+                                             @Override
+                                             public void run() {
+                                                 workbench.getDecoratorManager()
+                                                          .update(CodenvyLightweightLabelDecorator.DECORATOR_ID);
+                                             }
+                                         });
                                      }
 
-                                     final InputStream archiveInputStream = exportIProjectToZipStream(project, monitor);
-                                     codenvy.project()
-                                            .importArchive(workspaceRef.id(), remoteProject, archiveInputStream)
-                                            .execute();
-
-                                     IFolder codenvyFolder = project.getFolder(new Path(".codenvy"));
-                                     if (!codenvyFolder.exists()) {
-                                         codenvyFolder.create(true, true, monitor);
-                                     }
-                                     EclipseProjectHelper.createOrUpdateResourcesFromZip(codenvy.project()
-                                                                                                .exportResources(remoteProject,
-                                                                                                                 ".codenvy")
-                                                                                                .execute(),
-                                                                                         codenvyFolder,
-                                                                                         monitor);
-
-                                     CodenvyMetaProject.create(project, new CodenvyMetaProject(platformURL, username, project.getName(),
-                                                                                               workspaceRef.id()));
-                                     RepositoryProvider.map(project, CodenvyProvider.PROVIDER_ID);
-
-                                     final IProjectDescription newProjectDescription = project.getDescription();
-                                     newProjectDescription.setNatureIds(ObjectArrays.concat(newProjectDescription.getNatureIds(),
-                                                                                            CodenvyNature.NATURE_ID));
-                                     project.setDescription(newProjectDescription, new NullProgressMonitor());
-                                 } catch (CoreException e) {
-                                     throw new RuntimeException(e);
+                                     monitor.worked(1);
                                  }
 
-                                 monitor.worked(1);
+                             } catch (CoreException e) {
+                                 throw new RuntimeException(e);
+                             } finally {
+                                 monitor.done();
                              }
                          }
                      });
+
         } catch (InvocationTargetException | InterruptedException e) {
             throw new RuntimeException(e);
         }

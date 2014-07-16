@@ -34,6 +34,8 @@ import com.codenvy.eclipse.core.team.CodenvyProvider;
  * @see CodenvyProvider
  */
 public final class CodenvyLightweightLabelDecorator extends LabelProvider implements ILightweightLabelDecorator {
+    public static final String    DECORATOR_ID = "com.codenvy.eclipse.ui.team.codenvyLightweightLabelDecorator";
+
     private final ImageDescriptor trackedImageDescriptor;
 
     public CodenvyLightweightLabelDecorator() {

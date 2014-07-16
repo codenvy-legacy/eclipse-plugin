@@ -40,7 +40,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.team.core.RepositoryProvider;
@@ -101,7 +100,8 @@ public final class EclipseProjectHelper {
 
                     final IProjectDescription newProjectDescription = newProject.getDescription();
                     newProjectDescription.setNatureIds(new String[]{CodenvyNature.NATURE_ID});
-                    newProject.setDescription(newProjectDescription, new NullProgressMonitor());
+                    newProject.setDescription(newProjectDescription, monitor);
+
                 } catch (CoreException e) {
                     throw new RuntimeException(e);
                 }
@@ -246,8 +246,8 @@ public final class EclipseProjectHelper {
 
             final InputStream eclipseProjectZip = exportIProjectToZipStream(eclipseProject, monitor);
             final Project projectToUpdate = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
-                                                                 .withWorkspaceId(codenvyMetaProject.workspaceId)
-                                                                 .build();
+                                                      .withWorkspaceId(codenvyMetaProject.workspaceId)
+                                                      .build();
 
             codenvy.project()
                    .importArchive(codenvyMetaProject.workspaceId, projectToUpdate, eclipseProjectZip)
@@ -313,8 +313,8 @@ public final class EclipseProjectHelper {
                                                  .build();
 
             final Project codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
-                                                                .withWorkspaceId(codenvyMetaProject.workspaceId)
-                                                                .build();
+                                                     .withWorkspaceId(codenvyMetaProject.workspaceId)
+                                                     .build();
 
             final ZipInputStream stream = codenvy.project()
                                                  .exportResources(codenvyProject, eclipseProject.getProjectRelativePath().toString())

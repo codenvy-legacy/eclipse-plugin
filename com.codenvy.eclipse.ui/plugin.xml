@@ -179,7 +179,7 @@
       <decorator
             adaptable="true"
             class="com.codenvy.eclipse.ui.team.CodenvyLightweightLabelDecorator"
-            id="com.codenvy.eclipse.ui.team.decorator"
+            id="com.codenvy.eclipse.ui.team.codenvyLightweightLabelDecorator"
             label="Codenvy"
             lightweight="true"
             location="BOTTOM_RIGHT"
