@@ -21,8 +21,12 @@ import static org.eclipse.core.runtime.IStatus.ERROR;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +48,7 @@ import com.codenvy.client.model.Project;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.eclipse.core.CodenvyPlugin;
+import com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess.WebApplicationListener.WebApplicationEvent;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 
 /**
@@ -52,25 +57,29 @@ import com.codenvy.eclipse.core.team.CodenvyMetaProject;
  * @author Kevin Pollet
  */
 public final class CodenvyRunnerProcess implements IProcess {
-    private static final int                TICK_DELAY     = 500;
-    private static final TimeUnit           TICK_TIME_UNIT = MILLISECONDS;
+    private static final int                  STATUS_CHECKER_INTERVAL        = 500;
+    private static final TimeUnit             STATUS_CHECKER_TIME_UNIT       = MILLISECONDS;
+    private static final int                  URL_CHECKER_INTERVAL           = 1000;
+    private static final int                  URL_CHECKER_NUMBER_OF_ATTEMPTS = 30;
 
-    private final ILaunch                   launch;
-    private final Codenvy                   codenvy;
-    private final Project                   project;
-    private final Map<String, String>       attributes;
-    private volatile RunnerState            status;
-    private long                            processId;
-    private final ScheduledExecutorService  executorService;
-    private Link                            webLink;
-    private final StringBufferStreamMonitor outputStream;
-    private final StringBufferStreamMonitor errorStream;
-    private int                             exitValue;
-    private final Object                    webLinkLock;
+    private final ILaunch                     launch;
+    private final Codenvy                     codenvy;
+    private final Project                     project;
+    private final Map<String, String>         attributes;
+    private volatile RunnerState              status;
+    private final Object                      statusLock;
+    private long                              processId;
+    private final ScheduledExecutorService    executorService;
+    private final StringBufferStreamMonitor   outputStream;
+    private final StringBufferStreamMonitor   errorStream;
+    private int                               exitValue;
+    private final Set<WebApplicationListener> listeners;
+    private volatile boolean                  webApplicationStarted;
+    private final Object                      webApplicationStartedLock;
 
     /**
      * Constructs an instance of {@link CodenvyRunnerProcess}.
-     * 
+     *
      * @param launch the {@link ILaunch} object.
      * @param codenvyMetaProject the {@link CodenvyMetaProject}.
      * @param project the {@link Project} to run.
@@ -81,8 +90,8 @@ public final class CodenvyRunnerProcess implements IProcess {
 
         this.launch = checkNotNull(launch);
         this.project = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
-                                            .withWorkspaceId(codenvyMetaProject.workspaceId)
-                                            .build();
+                                 .withWorkspaceId(codenvyMetaProject.workspaceId)
+                                 .build();
 
         this.codenvy = CodenvyPlugin.getDefault()
                                     .getCodenvyBuilder(codenvyMetaProject.url, codenvyMetaProject.username)
@@ -93,7 +102,10 @@ public final class CodenvyRunnerProcess implements IProcess {
         this.outputStream = new StringBufferStreamMonitor();
         this.errorStream = new StringBufferStreamMonitor();
         this.exitValue = 0;
-        this.webLinkLock = new Object();
+        this.listeners = new HashSet<>();
+        this.webApplicationStarted = false;
+        this.statusLock = new Object();
+        this.webApplicationStartedLock = new Object();
 
         this.attributes.put(ATTR_PROCESS_TYPE, getClass().getName());
         launch.addProcess(this);
@@ -106,11 +118,8 @@ public final class CodenvyRunnerProcess implements IProcess {
 
             this.processId = runnerStatus.processId();
             this.status = runnerStatus.status();
-            synchronized (webLinkLock) {
-                this.webLink = runnerStatus.getWebLink();
-            }
 
-            executorService.scheduleAtFixedRate(new CodenvyRunnerStatusThread(), 0, TICK_DELAY, TICK_TIME_UNIT);
+            executorService.scheduleAtFixedRate(new RunnerStatusChecker(), 0, STATUS_CHECKER_INTERVAL, STATUS_CHECKER_TIME_UNIT);
 
         } catch (CodenvyErrorException e) {
             terminateWithAnError(e);
@@ -132,18 +141,22 @@ public final class CodenvyRunnerProcess implements IProcess {
 
     @Override
     public boolean isTerminated() {
-        return status == STOPPED || status == CANCELLED || status == FAILED;
+        synchronized (statusLock) {
+            return status == STOPPED || status == CANCELLED || status == FAILED;
+        }
     }
 
     @Override
     public void terminate() throws DebugException {
         try {
 
-            codenvy.runner()
-                   .stop(project, processId)
-                   .execute();
+            final RunnerStatus runnerStatus = codenvy.runner()
+                                                     .stop(project, processId)
+                                                     .execute();
+            synchronized (statusLock) {
+                status = runnerStatus.status();
+            }
 
-            status = STOPPED;
             stopProcess();
 
         } catch (CodenvyErrorException e) {
@@ -154,7 +167,10 @@ public final class CodenvyRunnerProcess implements IProcess {
     private void terminateWithAnError(CodenvyErrorException exception) {
         errorStream.append("Error: " + exception.getMessage());
         exitValue = exception.getStatus();
-        status = FAILED;
+
+        synchronized (statusLock) {
+            status = FAILED;
+        }
 
         stopProcess();
     }
@@ -162,6 +178,12 @@ public final class CodenvyRunnerProcess implements IProcess {
     private void stopProcess() {
         executorService.shutdownNow();
         fireDebugEvent(DebugEvent.TERMINATE);
+
+        synchronized (webApplicationStartedLock) {
+            if (webApplicationStarted) {
+                fireWebApplicationStoppedEvent();
+            }
+        }
     }
 
     @Override
@@ -195,18 +217,13 @@ public final class CodenvyRunnerProcess implements IProcess {
 
     @Override
     public void setAttribute(String key, String value) {
-        synchronized (attributes) {
-            attributes.put(key, value);
-        }
-
+        attributes.put(key, value);
         fireDebugEvent(DebugEvent.CHANGE);
     }
 
     @Override
     public String getAttribute(String key) {
-        synchronized (attributes) {
-            return attributes.get(key);
-        }
+        return attributes.get(key);
     }
 
     @Override
@@ -217,9 +234,43 @@ public final class CodenvyRunnerProcess implements IProcess {
         return exitValue;
     }
 
-    public Link getWebLink() {
-        synchronized (webLinkLock) {
-            return webLink;
+    /**
+     * Adds an {@link WebApplicationListener}.
+     *
+     * @param listener the {@link WebApplicationListener} to add.
+     * @return {@code true} if the {@link WebApplicationListener} is not already added, {@code false} otherwise.
+     */
+    public boolean addWebApplicationListener(WebApplicationListener listener) {
+        synchronized (listeners) {
+            return listeners.add(listener);
+        }
+    }
+
+    /**
+     * Removes an {@link WebApplicationListener}.
+     *
+     * @param listener the {@link WebApplicationListener} to remove.
+     * @return {@code true} if the {@link WebApplicationListener} is removed, {@code false} otherwise.
+     */
+    public boolean removeWebApplicationListener(WebApplicationListener listener) {
+        synchronized (listeners) {
+            return listeners.remove(listener);
+        }
+    }
+
+    private void fireWebApplicationStartedEvent(Link webApplicationLink) {
+        synchronized (listeners) {
+            for (WebApplicationListener oneListener : listeners) {
+                oneListener.webApplicationStarted(new WebApplicationEvent(webApplicationLink));
+            }
+        }
+    }
+
+    private void fireWebApplicationStoppedEvent() {
+        synchronized (listeners) {
+            for (WebApplicationListener oneListener : listeners) {
+                oneListener.webApplicationStopped();
+            }
         }
     }
 
@@ -229,10 +280,10 @@ public final class CodenvyRunnerProcess implements IProcess {
 
     /**
      * {@link Runnable} polling the runner status and logs.
-     * 
+     *
      * @author Kevin Pollet
      */
-    class CodenvyRunnerStatusThread implements Runnable {
+    private class RunnerStatusChecker implements Runnable {
         private static final String WAITING_FOR_RUNNER_MESSAGE = "Waiting for available runner";
 
         @Override
@@ -243,43 +294,50 @@ public final class CodenvyRunnerProcess implements IProcess {
                                                          .status(project, processId)
                                                          .execute();
 
-                status = runnerStatus.status();
-                synchronized (webLinkLock) {
-                    webLink = runnerStatus.getWebLink();
+                final Link webApplicationURL = runnerStatus.getWebLink();
+                synchronized (webApplicationStartedLock) {
+                    if (webApplicationURL != null && !webApplicationStarted) {
+                        new WebApplicationURLChecker(URL_CHECKER_INTERVAL, URL_CHECKER_NUMBER_OF_ATTEMPTS, webApplicationURL).start();
+                        webApplicationStarted = true;
+                    }
                 }
 
-                switch (status) {
-                    case NEW: {
-                        final String waitingString = outputStream.getContents().isEmpty() ? WAITING_FOR_RUNNER_MESSAGE : ".";
-                        outputStream.append(waitingString);
-                    }
-                        break;
+                synchronized (statusLock) {
+                    status = runnerStatus.status();
 
-                    case RUNNING: {
-                        final String outputStreamContent = outputStream.getContents();
-
-                        if (outputStreamContent.matches("^" + WAITING_FOR_RUNNER_MESSAGE + "[.]*$")) {
-                            outputStream.append("\n");
+                    switch (status) {
+                        case NEW: {
+                            final String waitingString = outputStream.getContents().isEmpty() ? WAITING_FOR_RUNNER_MESSAGE : ".";
+                            outputStream.append(waitingString);
                         }
+                            break;
 
-                        final String logs = codenvy.runner()
-                                                   .logs(project, processId)
-                                                   .execute()
-                                                   .trim();
+                        case RUNNING: {
+                            final String outputStreamContent = outputStream.getContents();
 
-                        final BufferedReader logsReader = new BufferedReader(new StringReader(logs));
+                            if (outputStreamContent.matches("^" + WAITING_FOR_RUNNER_MESSAGE + "[.]*$")) {
+                                outputStream.append("\n");
+                            }
 
-                        String line;
-                        while ((line = logsReader.readLine()) != null) {
-                            if (!outputStreamContent.contains(line)) {
-                                outputStream.append(line + "\n");
+                            final String logs = codenvy.runner()
+                                                       .logs(project, processId)
+                                                       .execute()
+                                                       .trim();
+
+                            final BufferedReader logsReader = new BufferedReader(new StringReader(logs));
+
+                            String line;
+                            while ((line = logsReader.readLine()) != null) {
+                                if (!outputStreamContent.contains(line)) {
+                                    outputStream.append(line + "\n");
+                                }
                             }
                         }
-                    }
-                        break;
+                            break;
 
-                    default: {
-                        stopProcess();
+                        default: {
+                            stopProcess();
+                        }
                     }
                 }
 
@@ -288,6 +346,99 @@ public final class CodenvyRunnerProcess implements IProcess {
 
             } catch (IOException e) {
                 // ignore we read a string
+            }
+        }
+    }
+
+    /**
+     * Thread checking when the web application is started.
+     *
+     * @author Kevin Pollet
+     */
+    private class WebApplicationURLChecker extends Thread {
+        private final long interval;
+        private long       numberOfAttemps;
+        private final Link webApplicationURL;
+
+        /**
+         * Constructs an instance of {@link WebApplicationURLChecker}.
+         *
+         * @param interval the checking interval.
+         * @param numberOfAttempts the number of attempts.
+         * @param webApplicationURL the web application {@link Link} to check.
+         * @throws NullPointerException if webApplicationURL parameter is {@code null}.
+         */
+        public WebApplicationURLChecker(long interval, long numberOfAttempts, Link webApplicationURL) {
+            this.interval = interval;
+            this.numberOfAttemps = numberOfAttempts;
+            this.webApplicationURL = checkNotNull(webApplicationURL);
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < numberOfAttemps && !Thread.interrupted() && !isTerminated(); i++) {
+                try {
+
+                    final URL url = new URL(webApplicationURL.href());
+                    final HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+                    connection.setRequestMethod("HEAD");
+                    connection.setConnectTimeout(1000);
+                    connection.setReadTimeout(1000);
+
+                    try {
+
+                        Thread.sleep(interval);
+
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+
+                    if (connection.getResponseCode() == 200) {
+                        fireWebApplicationStartedEvent(webApplicationURL);
+                        return;
+                    }
+
+                } catch (IOException e) {
+                    // ignore the exception
+                }
+            }
+        }
+    }
+
+    /**
+     * The {@link WebApplicationListener} interface.
+     *
+     * @author Kevin Pollet
+     */
+    public static interface WebApplicationListener {
+        /**
+         * Called when the web application is started.
+         *
+         * @param event the {@link WebApplicationEvent} instance.
+         */
+        void webApplicationStarted(WebApplicationEvent event);
+
+        /**
+         * Called when the web application is stopped.
+         */
+        void webApplicationStopped();
+
+        /**
+         * The {@link WebApplicationEvent} class.
+         *
+         * @author Kevin Pollet
+         */
+        public static class WebApplicationEvent {
+            public final Link webApplicationLink;
+
+            /**
+             * Constructs an instance of {@link WebApplicationEvent}.
+             *
+             * @param webApplicationLink the web application {@link Link}.
+             */
+            private WebApplicationEvent(Link webApplicationLink) {
+                this.webApplicationLink = webApplicationLink;
             }
         }
     }

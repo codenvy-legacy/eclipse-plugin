@@ -15,15 +15,9 @@ import static org.eclipse.ui.browser.IWorkbenchBrowserSupport.NAVIGATION_BAR;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.ui.console.IConsole;
 import org.eclipse.debug.ui.console.IConsoleLineTracker;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
@@ -31,6 +25,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
 import com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess;
+import com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess.WebApplicationListener;
 
 /**
  * Track the run on Codenvy console output.
@@ -38,52 +33,25 @@ import com.codenvy.eclipse.core.launcher.CodenvyRunnerProcess;
  * @author Kevin Pollet
  */
 public final class RunOnCodenvyConsoleLineTracker implements IConsoleLineTracker {
-    private static final Pattern serverStartedPattern = Pattern.compile("(.)*(Server startup|Started connect web server)(.)*");
-
-    private IConsole             console;
-    private final DebugPlugin    debugPlugin;
-
-    public RunOnCodenvyConsoleLineTracker() {
-        this.debugPlugin = DebugPlugin.getDefault();
-    }
-
     @Override
     public void init(IConsole console) {
-        this.console = console;
-    }
+        final CodenvyRunnerProcess runnerProcess = (CodenvyRunnerProcess)console.getProcess();
 
-    @Override
-    public void lineAppended(IRegion line) {
-        try {
-            final Matcher matcher = serverStartedPattern.matcher(console.getDocument().get(line.getOffset(), line.getLength()));
+        runnerProcess.addWebApplicationListener(new WebApplicationListener() {
+            private IWebBrowser      webApplicationBrowser;
+            private final IWorkbench workbench = PlatformUI.getWorkbench();
 
-            if (matcher.find()) {
-                final IWorkbench workbench = PlatformUI.getWorkbench();
-                final CodenvyRunnerProcess runnerProcess = (CodenvyRunnerProcess)console.getProcess();
-
+            @Override
+            public void webApplicationStarted(final WebApplicationEvent event) {
                 workbench.getDisplay().syncExec(new Runnable() {
                     @Override
                     public void run() {
                         try {
 
-                            if (runnerProcess.getWebLink() != null) {
-                                final IWebBrowser browser = workbench.getBrowserSupport()
-                                                                     .createBrowser(NAVIGATION_BAR | LOCATION_BAR, null, null, null);
+                            webApplicationBrowser = workbench.getBrowserSupport()
+                                                             .createBrowser(NAVIGATION_BAR | LOCATION_BAR, null, null, null);
 
-                                browser.openURL(new URL(runnerProcess.getWebLink().href()));
-
-                                debugPlugin.addDebugEventListener(new IDebugEventSetListener() {
-                                    @Override
-                                    public void handleDebugEvents(DebugEvent[] events) {
-                                        for (DebugEvent oneEvent : events) {
-                                            if (oneEvent.getKind() == DebugEvent.TERMINATE && runnerProcess.equals(oneEvent.getSource())) {
-                                                browser.close();
-                                                debugPlugin.removeDebugEventListener(this);
-                                            }
-                                        }
-                                    }
-                                });
-                            }
+                            webApplicationBrowser.openURL(new URL(event.webApplicationLink.href()));
 
                         } catch (PartInitException | MalformedURLException e) {
                             throw new RuntimeException(e);
@@ -92,9 +60,22 @@ public final class RunOnCodenvyConsoleLineTracker implements IConsoleLineTracker
                 });
             }
 
-        } catch (BadLocationException e1) {
-            throw new RuntimeException(e1);
-        }
+            @Override
+            public void webApplicationStopped() {
+                workbench.getDisplay().syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (webApplicationBrowser != null) {
+                            webApplicationBrowser.close();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void lineAppended(IRegion line) {
     }
 
     @Override
