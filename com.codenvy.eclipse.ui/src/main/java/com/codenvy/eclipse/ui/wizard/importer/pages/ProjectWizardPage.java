@@ -58,7 +58,7 @@ import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.model.Project;
-import com.codenvy.client.model.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
@@ -113,7 +113,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         workspaceComboViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                return element instanceof WorkspaceRef ? ((WorkspaceRef)element).name() : super.getText(element);
+                return element instanceof WorkspaceReference ? ((WorkspaceReference)element).name() : super.getText(element);
             }
         });
         workspaceComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -121,7 +121,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
             public void selectionChanged(SelectionChangedEvent event) {
                 final IStructuredSelection selection = (IStructuredSelection)event.getSelection();
                 if (!selection.isEmpty()) {
-                    loadWorkspaceProjects((WorkspaceRef)selection.getFirstElement());
+                    loadWorkspaceProjects((WorkspaceReference)selection.getFirstElement());
                 }
             }
         });
@@ -238,10 +238,10 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
 
             getContainer().run(true, false, new LoadWorkspacesJob(getWizard()) {
                 @Override
-                public void postLoadCallback(List<WorkspaceRef> workspaceRefs) {
-                    workspaceComboViewer.setInput(workspaceRefs.toArray());
-                    if (!workspaceRefs.isEmpty()) {
-                        workspaceComboViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
+                public void postLoadCallback(List< ? extends WorkspaceReference> workspaceReferences) {
+                    workspaceComboViewer.setInput(workspaceReferences.toArray());
+                    if (!workspaceReferences.isEmpty()) {
+                        workspaceComboViewer.setSelection(new StructuredSelection(workspaceReferences.get(0)));
                     }
                     workspaceComboViewer.refresh();
                 }
@@ -255,7 +255,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
     /**
      * Method used to load the workspace projects asynchronously when the workspace is selected.
      */
-    private void loadWorkspaceProjects(final WorkspaceRef workspaceRef) {
+    private void loadWorkspaceProjects(final WorkspaceReference workspaceRef) {
         try {
 
             projectTableViewer.setInput(null);
@@ -277,19 +277,21 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
                                 final String username = wizard.getUsername();
                                 final String password = wizard.getPassword();
                                 final boolean isStoreUserCredentials = wizard.isStoreUserCredentials();
-                                final Credentials credentials = CodenvyAPI.getClient().newCredentialsBuilder().withUsername(username)
-                                                                                         .withPassword(password)
-                                                                                         .storeOnlyToken(!isStoreUserCredentials)
-                                                                                         .build();
+                                final Credentials credentials = CodenvyAPI.getClient()
+                                                                          .newCredentialsBuilder()
+                                                                          .withUsername(username)
+                                                                          .withPassword(password)
+                                                                          .storeOnlyToken(!isStoreUserCredentials)
+                                                                          .build();
 
                                 final Codenvy codenvy = CodenvyPlugin.getDefault()
                                                                      .getCodenvyBuilder(platformURL, username)
                                                                      .withCredentials(credentials)
                                                                      .build();
 
-                                final List<? extends Project> projects = codenvy.project()
-                                                                      .getWorkspaceProjects(workspaceRef.id())
-                                                                      .execute();
+                                final List< ? extends Project> projects = codenvy.project()
+                                                                                 .getWorkspaceProjects(workspaceRef.id())
+                                                                                 .execute();
 
                                 projectTableViewer.setInput(projects);
 

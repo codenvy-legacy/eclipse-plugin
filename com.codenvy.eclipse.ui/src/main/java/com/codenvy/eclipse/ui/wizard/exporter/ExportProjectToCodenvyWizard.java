@@ -42,7 +42,7 @@ import org.eclipse.ui.PlatformUI;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.model.Project;
-import com.codenvy.client.model.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceReference;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -124,7 +124,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
         final String username = getUsername();
         final IWorkbench workbench = PlatformUI.getWorkbench();
         final Set<IProject> projects = exportToCodenvyProjectsSelectionPage.getSelectedProjects();
-        final WorkspaceRef workspaceRef = workspaceWizardPage.getSelectedWorkspace();
+        final WorkspaceReference workspaceReference = workspaceWizardPage.getSelectedWorkspace();
 
         try {
             workbench.getProgressService()
@@ -140,7 +140,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                                       .build();
 
                                  final List< ? extends Project> remoteWorkspaceProjects = codenvy.project()
-                                                                                                 .getWorkspaceProjects(workspaceRef.id())
+                                                                                                 .getWorkspaceProjects(workspaceReference.id())
                                                                                                  .execute();
 
                                  for (final IProject oneProject : projects) {
@@ -161,8 +161,8 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                                                    .withProjectTypeId(codenvyProjectType != null
                                                                                        ? codenvyProjectType : "unknown")
                                                                                    .withName(oneProject.getName())
-                                                                                   .withWorkspaceId(workspaceRef.id())
-                                                                                   .withWorkspaceName(workspaceRef.name())
+                                                                                   .withWorkspaceId(workspaceReference.id())
+                                                                                   .withWorkspaceName(workspaceReference.name())
                                                                                    .build();
 
                                          codenvy.project()
@@ -171,7 +171,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
 
                                          final InputStream archiveInputStream = exportIProjectToZipStream(oneProject, monitor);
                                          codenvy.project()
-                                                .importArchive(workspaceRef.id(), projectToExport, archiveInputStream)
+                                                .importArchive(workspaceReference.id(), projectToExport, archiveInputStream)
                                                 .execute();
 
                                          final IFolder codenvyFolder = oneProject.getFolder(new Path(".codenvy"));
@@ -187,7 +187,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
 
                                          CodenvyMetaProject.create(oneProject,
                                                                    new CodenvyMetaProject(platformURL, username, oneProject.getName(),
-                                                                                          workspaceRef.id()));
+                                                                                          workspaceReference.id()));
                                          RepositoryProvider.map(oneProject, CodenvyProvider.PROVIDER_ID);
 
                                          final IProjectDescription newProjectDescription = oneProject.getDescription();

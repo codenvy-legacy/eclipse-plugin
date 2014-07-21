@@ -29,7 +29,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import com.codenvy.client.model.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceReference;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.Images;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
@@ -37,6 +37,7 @@ import com.codenvy.eclipse.ui.wizard.common.jobs.LoadWorkspacesJob;
 
 /**
  * @author Stéphane Daviet
+ * @author Kevin Pollet
  */
 public final class WorkspaceWizardPage extends WizardPage implements IPageChangedListener {
     private TableViewer workspaceTableViewer;
@@ -64,7 +65,7 @@ public final class WorkspaceWizardPage extends WizardPage implements IPageChange
         workspaceTableViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                return element instanceof WorkspaceRef ? ((WorkspaceRef)element).name() : super.getText(element);
+                return element instanceof WorkspaceReference ? ((WorkspaceReference)element).name() : super.getText(element);
             }
         });
         workspaceTableViewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -88,8 +89,8 @@ public final class WorkspaceWizardPage extends WizardPage implements IPageChange
         }
     }
 
-    public WorkspaceRef getSelectedWorkspace() {
-        return (WorkspaceRef)((IStructuredSelection)workspaceTableViewer.getSelection()).getFirstElement();
+    public WorkspaceReference getSelectedWorkspace() {
+        return (WorkspaceReference)((IStructuredSelection)workspaceTableViewer.getSelection()).getFirstElement();
     }
 
     /**
@@ -100,10 +101,10 @@ public final class WorkspaceWizardPage extends WizardPage implements IPageChange
 
             getContainer().run(true, false, new LoadWorkspacesJob(getWizard()) {
                 @Override
-                public void postLoadCallback(List<WorkspaceRef> workspaceRefs) {
-                    workspaceTableViewer.setInput(workspaceRefs.toArray());
-                    if (!workspaceRefs.isEmpty()) {
-                        workspaceTableViewer.setSelection(new StructuredSelection(workspaceRefs.get(0)));
+                public void postLoadCallback(List< ? extends WorkspaceReference> workspaceReferences) {
+                    workspaceTableViewer.setInput(workspaceReferences.toArray());
+                    if (!workspaceReferences.isEmpty()) {
+                        workspaceTableViewer.setSelection(new StructuredSelection(workspaceReferences.get(0)));
                     }
                     workspaceTableViewer.refresh();
                 }

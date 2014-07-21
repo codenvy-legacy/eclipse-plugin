@@ -44,7 +44,7 @@ import com.codenvy.client.WorkspaceClient;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.User;
 import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceReference;
 
 /**
  * Codenvy mock used for UI tests.
@@ -56,8 +56,7 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
     private final List<Project>   projects;
 
     protected FakeCodenvy() {
-
-    	// Mock workspaces
+        // Mock workspaces
         this.workspaces = new ArrayList<>();
         this.workspaces.add(mockWorkspace(MOCK_WORKSPACE_ID, MOCK_WORKSPACE_NAME, "codenvy-organization"));
         this.workspaces.add(mockWorkspace("ws2-id", "ws2", "codenvy-organization"));
@@ -73,14 +72,13 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
     }
 
     public UserClient user() {
-    	
-    	// Mock user
-    	User user = Mockito.mock(User.class);
-    	doReturn(MOCK_USER_ID).when(user).id();
-    	doReturn("<none>").when(user).password();
-    	doReturn(MOCK_USERNAME).when(user).email();
-    	
-    	// mock User Client
+        // Mock user
+        User user = Mockito.mock(User.class);
+        doReturn(MOCK_USER_ID).when(user).id();
+        doReturn("<none>").when(user).password();
+        doReturn(MOCK_USERNAME).when(user).email();
+
+        // mock User Client
         final UserClient userClientMock = Mockito.mock(UserClient.class);
         @SuppressWarnings("unchecked")
         Request<User> request = Mockito.mock(Request.class);
@@ -174,22 +172,22 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
     public WorkspaceClient workspace() {
         final WorkspaceClient workspaceClientMock = mock(WorkspaceClient.class);
 
-        when(workspaceClientMock.all()).thenReturn(new Request<List<? extends Workspace>>() {
+        when(workspaceClientMock.all()).thenReturn(new Request<List< ? extends Workspace>>() {
             @Override
             public List<Workspace> execute() throws CodenvyErrorException {
                 return workspaces;
             }
         });
 
-        when(workspaceClientMock.withName(anyString())).thenAnswer(new Answer<Request<WorkspaceRef>>() {
+        when(workspaceClientMock.withName(anyString())).thenAnswer(new Answer<Request<WorkspaceReference>>() {
             @Override
-            public Request<WorkspaceRef> answer(final InvocationOnMock invocation) throws Throwable {
-                return new Request<WorkspaceRef>() {
+            public Request<WorkspaceReference> answer(final InvocationOnMock invocation) throws Throwable {
+                return new Request<WorkspaceReference>() {
                     @Override
-                    public WorkspaceRef execute() throws CodenvyErrorException {
-                        for (Workspace workspace : workspaces) {
-                            if (workspace.workspaceRef().name().equals(invocation.getArguments()[0])) {
-                                return workspace.workspaceRef();
+                    public WorkspaceReference execute() throws CodenvyErrorException {
+                        for (Workspace oneWorkspace : workspaces) {
+                            if (oneWorkspace.workspaceReference().name().equals(invocation.getArguments()[0])) {
+                                return oneWorkspace.workspaceReference();
                             }
                         }
                         return null;
@@ -203,30 +201,26 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
     }
 
     private Workspace mockWorkspace(String id, String name, String organization) {
-    	Workspace workspace = mock(Workspace.class);
+        final Workspace workspace = mock(Workspace.class);
 
-    	WorkspaceRef ref = mock(WorkspaceRef.class);
-        doReturn(id).when(ref).id();
-        doReturn(name).when(ref).name();
-        doReturn(organization).when(ref).organizationId();
+        final WorkspaceReference workspaceReference = mock(WorkspaceReference.class);
+        doReturn(id).when(workspaceReference).id();
+        doReturn(name).when(workspaceReference).name();
+        doReturn(organization).when(workspaceReference).organizationId();
 
-        doReturn(ref).when(workspace).workspaceRef();
-        
+        doReturn(workspaceReference).when(workspace).workspaceReference();
+
         return workspace;
-        
     }
-    
+
     private Project mockProject(String name, String workspaceId, String projectTypeName, String description) {
-    	Project project = mock(Project.class);
+        final Project project = mock(Project.class);
 
         doReturn(name).when(project).name();
         doReturn(workspaceId).when(project).workspaceId();
         doReturn(projectTypeName).when(project).projectTypeName();
         doReturn(description).when(project).description();
-        
+
         return project;
-        
     }
-    
-    
 }
