@@ -250,5 +250,17 @@
 				<version.target-platform>4.3</version.target-platform>
 			</properties>
 		</profile>
+		<profile>
+		  <id>platform-juno</id>
+            <activation>
+                <property>
+                    <name>platform-name</name>
+                    <value>juno</value>
+                </property>
+            </activation>
+            <properties>
+                <version.target-platform>4.2</version.target-platform>
+            </properties>
+        </profile>
 	</profiles>
 </project>

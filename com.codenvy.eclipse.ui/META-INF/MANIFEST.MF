@@ -50,5 +50,5 @@ Import-Package: com.codenvy.client;version="1.0.0.SNAPSHOT",
  org.eclipse.ui.plugin,
  org.osgi.framework;version="1.7.0"
 Comment: import org.eclipse.ui.workbench because of tycho bug to resolve org.eclipse.ui.browser package
-Require-Bundle: org.eclipse.ui.workbench;bundle-version="3.105.2"
+Require-Bundle: org.eclipse.ui.workbench;bundle-version="3.104.0"
 
