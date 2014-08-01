@@ -92,6 +92,12 @@
             <artifactId>jackson-jaxrs-json-provider</artifactId>
             <version>${version.jackson}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${com.google.guava.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
