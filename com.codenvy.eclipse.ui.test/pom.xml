@@ -11,78 +11,72 @@
       Codenvy, S.A. - initial API and implementation
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-	<modelVersion>4.0.0</modelVersion>
-
-	<parent>
-		<artifactId>codenvy-eclipse-parent</artifactId>
-		<groupId>com.codenvy.eclipse</groupId>
-		<version>1.0.0-SNAPSHOT</version>
-	</parent>
-
-	<artifactId>com.codenvy.eclipse.ui.test</artifactId>
-	<packaging>eclipse-test-plugin</packaging>
-	<name>Codenvy Eclipse Plugin :: UI Test</name>
-
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-surefire-plugin</artifactId>
-				<configuration>
-					<useUIHarness>true</useUIHarness>
-					<useUIThread>false</useUIThread>
-					<product>org.eclipse.sdk.ide</product>
-					<systemProperties>
-						<org.eclipse.swtbot.screenshots.dir>${project.build.directory}/screenshots</org.eclipse.swtbot.screenshots.dir>
-						<org.eclipse.swtbot.search.timeout>30000</org.eclipse.swtbot.search.timeout>
-					</systemProperties>
-					<dependencies>
-						<dependency>
-							<artifactId>org.eclipse.sdk.ide</artifactId>
-							<type>p2-installable-unit</type>
-						</dependency>
-						<dependency>
-							<artifactId>org.hamcrest</artifactId>
-							<type>p2-installable-unit</type>
-						</dependency>
-						<dependency>
-							<artifactId>com.codenvy.eclipse.ui</artifactId>
-							<type>p2-installable-unit</type>
-						</dependency>
-					</dependencies>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-	<profiles>
-		<profile>
-			<id>MacOS</id>
-			<activation>
-				<os>
-					<name>mac os x</name>
-					<family>mac</family>
-				</os>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>tycho-surefire-plugin</artifactId>
-						<configuration>
-							<argLine>-XstartOnFirstThread</argLine>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>codenvy-eclipse-parent</artifactId>
+        <groupId>com.codenvy.eclipse</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>com.codenvy.eclipse.ui.test</artifactId>
+    <packaging>eclipse-test-plugin</packaging>
+    <name>Codenvy Eclipse Plugin :: UI Test</name>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-surefire-plugin</artifactId>
+                <configuration>
+                    <useUIHarness>true</useUIHarness>
+                    <useUIThread>false</useUIThread>
+                    <product>org.eclipse.sdk.ide</product>
+                    <systemProperties>
+                        <org.eclipse.swtbot.screenshots.dir>${project.build.directory}/screenshots</org.eclipse.swtbot.screenshots.dir>
+                        <org.eclipse.swtbot.search.timeout>30000</org.eclipse.swtbot.search.timeout>
+                    </systemProperties>
+                    <dependencies>
+                        <dependency>
+                            <artifactId>org.eclipse.sdk.ide</artifactId>
+                            <type>p2-installable-unit</type>
+                        </dependency>
+                        <dependency>
+                            <artifactId>org.hamcrest</artifactId>
+                            <type>p2-installable-unit</type>
+                        </dependency>
+                        <dependency>
+                            <artifactId>com.codenvy.eclipse.ui</artifactId>
+                            <type>p2-installable-unit</type>
+                        </dependency>
+                    </dependencies>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>MacOS</id>
+            <activation>
+                <os>
+                    <name>mac os x</name>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eclipse.tycho</groupId>
+                        <artifactId>tycho-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>-XstartOnFirstThread</argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
