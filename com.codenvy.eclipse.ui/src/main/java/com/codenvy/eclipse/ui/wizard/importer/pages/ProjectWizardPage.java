@@ -58,6 +58,7 @@ import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.WorkspaceReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
@@ -289,14 +290,14 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
                                                                      .withCredentials(credentials)
                                                                      .build();
 
-                                final List< ? extends Project> projects = codenvy.project()
+                                final List<ProjectReference> projects = codenvy.project()
                                                                                  .getWorkspaceProjects(workspaceRef.id())
                                                                                  .execute();
 
                                 projectTableViewer.setInput(projects);
 
                                 final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-                                for (Project oneProject : projects) {
+                                for (ProjectReference oneProject : projects) {
                                     final IProject workspaceProject = workspaceRoot.getProject(oneProject.name());
                                     projectTableViewer.setGrayed(oneProject, workspaceProject.exists());
                                 }

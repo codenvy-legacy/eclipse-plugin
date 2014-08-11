@@ -42,6 +42,7 @@ import org.eclipse.ui.PlatformUI;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.WorkspaceReference;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
@@ -139,7 +140,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                                       .getCodenvyBuilder(platformURL, username)
                                                                       .build();
 
-                                 final List< ? extends Project> remoteWorkspaceProjects = codenvy.project()
+                                 final List<ProjectReference> remoteWorkspaceProjects = codenvy.project()
                                                                                                  .getWorkspaceProjects(workspaceReference.id())
                                                                                                  .execute();
 
@@ -155,7 +156,7 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                              }
                                          }
 
-                                         final Project projectToExport =
+                                         final ProjectReference projectToExport =
                                                                          CodenvyAPI.getClient()
                                                                                    .newProjectBuilder()
                                                                                    .withProjectTypeId(codenvyProjectType != null

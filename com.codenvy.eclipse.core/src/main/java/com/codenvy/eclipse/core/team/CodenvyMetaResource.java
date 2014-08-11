@@ -13,12 +13,14 @@ package com.codenvy.eclipse.core.team;
 import static com.codenvy.eclipse.core.team.CodenvyProvider.PROVIDER_ID;
 import static org.eclipse.core.resources.IResource.ROOT;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.CodenvyAuthenticationException;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 
 /**
@@ -41,18 +43,27 @@ public final class CodenvyMetaResource {
                 final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
 
                 if (metaProject != null) {
-                    final Project codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(metaProject.projectName)
+                    final ProjectReference codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(metaProject.projectName)
                                                                         .withWorkspaceId(metaProject.workspaceId)
                                                                         .build();
 
                     try {
 
+                    	if (resource instanceof IFile) {
                         this.tracked = CodenvyPlugin.getDefault()
                                                     .getCodenvyBuilder(metaProject.url, metaProject.username)
                                                     .build()
                                                     .project()
-                                                    .isResource(codenvyProject, resource.getProjectRelativePath().toString())
+                                                    .hasFile(codenvyProject, resource.getProjectRelativePath().toString())
                                                     .execute();
+                    	} else {
+                            this.tracked = CodenvyPlugin.getDefault()
+                                    .getCodenvyBuilder(metaProject.url, metaProject.username)
+                                    .build()
+                                    .project()
+                                    .hasFolder(codenvyProject, resource.getProjectRelativePath().toString())
+                                    .execute();
+                    	}
 
                     } catch (CodenvyAuthenticationException e) {
                         this.tracked = false;

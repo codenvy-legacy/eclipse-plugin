@@ -42,6 +42,7 @@ import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 
@@ -56,7 +57,7 @@ public final class CodenvyBuilderProcess implements IProcess {
 
     private final ILaunch                   launch;
     private final Codenvy                   codenvy;
-    private final Project                   project;
+    private final ProjectReference          project;
     private final Map<String, String>       attributes;
     private long                            taskId;
     private final ScheduledExecutorService  executorService;

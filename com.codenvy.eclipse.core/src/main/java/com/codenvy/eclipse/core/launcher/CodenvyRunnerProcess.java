@@ -45,6 +45,7 @@ import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.eclipse.core.CodenvyPlugin;
@@ -64,7 +65,7 @@ public final class CodenvyRunnerProcess implements IProcess {
 
     private final ILaunch                     launch;
     private final Codenvy                     codenvy;
-    private final Project                     project;
+    private final ProjectReference            project;
     private final Map<String, String>         attributes;
     private volatile RunnerState              status;
     private final Object                      statusLock;

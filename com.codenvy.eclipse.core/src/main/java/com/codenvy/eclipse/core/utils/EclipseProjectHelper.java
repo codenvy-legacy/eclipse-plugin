@@ -47,6 +47,7 @@ import org.eclipse.team.core.RepositoryProvider;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -245,7 +246,7 @@ public final class EclipseProjectHelper {
                                                  .build();
 
             final InputStream eclipseProjectZip = exportIProjectToZipStream(eclipseProject, monitor);
-            final Project projectToUpdate = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
+            final ProjectReference projectToUpdate = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
                                                       .withWorkspaceId(codenvyMetaProject.workspaceId)
                                                       .build();
 
@@ -312,7 +313,7 @@ public final class EclipseProjectHelper {
                                                  .getCodenvyBuilder(codenvyMetaProject.url, codenvyMetaProject.username)
                                                  .build();
 
-            final Project codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
+            final ProjectReference codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
                                                      .withWorkspaceId(codenvyMetaProject.workspaceId)
                                                      .build();
 
@@ -324,9 +325,18 @@ public final class EclipseProjectHelper {
             createOrUpdateResourcesFromZip(stream, eclipseProject, subMonitor);
 
             for (IResource oneResource : getResources(eclipseProject)) {
-                final boolean exists = codenvy.project()
-                                              .isResource(codenvyProject, oneResource.getProjectRelativePath().toString())
+            	final boolean exists;
+            	if (oneResource instanceof IFile) {
+                   exists = codenvy.project()
+                                              .hasFile(codenvyProject, oneResource.getProjectRelativePath().toString())
                                               .execute();
+            	} else if (oneResource instanceof IFolder) {
+                        exists = codenvy.project()
+                                                   .hasFolder(codenvyProject, oneResource.getProjectRelativePath().toString())
+                                                   .execute();
+            	} else {
+            		exists = false;
+            	}
 
                 if (!exists
                     && oneResource.exists()
