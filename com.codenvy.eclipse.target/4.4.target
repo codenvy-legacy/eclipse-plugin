@@ -34,10 +34,10 @@
 			<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 			<unit id="org.objectweb.asm.commons" version="0.0.0"/>
 			<unit id="org.hamcrest" version="0.0.0"/>
-			<unit id="com.google.guava" version="0.0.0"/>
+			<unit id="com.google.guava" version="12.0.0.v201212092141"/>
 			<unit id="javax.annotation" version="0.0.0"/>
 			<unit id="org.mockito.source" version="0.0.0"/>
-			<unit id="com.google.guava.source" version="0.0.0"/>
+			<unit id="com.google.guava.source" version="12.0.0.v201212092141"/>
 			<unit id="javax.annotation.source" version="0.0.0"/>
 			<unit id="org.mockito" version="0.0.0"/>
 			<unit id="ch.qos.logback.slf4j.source" version="0.0.0"/>
