@@ -35,8 +35,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.codenvy.client.CodenvyAPI;
-import com.codenvy.client.CodenvyUnknownHostException;
-import com.codenvy.client.auth.CodenvyAuthenticationException;
+import com.codenvy.client.CodenvyException;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.ui.CodenvyUIPlugin;
 import com.codenvy.eclipse.ui.preferences.CodenvyPreferencesInitializer;
@@ -54,7 +53,7 @@ import com.google.common.collect.ObjectArrays;
 public final class AuthenticationWizardPage extends WizardPage implements IPageChangingListener {
     private static final String    REPOSITORY_URL_ERROR_MESSAGE   = "This is not a valid Codenvy repository URL.";
     private static final String    MANDATORY_FIELDS_ERROR_MESSAGE = "Username, Password and URL are mandatory.";
-    private static final String    AUTHENTICATION_ERROR_MESSAGE   = "Authentication failed: verify URL, Username and Password.";
+    private static final String    AUTHENTICATION_ERROR_MESSAGE   = "Authentication failed: wrong URL, Username or Password.";
 
     @SuppressWarnings("unused")
     private ComboAutoCompleteField urlProposals;
@@ -138,7 +137,8 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
 
                 CodenvyPlugin.getDefault()
                              .getCodenvyBuilder(getURL(), getUsername())
-                             .withCredentials(CodenvyAPI.getClient().newCredentialsBuilder().withUsername(getUsername()).withPassword(getPassword()).build())
+                             .withCredentials(CodenvyAPI.getClient().newCredentialsBuilder().withUsername(getUsername())
+                                                        .withPassword(getPassword()).build())
                              .build()
                              .user()
                              .current()
@@ -156,7 +156,7 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
 
                 setErrorMessage(null);
 
-            } catch (CodenvyAuthenticationException | CodenvyUnknownHostException e) {
+            } catch (CodenvyException e) {
                 setErrorMessage(AUTHENTICATION_ERROR_MESSAGE);
                 event.doit = false;
             }

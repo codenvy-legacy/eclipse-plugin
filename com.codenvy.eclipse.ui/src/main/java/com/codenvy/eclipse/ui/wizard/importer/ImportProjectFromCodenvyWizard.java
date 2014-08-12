@@ -39,7 +39,7 @@ import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
 
-import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
@@ -108,7 +108,7 @@ public final class ImportProjectFromCodenvyWizard extends Wizard implements IImp
         final String platformURL = getUrl();
         final String username = getUsername();
         final List<IWorkingSet> workingSets = projectWizardPage.getWorkingSets();
-        final List<Project> projects = projectWizardPage.getProjects();
+        final List<ProjectReference> projects = projectWizardPage.getProjects();
         final IWorkbench workbench = PlatformUI.getWorkbench();
 
         try {
@@ -119,7 +119,7 @@ public final class ImportProjectFromCodenvyWizard extends Wizard implements IImp
                     monitor.beginTask("Importing projects", projects.size());
 
                     final List<IProject> importedProjects = new ArrayList<>();
-                    for (final Project oneProject : projects) {
+                    for (final ProjectReference oneProject : projects) {
                         final IPath workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
                         final IPath newProjectLocation = workspaceLocation != null ? workspaceLocation.append(oneProject.name()) : null;
 
@@ -184,11 +184,11 @@ public final class ImportProjectFromCodenvyWizard extends Wizard implements IImp
      * 
      * @param platformURL the Codenvy platform URL.
      * @param username the user name.
-     * @param project the Codenvy {@link Project} to import.
+     * @param project the Codenvy {@link ProjectReference} to import.
      * @param monitor the {@link IProgressMonitor}.
      * @return the imported {@link IProject} reference.
      */
-    private IProject importProject(String platformURL, String username, Project project, IProgressMonitor monitor) {
+    private IProject importProject(String platformURL, String username, ProjectReference project, IProgressMonitor monitor) {
         final ZipInputStream zipInputStream = CodenvyPlugin.getDefault()
                                                            .getCodenvyBuilder(platformURL, username)
                                                            .build()

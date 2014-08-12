@@ -57,7 +57,6 @@ import org.eclipse.ui.internal.registry.WorkingSetDescriptor;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.Credentials;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.WorkspaceReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
@@ -139,7 +138,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         projectNameColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof Project ? ((Project)element).name() : super.getText(element);
+                return element instanceof ProjectReference ? ((ProjectReference)element).name() : super.getText(element);
             }
         });
 
@@ -149,7 +148,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         projectTypeNameColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof Project ? ((Project)element).projectTypeName() : super.getText(element);
+                return element instanceof ProjectReference ? ((ProjectReference)element).projectTypeName() : super.getText(element);
             }
         });
 
@@ -159,7 +158,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         projectDescriptionColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof Project ? ((Project)element).description() : super.getText(element);
+                return element instanceof ProjectReference ? ((ProjectReference)element).description() : super.getText(element);
             }
         });
         projectTableViewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -346,10 +345,10 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
      *
      * @return the selected Codenvy projects never {@code null}.
      */
-    public List<Project> getProjects() {
-        final List<Project> selectedProjects = new ArrayList<>();
+    public List<ProjectReference> getProjects() {
+        final List<ProjectReference> selectedProjects = new ArrayList<>();
         for (Object oneProject : projectTableViewer.getCheckedElements()) {
-            selectedProjects.add((Project)oneProject);
+            selectedProjects.add((ProjectReference)oneProject);
         }
         return selectedProjects;
     }
