@@ -44,7 +44,6 @@ import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.Link;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
@@ -83,7 +82,6 @@ public final class CodenvyRunnerProcess implements IProcess {
      *
      * @param launch the {@link ILaunch} object.
      * @param codenvyMetaProject the {@link CodenvyMetaProject}.
-     * @param project the {@link Project} to run.
      * @throws NullPointerException if launch or codenvyMetaProject parameter is {@code null}.
      */
     public CodenvyRunnerProcess(ILaunch launch, CodenvyMetaProject codenvyMetaProject) {

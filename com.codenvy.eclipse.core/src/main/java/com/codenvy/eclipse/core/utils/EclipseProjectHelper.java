@@ -46,7 +46,6 @@ import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;

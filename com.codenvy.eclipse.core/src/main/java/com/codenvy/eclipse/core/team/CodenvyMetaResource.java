@@ -19,7 +19,6 @@ import org.eclipse.team.core.RepositoryProvider;
 
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.CodenvyAuthenticationException;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 
@@ -44,26 +43,26 @@ public final class CodenvyMetaResource {
 
                 if (metaProject != null) {
                     final ProjectReference codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(metaProject.projectName)
-                                                                        .withWorkspaceId(metaProject.workspaceId)
-                                                                        .build();
+                                                                      .withWorkspaceId(metaProject.workspaceId)
+                                                                      .build();
 
                     try {
 
-                    	if (resource instanceof IFile) {
-                        this.tracked = CodenvyPlugin.getDefault()
-                                                    .getCodenvyBuilder(metaProject.url, metaProject.username)
-                                                    .build()
-                                                    .project()
-                                                    .hasFile(codenvyProject, resource.getProjectRelativePath().toString())
-                                                    .execute();
-                    	} else {
+                        if (resource instanceof IFile) {
                             this.tracked = CodenvyPlugin.getDefault()
-                                    .getCodenvyBuilder(metaProject.url, metaProject.username)
-                                    .build()
-                                    .project()
-                                    .hasFolder(codenvyProject, resource.getProjectRelativePath().toString())
-                                    .execute();
-                    	}
+                                                        .getCodenvyBuilder(metaProject.url, metaProject.username)
+                                                        .build()
+                                                        .project()
+                                                        .hasFile(codenvyProject, resource.getProjectRelativePath().toString())
+                                                        .execute();
+                        } else {
+                            this.tracked = CodenvyPlugin.getDefault()
+                                                        .getCodenvyBuilder(metaProject.url, metaProject.username)
+                                                        .build()
+                                                        .project()
+                                                        .hasFolder(codenvyProject, resource.getProjectRelativePath().toString())
+                                                        .execute();
+                        }
 
                     } catch (CodenvyAuthenticationException e) {
                         this.tracked = false;
