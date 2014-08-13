@@ -62,7 +62,7 @@
 		<license_years>2014</license_years>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.build-helper-maven-plugin>1.9</version.build-helper-maven-plugin>
-		<version.codenvy-platform-api-client-java-core>1.0.1</version.codenvy-platform-api-client-java-core>
+		<version.codenvy-platform-api-client-java>1.0.1</version.codenvy-platform-api-client-java>
 		<version.jackson>2.3.2</version.jackson>
 		<version.jersey-all>2.8</version.jersey-all>
 		<version.tycho>0.21.0</version.tycho>
@@ -70,9 +70,14 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.codenvy.platform-api-client-java</groupId>
-			<artifactId>codenvy-platform-api-client-java-core</artifactId>
-			<version>${version.codenvy-platform-api-client-java-core}</version>
+			<artifactId>codenvy-platform-api-client-java-api</artifactId>
+			<version>${version.codenvy-platform-api-client-java}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.codenvy.platform-api-client-java</groupId>
+            <artifactId>codenvy-platform-api-client-java-core</artifactId>
+            <version>${version.codenvy-platform-api-client-java}</version>
+        </dependency>
 		<dependency>
 			<groupId>com.eclipsesource.jaxrs</groupId>
 			<artifactId>jersey-all</artifactId>
@@ -97,12 +102,6 @@
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
 			<version>${version.jackson}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${com.google.guava.version}</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<repositories>

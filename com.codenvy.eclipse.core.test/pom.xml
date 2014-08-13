@@ -11,34 +11,39 @@
       Codenvy, S.A. - initial API and implementation
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <artifactId>codenvy-eclipse-parent</artifactId>
-        <groupId>com.codenvy.eclipse</groupId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
-    <artifactId>com.codenvy.eclipse.core.test</artifactId>
-    <packaging>eclipse-test-plugin</packaging>
-    <name>Codenvy Eclipse Plugin :: Core Test</name>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.eclipse.tycho</groupId>
-                <artifactId>tycho-surefire-plugin</artifactId>
-                <configuration>
-                    <dependencies>
-                        <dependency>
-                            <artifactId>org.eclipse.equinox.security.ui</artifactId>
-                            <type>p2-installable-unit</type>
-                        </dependency>
-                        <dependency>
-                            <artifactId>org.hamcrest</artifactId>
-                            <type>p2-installable-unit</type>
-                        </dependency>
-                    </dependencies>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>codenvy-eclipse-parent</artifactId>
+		<groupId>com.codenvy.eclipse</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>com.codenvy.eclipse.core.test</artifactId>
+	<packaging>eclipse-test-plugin</packaging>
+	<name>Codenvy Eclipse Plugin :: Core Test</name>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<configuration>
+					<dependencies>
+						<dependency>
+							<artifactId>com.codenvy.platform-api-client-java.codenvy-platform-api-client-java-core</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
+						<dependency>
+							<artifactId>org.eclipse.equinox.security.ui</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
+						<dependency>
+							<artifactId>org.hamcrest</artifactId>
+							<type>p2-installable-unit</type>
+						</dependency>
+					</dependencies>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
