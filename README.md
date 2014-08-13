@@ -61,6 +61,31 @@ Run the plugin
 Once the project imported in Eclipse, right-click its sub-module
 *com.codenvy.eclipse.ui* and chose *‘Run as → Eclipse Application’*.
 
+Release the plugin
+------------------
+
+1. Clone the project:
+
+        git clone https://github.com/codenvy/eclipse-plugin.git
+        cd eclipse-plugin
+
+2. Prepare release:
+
+        mvn tycho-versions:set-version -DnewVersion=${releaseVersion} clean install
+        git commit -am "Prepare release ${releaseVersion}"
+        git push origin master
+
+3. Tag released version:
+
+        git tag -a ${releaseVersion} -m "Tag ${releaseVersion}"
+        git push origin ${releaseVersion}
+
+4. Prepare for next development iteration:
+
+        mvn tycho-versions:set-version -DnewVersion=${nextDevelopmentVersion} clean install
+        git commit -am "Prepare for next development iteration"
+        git push origin master
+
 License
 -------
 
