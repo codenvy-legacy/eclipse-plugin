@@ -25,23 +25,24 @@
 
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="http://download.eclipse.org/technology/swtbot/releases/2.2.1/"/>
-			<unit id="org.eclipse.swtbot.eclipse.test.junit.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.swtbot.eclipse.source.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.swtbot.eclipse.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.swtbot.eclipse.test.junit.feature.group" version="2.2.1.201402241301"/>
+			<unit id="org.eclipse.swtbot.eclipse.source.feature.group" version="2.2.1.201402241301"/>
+			<unit id="org.eclipse.swtbot.eclipse.feature.group" version="2.2.1.201402241301"/>
 		</location>
 
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
-			<unit id="org.objectweb.asm.commons" version="0.0.0"/>
-			<unit id="org.hamcrest" version="0.0.0"/>
+			<unit id="org.objectweb.asm.commons" version="5.0.1.v201404251740"/>
+			<unit id="org.objectweb.asm.commons.source" version="5.0.1.v201404251740"/>
+			<unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
 			<unit id="com.google.guava" version="12.0.0.v201212092141"/>
-			<unit id="javax.annotation" version="0.0.0"/>
-			<unit id="org.mockito.source" version="0.0.0"/>
 			<unit id="com.google.guava.source" version="12.0.0.v201212092141"/>
-			<unit id="javax.annotation.source" version="0.0.0"/>
-			<unit id="org.mockito" version="0.0.0"/>
-			<unit id="ch.qos.logback.slf4j.source" version="0.0.0"/>
-			<unit id="ch.qos.logback.slf4j" version="0.0.0"/>
+			<unit id="javax.annotation" version="1.2.0.v201401042248"/>
+			<unit id="javax.annotation.source" version="1.2.0.v201401042248"/>
+			<unit id="org.mockito" version="1.9.5.v201311280930"/>
+			<unit id="org.mockito.source" version="1.9.5.v201311280930"/>
+			<unit id="ch.qos.logback.slf4j" version="1.0.7.v20121108-1250"/>
+			<unit id="ch.qos.logback.slf4j.source" version="1.0.7.v20121108-1250"/>
 		</location>
 
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
