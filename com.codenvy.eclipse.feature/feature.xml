@@ -326,11 +326,4 @@ any resulting litigation.
          version="0.0.0"
          unpack="false"/>
 
-   <plugin
-         id="com.codenvy.platform-api-client-java.codenvy-platform-api-client-java-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
 </feature>
