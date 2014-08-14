@@ -329,7 +329,7 @@ public final class EclipseProjectHelper {
                    exists = codenvy.project()
                                               .hasFile(codenvyProject, oneResource.getProjectRelativePath().toString())
                                               .execute();
-            	} else if (oneResource instanceof IFolder) {
+            	} else if (oneResource instanceof IContainer) {
                         exists = codenvy.project()
                                                    .hasFolder(codenvyProject, oneResource.getProjectRelativePath().toString())
                                                    .execute();
