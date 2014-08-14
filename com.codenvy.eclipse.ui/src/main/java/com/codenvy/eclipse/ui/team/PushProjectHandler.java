@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.team.core.RepositoryProvider;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
@@ -37,9 +38,8 @@ public final class PushProjectHandler extends AbstractProjectHandler {
     public Object execute(final Set<IProject> projects, ExecutionEvent event) throws ExecutionException {
         if (!projects.isEmpty()) {
             try {
-
-                PlatformUI.getWorkbench()
-                          .getProgressService()
+                final IWorkbench workbench = PlatformUI.getWorkbench();
+                workbench.getProgressService()
                           .run(true, false, new IRunnableWithProgress() {
                               @Override
                               public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
@@ -54,6 +54,14 @@ public final class PushProjectHandler extends AbstractProjectHandler {
                                           updateProjectOnCodenvy(oneProject, codenvyMetaProject, monitor);
                                           monitor.worked(1);
                                       }
+
+                                      workbench.getDisplay().syncExec(new Runnable() {
+                                          @Override
+                                          public void run() {
+                                              workbench.getDecoratorManager()
+                                                       .update(CodenvyLightweightLabelDecorator.DECORATOR_ID);
+                                          }
+                                      });
 
                                   } finally {
                                       monitor.done();
