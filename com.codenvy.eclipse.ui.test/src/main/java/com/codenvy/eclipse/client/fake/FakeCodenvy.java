@@ -37,6 +37,7 @@ import org.mockito.stubbing.Answer;
 import com.codenvy.client.BuilderClient;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.CodenvyException;
+import com.codenvy.client.FactoryClient;
 import com.codenvy.client.ProjectClient;
 import com.codenvy.client.Request;
 import com.codenvy.client.Response;
@@ -51,7 +52,7 @@ import com.codenvy.client.model.WorkspaceReference;
 
 /**
  * Codenvy mock used for UI tests.
- * 
+ *
  * @author Kevin Pollet
  */
 public class FakeCodenvy implements com.codenvy.client.Codenvy {
@@ -74,6 +75,7 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
         this.projects.add(mockProject("prj4", MOCK_WORKSPACE_ID, "maven", "prj4-description"));
     }
 
+    @Override
     public UserClient user() {
         // Mock user
         User user = Mockito.mock(User.class);
@@ -91,14 +93,17 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
         return userClientMock;
     }
 
+    @Override
     public BuilderClient builder() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public RunnerClient runner() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ProjectClient project() {
         final ProjectClient projectClientMock = mock(ProjectClient.class);
         when(projectClientMock.getWorkspaceProjects(anyString())).thenAnswer(new Answer<Request<List<Project>>>() {
@@ -113,11 +118,11 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
                         return new ArrayList<>();
                     }
 
-					@Override
-					public Response<List<Project>> response()
-							throws CodenvyException {
-						return null;
-					}
+                    @Override
+                    public Response<List<Project>> response()
+                                                             throws CodenvyException {
+                        return null;
+                    }
                 };
             }
         });
@@ -135,11 +140,11 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
                         return null;
                     }
 
-					@Override
-					public Response<ZipInputStream> response()
-							throws CodenvyException {
-						return null;
-					}
+                    @Override
+                    public Response<ZipInputStream> response()
+                                                              throws CodenvyException {
+                        return null;
+                    }
                 };
             }
         });
@@ -178,10 +183,10 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
                         return exists;
                     }
 
-					@Override
-					public Response<Boolean> response() throws CodenvyException {
-						return null;
-					}
+                    @Override
+                    public Response<Boolean> response() throws CodenvyException {
+                        return null;
+                    }
                 };
             }
         });
@@ -189,6 +194,7 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
         return projectClientMock;
     }
 
+    @Override
     public WorkspaceClient workspace() {
         final WorkspaceClient workspaceClientMock = mock(WorkspaceClient.class);
 
@@ -197,13 +203,13 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
             public List<Workspace> execute() throws CodenvyErrorException {
                 return workspaces;
             }
-            
+
             @Override
             public com.codenvy.client.Response<List<Workspace>> response() throws CodenvyErrorException {
                 return null;
             }
-            
-            
+
+
         });
 
         when(workspaceClientMock.withName(anyString())).thenAnswer(new Answer<Request<WorkspaceReference>>() {
@@ -220,11 +226,11 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
                         return null;
                     }
 
-					@Override
-					public Response<WorkspaceReference> response()
-							throws CodenvyException {
-						return null;
-					}
+                    @Override
+                    public Response<WorkspaceReference> response()
+                                                                  throws CodenvyException {
+                        return null;
+                    }
                 };
 
             }
@@ -257,8 +263,13 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
         return project;
     }
 
-	@Override
-	public VersionClient version() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public VersionClient version() {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
+
+    @Override
+    public FactoryClient factory() {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
 }
