@@ -16,7 +16,7 @@
     <parent>
         <artifactId>codenvy-eclipse-parent</artifactId>
         <groupId>com.codenvy.eclipse</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>com.codenvy.eclipse.target</artifactId>
     <name>Codenvy Eclipse Plugin :: Target Platform</name>
