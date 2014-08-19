@@ -16,7 +16,7 @@
     <parent>
         <artifactId>codenvy-eclipse-parent</artifactId>
         <groupId>com.codenvy.eclipse</groupId>
-        <version>1.0.0</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>com.codenvy.eclipse.feature</artifactId>
     <packaging>eclipse-feature</packaging>
