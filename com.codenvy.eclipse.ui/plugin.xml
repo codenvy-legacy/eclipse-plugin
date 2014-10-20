@@ -137,29 +137,6 @@
    <extension
          point="org.eclipse.core.expressions.definitions">
       <definition
-            id="com.codenvy.eclipse.ui.team.trackedResourceContributions">
-         <iterate
-               ifEmpty="false"
-               operator="and">
-            <adapt
-                  type="org.eclipse.core.resources.IResource">
-               <and>
-                  <adapt
-                        type="com.codenvy.eclipse.core.team.CodenvyMetaResource">
-                     <test
-                           property="com.codenvy.eclipse.core.team.codenvyMetaResource.tracked"
-                           value="true">
-                     </test>
-                  </adapt>
-                  <test
-                        args="org.eclipse.team.core.repository, com.codenvy.eclipse.core.team.codenvyProvider"
-                        property="org.eclipse.core.resources.projectPersistentProperty">
-                  </test>
-               </and>
-            </adapt>
-         </iterate>
-      </definition>
-      <definition
             id="com.codenvy.eclipse.ui.team.resourceContributions">
          <iterate
                ifEmpty="false"
