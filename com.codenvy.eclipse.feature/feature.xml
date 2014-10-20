@@ -264,13 +264,6 @@ any resulting litigation.
          unpack="false"/>
 
    <plugin
-         id="javax.annotation"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.fasterxml.jackson.core.jackson-annotations"
          download-size="0"
          install-size="0"
@@ -292,20 +285,6 @@ any resulting litigation.
          unpack="false"/>
 
    <plugin
-         id="com.fasterxml.jackson.jaxrs.jackson-jaxrs-base"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"
          download-size="0"
          install-size="0"
@@ -313,21 +292,7 @@ any resulting litigation.
          unpack="false"/>
 
    <plugin
-         id="com.eclipsesource.jaxrs.jersey-all"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.codenvy.platform-api-client-java.codenvy-platform-api-client-java-core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.javax.json"
+         id="com.codenvy.platform-api-client-java.uberjar"
          download-size="0"
          install-size="0"
          version="0.0.0"
