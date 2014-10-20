@@ -11,14 +11,13 @@
 package com.codenvy.eclipse.core;
 
 import static com.codenvy.eclipse.core.CodenvyPlugin.FAMILY_CODENVY;
-import static java.util.Arrays.asList;
+import static com.codenvy.eclipse.core.CodenvyProjectDescriptor.DEFAULT_BUILDER;
+import static com.google.common.collect.ObjectArrays.concat;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
@@ -37,11 +36,7 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 
 import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ObjectArrays;
 
 /**
  * The Codenvy project nature.
@@ -50,25 +45,24 @@ import com.google.common.collect.ObjectArrays;
  * @author Stéphane Daviet
  */
 public final class CodenvyNature implements IProjectNature {
-    public static final String                    NATURE_ID            = "com.codenvy.eclipse.core.codenvyNature";
+    public static final String                                           NATURE_ID                =
+                                                                                                    "com.codenvy.eclipse.core.codenvyNature";
 
-    private static final String                   MAVEN_NATURE_ID      = "org.eclipse.m2e.core.maven2Nature";
-    private static final String                   JAVASCRIPT_NATURE_ID = "org.eclipse.wst.jsdt.core.jsNature";
+    private static final String                                          MAVEN_NATURE_ID          = "org.eclipse.m2e.core.maven2Nature";
+    private static final String                                          JAVASCRIPT_NATURE_ID     = "org.eclipse.wst.jsdt.core.jsNature";
 
-    private static final String                   BUILDER_NAME_KEY     = "builder.name";
+    private static final String                                          MAVEN_BUILDER_NAME       = "maven";
 
-    private static final String                   MAVEN_BUILDER_NAME   = "maven";
+    private IProject                                                     codenvyProject;
 
-    private IProject                              codenvyProject;
-
-    public static final HashBiMap<String, String> NATURE_MAPPINGS      = HashBiMap.create();
-    public static final HashBiMap<String, String> BUILDER_MAPPINGS     = HashBiMap.create();
+    public static final HashBiMap<CodenvyProjectDescriptor.Type, String> ECLIPSE_NATURE_MAPPINGS  = HashBiMap.create();
+    public static final HashBiMap<CodenvyProjectDescriptor.Type, String> ECLIPSE_BUILDER_MAPPINGS = HashBiMap.create();
 
     static {
-        NATURE_MAPPINGS.put("maven", JavaCore.NATURE_ID);
-        NATURE_MAPPINGS.put("angularjs", JAVASCRIPT_NATURE_ID);
+        ECLIPSE_NATURE_MAPPINGS.put(CodenvyProjectDescriptor.Type.MAVEN, JavaCore.NATURE_ID);
+        ECLIPSE_NATURE_MAPPINGS.put(CodenvyProjectDescriptor.Type.ANGULARJS, JAVASCRIPT_NATURE_ID);
 
-        BUILDER_MAPPINGS.put("maven", JavaCore.BUILDER_ID);
+        ECLIPSE_BUILDER_MAPPINGS.put(CodenvyProjectDescriptor.Type.MAVEN, JavaCore.BUILDER_ID);
     }
 
     @Override
@@ -83,27 +77,19 @@ public final class CodenvyNature implements IProjectNature {
                     monitor.beginTask("Configure project natures and builders", IProgressMonitor.UNKNOWN);
 
                     try (InputStream inputStream = codenvyDesciptorFile.getContents()) {
-                        final CodenvyProjectDescriptor descriptor;
                         final IProjectDescription codenvyProjectDescription = codenvyProject.getDescription();
+                        final CodenvyProjectDescriptor descriptor = CodenvyProjectDescriptor.load(inputStream);
 
-                        final ObjectMapper mapper = new ObjectMapper();
-                        descriptor = mapper.readValue(codenvyDesciptorFile.getContents(), CodenvyProjectDescriptor.class);
-
-                        final String oneNature = NATURE_MAPPINGS.get(descriptor.type.name().toLowerCase());
-                        if (oneNature != null) {
-                            final List<String> natures = new ArrayList<>(asList(codenvyProjectDescription.getNatureIds()));
-                            if (isNatureWithId(oneNature)) {
-                                natures.add(oneNature);
-                            }
-
-                            codenvyProjectDescription.setNatureIds(natures.toArray(new String[0]));
+                        final String eclipseNature = ECLIPSE_NATURE_MAPPINGS.get(descriptor.type);
+                        if (eclipseNature != null && isNatureWithId(eclipseNature)) {
+                            codenvyProjectDescription.setNatureIds(concat(codenvyProjectDescription.getNatureIds(), eclipseNature));
                         }
 
-                        final String oneBuilder = BUILDER_MAPPINGS.get(descriptor.type.name().toLowerCase());
-                        if (oneBuilder != null) {
+                        final String eclipseBuilder = ECLIPSE_BUILDER_MAPPINGS.get(descriptor.type);
+                        if (eclipseBuilder != null) {
                             final List<ICommand> builders = new ArrayList<>();
                             final ICommand command = codenvyProjectDescription.newCommand();
-                            command.setBuilderName(oneBuilder);
+                            command.setBuilderName(eclipseBuilder);
                             builders.add(command);
 
                             codenvyProjectDescription.setBuildSpec(builders.toArray(new ICommand[0]));
@@ -112,10 +98,9 @@ public final class CodenvyNature implements IProjectNature {
                         // save nature and builders added to the project
                         codenvyProject.setDescription(codenvyProjectDescription, monitor);
 
-                        final String builderName = descriptor.properties.get(BUILDER_NAME_KEY);
-                        if (MAVEN_BUILDER_NAME.equals(builderName)) {
-                            codenvyProjectDescription.setNatureIds(ObjectArrays.concat(codenvyProjectDescription.getNatureIds(),
-                                                                                       MAVEN_NATURE_ID));
+                        final String codenvyBuilder = descriptor.getBuilder(DEFAULT_BUILDER);
+                        if (MAVEN_BUILDER_NAME.equals(codenvyBuilder)) {
+                            codenvyProjectDescription.setNatureIds(concat(codenvyProjectDescription.getNatureIds(), MAVEN_NATURE_ID));
                             codenvyProject.setDescription(codenvyProjectDescription, monitor);
 
                             final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
@@ -168,60 +153,4 @@ public final class CodenvyNature implements IProjectNature {
         return projectNatureDescriptor != null;
     }
 
-    /**
-     * The Codenvy project descriptor.
-     *
-     * @author Kevin Pollet
-     */
-    public static class CodenvyProjectDescriptor {
-        public final ProjectType         type;
-        public final String              description;
-        public final Map<String, String> properties;
-
-        public CodenvyProjectDescriptor(@JsonProperty("type") ProjectType type,
-                                        @JsonProperty("description") String description,
-                                        @JsonProperty("properties") List<Property> properties) {
-            this.type = type;
-            this.description = description;
-            this.properties = new HashMap<>();
-
-            if (properties != null) {
-                for (Property oneProperty : properties) {
-                    this.properties.put(oneProperty.name, oneProperty.value);
-                }
-            }
-        }
-
-        public static class Property {
-            public final String name;
-            public final String value;
-
-            @JsonCreator
-            public Property(@JsonProperty("name") String name, @JsonProperty("value") List<String> value) {
-                this.name = name;
-                this.value = value.isEmpty() ? null : value.get(0);
-            }
-        }
-
-        enum ProjectType {
-            ANGULARJS,
-            MAVEN,
-            UNKNOWN;
-
-            @JsonCreator
-            static ProjectType forValue(String value) {
-                ProjectType projectType;
-
-                try {
-
-                    projectType = Enum.valueOf(ProjectType.class, value.toUpperCase());
-
-                } catch (NullPointerException | IllegalArgumentException e) {
-                    projectType = UNKNOWN;
-                }
-
-                return projectType;
-            }
-        }
-    }
 }

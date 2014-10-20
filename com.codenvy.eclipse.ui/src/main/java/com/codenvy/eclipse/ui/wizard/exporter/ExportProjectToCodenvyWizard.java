@@ -45,6 +45,7 @@ import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.WorkspaceReference;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
+import com.codenvy.eclipse.core.CodenvyProjectDescriptor;
 import com.codenvy.eclipse.core.team.CodenvyMetaProject;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 import com.codenvy.eclipse.ui.team.CodenvyLightweightLabelDecorator;
@@ -139,26 +140,28 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                                       .getCodenvyBuilder(platformURL, username)
                                                                       .build();
 
-                                 final List<ProjectReference> remoteWorkspaceProjects = codenvy.project()
-                                                                                                 .getWorkspaceProjects(workspaceReference.id())
-                                                                                                 .execute();
+                                 final List<ProjectReference> remoteWorkspaceProjects =
+                                                                                        codenvy.project()
+                                                                                               .getWorkspaceProjects(workspaceReference.id())
+                                                                                               .execute();
 
                                  for (final IProject oneProject : projects) {
 
                                      if (!remoteWorkspaceProjects.contains(projects)) {
 
-                                         String codenvyProjectType = null;
+                                         CodenvyProjectDescriptor.Type codenvyProjectType = null;
                                          for (String natureId : oneProject.getDescription().getNatureIds()) {
-                                             codenvyProjectType = CodenvyNature.NATURE_MAPPINGS.inverse().get(natureId);
+                                             codenvyProjectType = CodenvyNature.ECLIPSE_NATURE_MAPPINGS.inverse().get(natureId);
                                              if (codenvyProjectType != null) {
                                                  break;
                                              }
                                          }
 
-                                         final ProjectReference projectToExport = CodenvyAPI.getClient()
+                                         final ProjectReference projectToExport =
+                                                                                  CodenvyAPI.getClient()
                                                                                             .newProjectBuilder()
-                                                                                            .withType(codenvyProjectType != null
-                                                                                                ? codenvyProjectType : "unknown")
+                                                                                            .withType(codenvyProjectType.name()
+                                                                                                                        .toLowerCase())
                                                                                             .withName(oneProject.getName())
                                                                                             .withWorkspaceId(workspaceReference.id())
                                                                                             .withWorkspaceName(workspaceReference.name())
