@@ -62,8 +62,9 @@
 		<license_years>2014</license_years>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.build-helper-maven-plugin>1.9</version.build-helper-maven-plugin>
-		<version.codenvy-platform-api-client-java>1.0.2</version.codenvy-platform-api-client-java>
+		<version.codenvy-platform-api-client-java>1.0.4-SNAPSHOT</version.codenvy-platform-api-client-java>
 		<version.jackson>2.3.2</version.jackson>
+		<version.javax.json>1.0.4</version.javax.json>
 		<version.jersey-all>2.8</version.jersey-all>
 		<version.target-platform>4.4</version.target-platform>
 		<version.tycho>0.21.0</version.tycho>
@@ -104,6 +105,12 @@
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
 			<version>${version.jackson}</version>
 		</dependency>
+		<dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>${version.javax.json}</version>
+            <scope>provided</scope>
+        </dependency>
 	</dependencies>
 	<repositories>
 		<repository>

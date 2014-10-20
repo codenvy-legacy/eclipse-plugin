@@ -155,15 +155,14 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                              }
                                          }
 
-                                         final ProjectReference projectToExport =
-                                                                         CodenvyAPI.getClient()
-                                                                                   .newProjectBuilder()
-                                                                                   .withProjectTypeId(codenvyProjectType != null
-                                                                                       ? codenvyProjectType : "unknown")
-                                                                                   .withName(oneProject.getName())
-                                                                                   .withWorkspaceId(workspaceReference.id())
-                                                                                   .withWorkspaceName(workspaceReference.name())
-                                                                                   .build();
+                                         final ProjectReference projectToExport = CodenvyAPI.getClient()
+                                                                                            .newProjectBuilder()
+                                                                                            .withType(codenvyProjectType != null
+                                                                                                ? codenvyProjectType : "unknown")
+                                                                                            .withName(oneProject.getName())
+                                                                                            .withWorkspaceId(workspaceReference.id())
+                                                                                            .withWorkspaceName(workspaceReference.name())
+                                                                                            .build();
 
                                          codenvy.project()
                                                 .create(projectToExport)

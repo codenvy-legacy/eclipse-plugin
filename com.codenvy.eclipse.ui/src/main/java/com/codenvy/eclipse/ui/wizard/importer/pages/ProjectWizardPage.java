@@ -148,7 +148,7 @@ public final class ProjectWizardPage extends WizardPage implements IPageChangedL
         projectTypeNameColumn.setLabelProvider(new ColumnLabelProviderWithGreyElement() {
             @Override
             public String getText(Object element) {
-                return element instanceof ProjectReference ? ((ProjectReference)element).projectTypeName() : super.getText(element);
+                return element instanceof ProjectReference ? ((ProjectReference)element).typeName() : super.getText(element);
             }
         });
 

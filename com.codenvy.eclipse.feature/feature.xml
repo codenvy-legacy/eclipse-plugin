@@ -326,4 +326,11 @@ any resulting litigation.
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.glassfish.javax.json"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>

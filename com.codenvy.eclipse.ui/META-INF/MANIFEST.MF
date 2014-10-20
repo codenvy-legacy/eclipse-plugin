@@ -7,9 +7,9 @@ Bundle-Name: Codenvy Eclipse Plugin :: UI
 Bundle-Vendor: Codenvy
 Bundle-Activator: com.codenvy.eclipse.ui.CodenvyUIPlugin
 Bundle-ActivationPolicy: lazy
-Import-Package: com.codenvy.client;version="1.0.1",
- com.codenvy.client.auth;version="1.0.1",
- com.codenvy.client.model;version="1.0.1",
+Import-Package: com.codenvy.client;version="1.0.4.SNAPSHOT",
+ com.codenvy.client.auth;version="1.0.4.SNAPSHOT",
+ com.codenvy.client.model;version="1.0.4.SNAPSHOT",
  com.codenvy.eclipse.core;version="1.0.0",
  com.codenvy.eclipse.core.launcher;version="1.0.0",
  com.codenvy.eclipse.core.team;version="1.0.0",

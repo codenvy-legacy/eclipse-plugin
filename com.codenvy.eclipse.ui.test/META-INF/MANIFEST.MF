@@ -8,7 +8,8 @@ Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Fragment-Host: com.codenvy.eclipse.ui
 Comment: import org.junit.runner see https://bugs.eclipse.org/bugs/show_bug.cgi?id=369266
-Import-Package: com.codenvy.client.store;version="1.0.2",
+Import-Package: com.codenvy.client.model.runner;version="1.0.4.SNAPSHOT",
+ com.codenvy.client.store;version="1.0.4.SNAPSHOT",
  com.codenvy.eclipse.core;version="1.0.0",
  org.apache.log4j;version="1.2.15",
  org.eclipse.core.resources,

@@ -38,6 +38,7 @@ import com.codenvy.client.BuilderClient;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.CodenvyException;
 import com.codenvy.client.FactoryClient;
+import com.codenvy.client.GitClient;
 import com.codenvy.client.ProjectClient;
 import com.codenvy.client.Request;
 import com.codenvy.client.Response;
@@ -252,12 +253,12 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
         return workspace;
     }
 
-    private Project mockProject(String name, String workspaceId, String projectTypeName, String description) {
+    private Project mockProject(String name, String workspaceId, String typeName, String description) {
         final Project project = mock(Project.class);
 
         doReturn(name).when(project).name();
         doReturn(workspaceId).when(project).workspaceId();
-        doReturn(projectTypeName).when(project).projectTypeName();
+        doReturn(typeName).when(project).typeName();
         doReturn(description).when(project).description();
 
         return project;
@@ -270,6 +271,11 @@ public class FakeCodenvy implements com.codenvy.client.Codenvy {
 
     @Override
     public FactoryClient factory() {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
+
+    @Override
+    public GitClient git() {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 }
