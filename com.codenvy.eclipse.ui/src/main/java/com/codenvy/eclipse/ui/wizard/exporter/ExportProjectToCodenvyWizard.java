@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.wizard.exporter;
 
+import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_FOLDER_NAME;
 import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.createOrUpdateResourcesFromZip;
 import static com.codenvy.eclipse.core.utils.EclipseProjectHelper.exportIProjectToZipStream;
 import static com.google.common.base.Predicates.notNull;
@@ -176,13 +177,15 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
                                                 .importArchive(workspaceReference.id(), projectToExport, archiveInputStream)
                                                 .execute();
 
-                                         final IFolder codenvyFolder = oneProject.getFolder(new Path(".codenvy"));
+                                         final IFolder codenvyFolder = oneProject.getFolder(new Path(CODENVY_FOLDER_NAME));
                                          if (!codenvyFolder.exists()) {
                                              codenvyFolder.create(true, true, monitor);
                                          }
 
-                                         final ZipInputStream codenvyFolderZip = codenvy.project()
-                                                                                        .exportResources(projectToExport, ".codenvy")
+                                         final ZipInputStream codenvyFolderZip =
+                                                                                 codenvy.project()
+                                                                                        .exportResources(projectToExport,
+                                                                                                         CODENVY_FOLDER_NAME)
                                                                                         .execute();
 
                                          createOrUpdateResourcesFromZip(codenvyFolderZip, codenvyFolder, monitor);

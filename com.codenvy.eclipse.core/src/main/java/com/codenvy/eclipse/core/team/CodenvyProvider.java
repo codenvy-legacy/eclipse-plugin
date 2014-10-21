@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core.team;
 
+import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_FOLDER_NAME;
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.team.core.RepositoryProvider;
@@ -54,7 +56,7 @@ public final class CodenvyProvider extends RepositoryProvider {
      * @throws CoreException if this method fails.
      */
     private void setCodenvyFolderAsTeamPrivate(boolean isTeamPrivate) throws CoreException {
-        final IFolder codenvyFolder = getProject().getFolder(".codenvy");
+        final IFolder codenvyFolder = getProject().getFolder(CODENVY_FOLDER_NAME);
         codenvyFolder.setTeamPrivateMember(isTeamPrivate);
     }
 }

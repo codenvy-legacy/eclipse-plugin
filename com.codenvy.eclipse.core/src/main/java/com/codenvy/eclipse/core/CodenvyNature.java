@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core;
 
+import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_FOLDER_NAME;
+import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_PROJECT_DESCRIPTOR_FILE_NAME;
 import static com.codenvy.eclipse.core.CodenvyPlugin.FAMILY_CODENVY;
 import static com.codenvy.eclipse.core.CodenvyProjectDescriptor.DEFAULT_BUILDER;
 import static com.google.common.collect.ObjectArrays.concat;
@@ -69,7 +71,7 @@ public final class CodenvyNature implements IProjectNature {
     public void configure() throws CoreException {
         EclipseProjectHelper.checkCodenvyProjectLayout(codenvyProject);
 
-        final IFile codenvyDesciptorFile = codenvyProject.getFolder(".codenvy").getFile("project.json");
+        final IFile codenvyDesciptorFile = codenvyProject.getFolder(CODENVY_FOLDER_NAME).getFile(CODENVY_PROJECT_DESCRIPTOR_FILE_NAME);
         if (codenvyDesciptorFile.exists()) {
             final Job job = new Job("Configure project") {
                 @Override

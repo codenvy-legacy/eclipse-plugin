@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core.utils;
 
+import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_FOLDER_NAME;
+import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_PROJECT_DESCRIPTOR_FILE_NAME;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.ByteArrayInputStream;
@@ -390,8 +392,8 @@ public final class EclipseProjectHelper {
      * @param project the Codenvy project.
      */
     public static void checkCodenvyProjectLayout(IProject project) {
-        final IFolder codenvyFolder = project.getFolder(".codenvy");
-        final IFile codenvyProjectFile = codenvyFolder.getFile("project.json");
+        final IFolder codenvyFolder = project.getFolder(CODENVY_FOLDER_NAME);
+        final IFile codenvyProjectFile = codenvyFolder.getFile(CODENVY_PROJECT_DESCRIPTOR_FILE_NAME);
         final IFile codenvyTeamFile = codenvyFolder.getFile("team");
 
         try {
