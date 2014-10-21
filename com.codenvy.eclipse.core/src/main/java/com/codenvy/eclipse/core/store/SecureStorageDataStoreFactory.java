@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.eclipse.core;
+package com.codenvy.eclipse.core.store;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.equinox.security.storage.EncodingUtils.encodeSlashes;

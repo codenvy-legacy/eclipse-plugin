@@ -8,11 +8,11 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.eclipse.core;
+package com.codenvy.eclipse.core.store;
 
-import static com.codenvy.eclipse.core.SecureStorageDataStore.CODENVY_PASSWORD_KEY_NAME;
-import static com.codenvy.eclipse.core.SecureStorageDataStore.CODENVY_TOKEN_KEY_NAME;
-import static com.codenvy.eclipse.core.SecureStorageDataStoreFactory.CODENVY_NODE_NAME;
+import static com.codenvy.eclipse.core.store.SecureStorageDataStore.CODENVY_PASSWORD_KEY_NAME;
+import static com.codenvy.eclipse.core.store.SecureStorageDataStore.CODENVY_TOKEN_KEY_NAME;
+import static com.codenvy.eclipse.core.store.SecureStorageDataStoreFactory.CODENVY_NODE_NAME;
 import static org.eclipse.equinox.security.storage.EncodingUtils.encodeSlashes;
 
 import org.eclipse.equinox.security.storage.ISecurePreferences;
@@ -27,6 +27,7 @@ import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyClient;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.store.DataStore;
+import com.codenvy.eclipse.core.store.SecureStorageDataStore;
 
 /**
  * {@link SecureStorageDataStore} tests.

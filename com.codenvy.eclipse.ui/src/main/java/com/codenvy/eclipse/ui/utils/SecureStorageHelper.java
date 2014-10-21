@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.eclipse.ui.utils;
 
-import static com.codenvy.eclipse.core.SecureStorageDataStore.CODENVY_PASSWORD_KEY_NAME;
-import static com.codenvy.eclipse.core.SecureStorageDataStoreFactory.CODENVY_NODE_NAME;
+import static com.codenvy.eclipse.core.store.SecureStorageDataStore.CODENVY_PASSWORD_KEY_NAME;
+import static com.codenvy.eclipse.core.store.SecureStorageDataStoreFactory.CODENVY_NODE_NAME;
 import static com.codenvy.eclipse.core.utils.StringHelper.isEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

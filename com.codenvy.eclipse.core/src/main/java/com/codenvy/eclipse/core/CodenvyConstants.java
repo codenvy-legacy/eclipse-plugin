@@ -17,7 +17,6 @@ package com.codenvy.eclipse.core;
  */
 public final class CodenvyConstants {
     public static final String CODENVY_FOLDER_NAME                  = ".codenvy";
-    public static final String CODENVY_PROJECT_DESCRIPTOR_FILE_NAME = "project.json";
 
     /**
      * Disable instantiation.

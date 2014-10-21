@@ -10,48 +10,55 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core;
 
+import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_FOLDER_NAME;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 
 /**
- * The Codenvy project descriptor.
+ * The Codenvy project descriptor. The "project.json" file.
  *
  * @author Kevin Pollet
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CodenvyProjectDescriptor {
-    public static final String       DEFAULT_BUILDER = "default";
+public final class CodenvyProjectDescriptor {
+    public static final String       PROJECT_DESCRIPTOR_FILE_NAME = "project.json";
+    public static final String       DEFAULT_PROJECT_BUILDER      = "default";
 
     public final Type                type;
     public final Map<String, String> builders;
 
-    public static CodenvyProjectDescriptor load(InputStream inputStream) {
-        final ObjectMapper mapper = new ObjectMapper();
-        try {
+    public static CodenvyProjectDescriptor load(IProject project) {
+        final IFile projectDescriptor = project.getFolder(CODENVY_FOLDER_NAME).getFile(PROJECT_DESCRIPTOR_FILE_NAME);
+        if (projectDescriptor.exists()) {
+            final ObjectMapper mapper = new ObjectMapper();
+            try {
 
-            return mapper.readValue(inputStream, CodenvyProjectDescriptor.class);
+                return mapper.readValue(projectDescriptor.getContents(), CodenvyProjectDescriptor.class);
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            } catch (IOException | CoreException e) {
+                throw new RuntimeException(e);
+            }
         }
+        return null;
     }
 
     @JsonCreator
-    public CodenvyProjectDescriptor(@JsonProperty("type") Type type, @JsonProperty("builders") Map<String, String> builders) {
+    public CodenvyProjectDescriptor(@JsonProperty(value = "type", required = true) Type type,
+                                    @JsonProperty(value = "builders", required = true) Map<String, String> builders) {
         this.type = checkNotNull(type);
-        this.builders = checkNotNull(builders);
-    }
-
-    public String getBuilder(String name) {
-        return builders.get(name);
+        this.builders = new ImmutableMap.Builder<String, String>().putAll(checkNotNull(builders)).build();
     }
 
     public enum Type {

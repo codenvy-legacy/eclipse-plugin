@@ -35,29 +35,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Stéphane Daviet
  */
 public final class CodenvyProjectMetadata {
-    public static final String                                           PROJECT_METADATA_FILE_NAME = "projectMetadata.json";
-
+    private static final String                                          PROJECT_METADATA_FILE_NAME = "projectMetadata.json";
     private static final ConcurrentMap<IProject, CodenvyProjectMetadata> PROJECT_METADATA_CACHE     = new ConcurrentHashMap<>();
-
-    public static void create(IProject project, CodenvyProjectMetadata projectMetadata) {
-        PROJECT_METADATA_CACHE.put(project, projectMetadata);
-
-        final IFile projectMetadataFile = project.getFolder(CODENVY_FOLDER_NAME).getFile(PROJECT_METADATA_FILE_NAME);
-        final ObjectMapper mapper = new ObjectMapper();
-        try {
-
-            final byte[] projectMetadataBytes = mapper.writeValueAsBytes(projectMetadata);
-            if (!projectMetadataFile.exists()) {
-                projectMetadataFile.create(new ByteArrayInputStream(projectMetadataBytes), true, new NullProgressMonitor());
-            } else {
-                projectMetadataFile.setContents(new ByteArrayInputStream(projectMetadataBytes), IResource.FORCE,
-                                                new NullProgressMonitor());
-            }
-
-        } catch (JsonProcessingException | CoreException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static CodenvyProjectMetadata get(IProject project) {
         CodenvyProjectMetadata projectMetadata = PROJECT_METADATA_CACHE.get(project);
@@ -83,6 +62,26 @@ public final class CodenvyProjectMetadata {
         return projectMetadata;
     }
 
+    public static void create(IProject project, CodenvyProjectMetadata projectMetadata) {
+        PROJECT_METADATA_CACHE.put(project, projectMetadata);
+
+        final IFile projectMetadataFile = project.getFolder(CODENVY_FOLDER_NAME).getFile(PROJECT_METADATA_FILE_NAME);
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+
+            final byte[] projectMetadataBytes = mapper.writeValueAsBytes(projectMetadata);
+            if (!projectMetadataFile.exists()) {
+                projectMetadataFile.create(new ByteArrayInputStream(projectMetadataBytes), true, new NullProgressMonitor());
+            } else {
+                projectMetadataFile.setContents(new ByteArrayInputStream(projectMetadataBytes), IResource.FORCE,
+                                                new NullProgressMonitor());
+            }
+
+        } catch (JsonProcessingException | CoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void delete(IProject project) {
         final CodenvyProjectMetadata projectMetadata = PROJECT_METADATA_CACHE.get(project);
         if (projectMetadata != null) {
@@ -106,11 +105,10 @@ public final class CodenvyProjectMetadata {
     public final String workspaceId;
 
     @JsonCreator
-    public CodenvyProjectMetadata(@JsonProperty("url") String url,
-                                  @JsonProperty("username") String username,
-                                  @JsonProperty("projectName") String projectName,
-                                  @JsonProperty("workspaceId") String workspaceId) {
-
+    public CodenvyProjectMetadata(@JsonProperty(value = "url", required = true) String url,
+                                  @JsonProperty(value = "username", required = true) String username,
+                                  @JsonProperty(value = "projectName", required = true) String projectName,
+                                  @JsonProperty(value = "workspaceId", required = true) String workspaceId) {
         this.url = url;
         this.username = username;
         this.projectName = projectName;

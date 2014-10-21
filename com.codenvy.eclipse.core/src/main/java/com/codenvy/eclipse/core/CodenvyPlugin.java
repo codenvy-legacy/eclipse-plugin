@@ -20,6 +20,7 @@ import org.osgi.framework.BundleContext;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyBuilder;
 import com.codenvy.client.auth.CredentialsProvider;
+import com.codenvy.eclipse.core.store.SecureStorageDataStoreFactory;
 
 /**
  * The activator class controls the plug-in life cycle.

@@ -10,19 +10,14 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core;
 
-import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_FOLDER_NAME;
-import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_PROJECT_DESCRIPTOR_FILE_NAME;
 import static com.codenvy.eclipse.core.CodenvyPlugin.FAMILY_CODENVY;
-import static com.codenvy.eclipse.core.CodenvyProjectDescriptor.DEFAULT_BUILDER;
+import static com.codenvy.eclipse.core.CodenvyProjectDescriptor.DEFAULT_PROJECT_BUILDER;
 import static com.google.common.collect.ObjectArrays.concat;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.ICommand;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
@@ -51,10 +46,9 @@ public final class CodenvyNature implements IProjectNature {
 
     private static final String                                          MAVEN_NATURE_ID          = "org.eclipse.m2e.core.maven2Nature";
     private static final String                                          JAVASCRIPT_NATURE_ID     = "org.eclipse.wst.jsdt.core.jsNature";
-
     private static final String                                          MAVEN_BUILDER_NAME       = "maven";
 
-    private IProject                                                     codenvyProject;
+    private IProject                                                     project;
 
     public static final HashBiMap<CodenvyProjectDescriptor.Type, String> ECLIPSE_NATURE_MAPPINGS  = HashBiMap.create();
     public static final HashBiMap<CodenvyProjectDescriptor.Type, String> ECLIPSE_BUILDER_MAPPINGS = HashBiMap.create();
@@ -68,62 +62,58 @@ public final class CodenvyNature implements IProjectNature {
 
     @Override
     public void configure() throws CoreException {
-        final IFile codenvyDesciptorFile = codenvyProject.getFolder(CODENVY_FOLDER_NAME).getFile(CODENVY_PROJECT_DESCRIPTOR_FILE_NAME);
-        if (codenvyDesciptorFile.exists()) {
-            final Job job = new Job("Configure project") {
-                @Override
-                protected IStatus run(IProgressMonitor monitor) {
-                    monitor.beginTask("Configure project natures and builders", IProgressMonitor.UNKNOWN);
+        new Job("Configure project") {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                monitor.beginTask("Configure project natures and builders", IProgressMonitor.UNKNOWN);
+                try {
 
-                    try (InputStream inputStream = codenvyDesciptorFile.getContents()) {
-                        final IProjectDescription codenvyProjectDescription = codenvyProject.getDescription();
-                        final CodenvyProjectDescriptor descriptor = CodenvyProjectDescriptor.load(inputStream);
+                    final IProjectDescription projectDescription = project.getDescription();
+                    final CodenvyProjectDescriptor projectDescriptor = CodenvyProjectDescriptor.load(getProject());
 
-                        final String eclipseNature = ECLIPSE_NATURE_MAPPINGS.get(descriptor.type);
-                        if (eclipseNature != null && isNatureWithId(eclipseNature)) {
-                            codenvyProjectDescription.setNatureIds(concat(codenvyProjectDescription.getNatureIds(), eclipseNature));
-                        }
-
-                        final String eclipseBuilder = ECLIPSE_BUILDER_MAPPINGS.get(descriptor.type);
-                        if (eclipseBuilder != null) {
-                            final List<ICommand> builders = new ArrayList<>();
-                            final ICommand command = codenvyProjectDescription.newCommand();
-                            command.setBuilderName(eclipseBuilder);
-                            builders.add(command);
-
-                            codenvyProjectDescription.setBuildSpec(builders.toArray(new ICommand[0]));
-                        }
-
-                        // save nature and builders added to the project
-                        codenvyProject.setDescription(codenvyProjectDescription, monitor);
-
-                        final String codenvyBuilder = descriptor.getBuilder(DEFAULT_BUILDER);
-                        if (MAVEN_BUILDER_NAME.equals(codenvyBuilder)) {
-                            codenvyProjectDescription.setNatureIds(concat(codenvyProjectDescription.getNatureIds(), MAVEN_NATURE_ID));
-                            codenvyProject.setDescription(codenvyProjectDescription, monitor);
-
-                            final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
-                            projectConfigurationManager.updateProjectConfiguration(codenvyProject, monitor);
-                        }
-
-                    } catch (CoreException | IOException e) {
-                        throw new RuntimeException(e);
-
-                    } finally {
-                        monitor.done();
+                    final String eclipseNature = ECLIPSE_NATURE_MAPPINGS.get(projectDescriptor.type);
+                    if (eclipseNature != null && isNatureWithId(eclipseNature)) {
+                        projectDescription.setNatureIds(concat(projectDescription.getNatureIds(), eclipseNature));
                     }
 
-                    return Status.OK_STATUS;
+                    final String eclipseBuilder = ECLIPSE_BUILDER_MAPPINGS.get(projectDescriptor.type);
+                    if (eclipseBuilder != null) {
+                        final List<ICommand> builders = new ArrayList<>();
+                        final ICommand command = projectDescription.newCommand();
+                        command.setBuilderName(eclipseBuilder);
+                        builders.add(command);
+
+                        projectDescription.setBuildSpec(builders.toArray(new ICommand[0]));
+                    }
+
+                    // save nature and builders added to the project
+                    project.setDescription(projectDescription, monitor);
+
+                    final String codenvyBuilder = projectDescriptor.builders.get(DEFAULT_PROJECT_BUILDER);
+                    if (MAVEN_BUILDER_NAME.equals(codenvyBuilder)) {
+                        projectDescription.setNatureIds(concat(projectDescription.getNatureIds(), MAVEN_NATURE_ID));
+                        project.setDescription(projectDescription, monitor);
+
+                        final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
+                        projectConfigurationManager.updateProjectConfiguration(project, monitor);
+                    }
+
+                } catch (CoreException e) {
+                    throw new RuntimeException(e);
+
+                } finally {
+                    monitor.done();
                 }
 
-                @Override
-                public boolean belongsTo(Object family) {
-                    return FAMILY_CODENVY.equals(family);
-                }
-            };
+                return Status.OK_STATUS;
+            }
 
-            job.schedule();
-        }
+            @Override
+            public boolean belongsTo(Object family) {
+                return FAMILY_CODENVY.equals(family);
+            }
+
+        }.schedule();
     }
 
     @Override
@@ -133,12 +123,12 @@ public final class CodenvyNature implements IProjectNature {
 
     @Override
     public IProject getProject() {
-        return codenvyProject;
+        return project;
     }
 
     @Override
     public void setProject(IProject codenvyProject) {
-        this.codenvyProject = codenvyProject;
+        this.project = codenvyProject;
     }
 
     /**
@@ -148,8 +138,8 @@ public final class CodenvyNature implements IProjectNature {
      * @return {@code true} if the given nature exists, {@code false} otherwise.
      */
     private boolean isNatureWithId(String natureId) {
-        final IProjectNatureDescriptor projectNatureDescriptor = ResourcesPlugin.getWorkspace().getNatureDescriptor(natureId);
-        return projectNatureDescriptor != null;
+        final IProjectNatureDescriptor natureDescriptor = ResourcesPlugin.getWorkspace().getNatureDescriptor(natureId);
+        return natureDescriptor != null;
     }
 
 }
