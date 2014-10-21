@@ -10,8 +10,6 @@
  *******************************************************************************/
 package com.codenvy.eclipse.core.utils;
 
-import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_FOLDER_NAME;
-import static com.codenvy.eclipse.core.CodenvyConstants.CODENVY_PROJECT_DESCRIPTOR_FILE_NAME;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.ByteArrayInputStream;
@@ -35,7 +33,6 @@ import java.util.zip.ZipOutputStream;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -51,7 +48,7 @@ import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.team.CodenvyMetaProject;
+import com.codenvy.eclipse.core.CodenvyProjectMetadata;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 import com.google.common.io.ByteStreams;
 
@@ -62,8 +59,6 @@ import com.google.common.io.ByteStreams;
  * @author Stéphane Daviet
  */
 public final class EclipseProjectHelper {
-    private static final String       CODENVY_PROJECT_LAYOUT_MARKER_ID = "com.codenvy.eclipse.core.codenvyProjectLayoutMarker";
-
     private static final List<String> excludedResources                = Arrays.asList(new String[]{".project",
                                                                        ".classpath",
                                                                        ".settings",
@@ -75,17 +70,19 @@ public final class EclipseProjectHelper {
      * Creates an {@link IProject} in the current Eclipse workspace.
      *
      * @param stream the project {@link ZipInputStream}.
-     * @param metaProject the {@link CodenvyMetaProject}.
+     * @param projectMetadata the {@link CodenvyProjectMetadata}.
      * @param monitor the {@link IProgressMonitor} or {@code null} if none.
      * @return the created {@link IProject}.
      * @throws NullPointerException if stream or metaProject parameter is {@code null}.
      */
-    public static IProject createIProjectFromZipStream(ZipInputStream stream, CodenvyMetaProject metaProject, IProgressMonitor monitor) {
+    public static IProject createIProjectFromZipStream(ZipInputStream stream,
+                                                       CodenvyProjectMetadata projectMetadata,
+                                                       IProgressMonitor monitor) {
         checkNotNull(stream);
-        checkNotNull(metaProject);
+        checkNotNull(projectMetadata);
 
-        final SubMonitor subMonitor = SubMonitor.convert(monitor, "Create project " + metaProject.projectName, 1);
-        final IProject newProject = ResourcesPlugin.getWorkspace().getRoot().getProject(metaProject.projectName);
+        final SubMonitor subMonitor = SubMonitor.convert(monitor, "Create project " + projectMetadata.projectName, 1);
+        final IProject newProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectMetadata.projectName);
 
         try (ZipInputStream zipInputStream = stream) {
 
@@ -97,7 +94,7 @@ public final class EclipseProjectHelper {
 
                 try {
 
-                    CodenvyMetaProject.create(newProject, metaProject);
+                    CodenvyProjectMetadata.create(newProject, projectMetadata);
                     RepositoryProvider.map(newProject, CodenvyProvider.PROVIDER_ID);
 
                     final IProjectDescription newProjectDescription = newProject.getDescription();
@@ -230,29 +227,29 @@ public final class EclipseProjectHelper {
      * Updates the whole Codenvy project with the resources contained in the {@link IProject}.
      * 
      * @param eclipseProject Eclipse {@link IProject}.
-     * @param codenvyMetaProject {@link CodenvyMetaProject} descriptor.
+     * @param projectMetadata {@link CodenvyProjectMetadata} descriptor.
      * @param monitor the {@link IProgressMonitor} instance.
      * @throws NullPointerException if eclipeProject or codenvyProject parameter is {@code null}.
      */
-    public static void updateProjectOnCodenvy(IProject eclipseProject, CodenvyMetaProject codenvyMetaProject, IProgressMonitor monitor) {
+    public static void updateProjectOnCodenvy(IProject eclipseProject, CodenvyProjectMetadata projectMetadata, IProgressMonitor monitor) {
         checkNotNull(eclipseProject);
-        checkNotNull(codenvyMetaProject);
+        checkNotNull(projectMetadata);
 
-        final SubMonitor subMonitor = SubMonitor.convert(monitor, "Update project " + codenvyMetaProject.projectName + " on Codenvy", 1);
+        final SubMonitor subMonitor = SubMonitor.convert(monitor, "Update project " + projectMetadata.projectName + " on Codenvy", 1);
 
         try {
 
             final Codenvy codenvy = CodenvyPlugin.getDefault()
-                                                 .getCodenvyBuilder(codenvyMetaProject.url, codenvyMetaProject.username)
+                                                 .getCodenvyBuilder(projectMetadata.url, projectMetadata.username)
                                                  .build();
 
             final InputStream eclipseProjectZip = exportIProjectToZipStream(eclipseProject, monitor);
-            final ProjectReference projectToUpdate = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
-                                                      .withWorkspaceId(codenvyMetaProject.workspaceId)
-                                                      .build();
+            final ProjectReference projectToUpdate = CodenvyAPI.getClient().newProjectBuilder().withName(projectMetadata.projectName)
+                                                               .withWorkspaceId(projectMetadata.workspaceId)
+                                                               .build();
 
             codenvy.project()
-                   .importArchive(codenvyMetaProject.workspaceId, projectToUpdate, eclipseProjectZip)
+                   .importArchive(projectMetadata.workspaceId, projectToUpdate, eclipseProjectZip)
                    .execute();
 
             final InputStream codenvyProjectZip =
@@ -298,25 +295,25 @@ public final class EclipseProjectHelper {
      * Updates the whole Eclipse {@link IProject} with the resources contained in the Codenvy project.
      * 
      * @param eclipseProject Eclipse {@link IProject}.
-     * @param codenvyMetaProject {@link CodenvyMetaProject} descriptor.
+     * @param projectMetadata {@link CodenvyProjectMetadata} descriptor.
      * @param monitor the {@link IProgressMonitor} instance.
      * @throws NullPointerException if eclipeProject or codenvyProject parameter is {@code null}.
      */
-    public static void updateProjectFromCodenvy(IProject eclipseProject, CodenvyMetaProject codenvyMetaProject, IProgressMonitor monitor) {
+    public static void updateProjectFromCodenvy(IProject eclipseProject, CodenvyProjectMetadata projectMetadata, IProgressMonitor monitor) {
         checkNotNull(eclipseProject);
-        checkNotNull(codenvyMetaProject);
+        checkNotNull(projectMetadata);
 
         final SubMonitor subMonitor = SubMonitor.convert(monitor, "Update project " + eclipseProject.getName() + " from Codenvy", 1);
 
         try {
 
             final Codenvy codenvy = CodenvyPlugin.getDefault()
-                                                 .getCodenvyBuilder(codenvyMetaProject.url, codenvyMetaProject.username)
+                                                 .getCodenvyBuilder(projectMetadata.url, projectMetadata.username)
                                                  .build();
 
-            final ProjectReference codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
-                                                     .withWorkspaceId(codenvyMetaProject.workspaceId)
-                                                     .build();
+            final ProjectReference codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(projectMetadata.projectName)
+                                                              .withWorkspaceId(projectMetadata.workspaceId)
+                                                              .build();
 
             final ZipInputStream stream = codenvy.project()
                                                  .exportResources(codenvyProject, eclipseProject.getProjectRelativePath().toString())
@@ -326,18 +323,18 @@ public final class EclipseProjectHelper {
             createOrUpdateResourcesFromZip(stream, eclipseProject, subMonitor);
 
             for (IResource oneResource : getResources(eclipseProject)) {
-            	final boolean exists;
-            	if (oneResource instanceof IFile) {
-                   exists = codenvy.project()
-                                              .hasFile(codenvyProject, oneResource.getProjectRelativePath().toString())
-                                              .execute();
-            	} else if (oneResource instanceof IContainer) {
-                        exists = codenvy.project()
-                                                   .hasFolder(codenvyProject, oneResource.getProjectRelativePath().toString())
-                                                   .execute();
-            	} else {
-            		exists = false;
-            	}
+                final boolean exists;
+                if (oneResource instanceof IFile) {
+                    exists = codenvy.project()
+                                    .hasFile(codenvyProject, oneResource.getProjectRelativePath().toString())
+                                    .execute();
+                } else if (oneResource instanceof IContainer) {
+                    exists = codenvy.project()
+                                    .hasFolder(codenvyProject, oneResource.getProjectRelativePath().toString())
+                                    .execute();
+                } else {
+                    exists = false;
+                }
 
                 if (!exists
                     && oneResource.exists()
@@ -384,41 +381,6 @@ public final class EclipseProjectHelper {
             throw new RuntimeException(e);
         }
         return resources;
-    }
-
-    /**
-     * Checks that the Codenvy {@link IProject} layout is valid.
-     *
-     * @param project the Codenvy project.
-     */
-    public static void checkCodenvyProjectLayout(IProject project) {
-        final IFolder codenvyFolder = project.getFolder(CODENVY_FOLDER_NAME);
-        final IFile codenvyProjectFile = codenvyFolder.getFile(CODENVY_PROJECT_DESCRIPTOR_FILE_NAME);
-        final IFile codenvyTeamFile = codenvyFolder.getFile("team");
-
-        try {
-            project.deleteMarkers(CODENVY_PROJECT_LAYOUT_MARKER_ID, true, IResource.DEPTH_INFINITE);
-
-            if (!codenvyFolder.exists()) {
-                final IMarker marker = project.createMarker(CODENVY_PROJECT_LAYOUT_MARKER_ID);
-                marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-                marker.setAttribute(IMarker.MESSAGE, ".codenvy folder is missing");
-            }
-
-            if (!codenvyProjectFile.exists()) {
-                final IMarker marker = codenvyFolder.createMarker(CODENVY_PROJECT_LAYOUT_MARKER_ID);
-                marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-                marker.setAttribute(IMarker.MESSAGE, "project file is missing");
-            }
-
-            if (!codenvyTeamFile.exists()) {
-                final IMarker marker = codenvyFolder.createMarker(CODENVY_PROJECT_LAYOUT_MARKER_ID);
-                marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-                marker.setAttribute(IMarker.MESSAGE, "team file is missing");
-            }
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

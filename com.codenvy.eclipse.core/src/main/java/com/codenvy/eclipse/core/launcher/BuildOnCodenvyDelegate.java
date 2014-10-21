@@ -55,7 +55,7 @@ public final class BuildOnCodenvyDelegate implements ILaunchConfigurationDelegat
                 throw new CoreException(new Status(ERROR, PLUGIN_ID, "Project named " + projectName + " isn't a Codenvy project"));
             }
 
-            new CodenvyBuilderProcess(launch, codenvyProvider.getMetaProject());
+            new CodenvyBuilderProcess(launch, codenvyProvider.getProjectMetadata());
         }
     }
 }

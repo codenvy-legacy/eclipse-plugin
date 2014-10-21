@@ -16,15 +16,17 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.team.core.RepositoryProvider;
 
+import com.codenvy.eclipse.core.CodenvyProjectMetadata;
+
 /**
  * The Codenvy team provider.
  * 
  * @author Kevin Pollet
  */
 public final class CodenvyProvider extends RepositoryProvider {
-    public static final String PROVIDER_ID = "com.codenvy.eclipse.core.team.codenvyProvider";
+    public static final String     PROVIDER_ID = "com.codenvy.eclipse.core.team.codenvyProvider";
 
-    private CodenvyMetaProject metaProject;
+    private CodenvyProjectMetadata projectMetadata;
 
     @Override
     public void configureProject() throws CoreException {
@@ -33,7 +35,6 @@ public final class CodenvyProvider extends RepositoryProvider {
 
     @Override
     public void deconfigure() throws CoreException {
-        CodenvyMetaProject.delete(getProject());
         setCodenvyFolderAsTeamPrivate(false);
     }
 
@@ -42,11 +43,11 @@ public final class CodenvyProvider extends RepositoryProvider {
         return PROVIDER_ID;
     }
 
-    public CodenvyMetaProject getMetaProject() {
-        if (metaProject == null) {
-            metaProject = CodenvyMetaProject.get(getProject());
+    public CodenvyProjectMetadata getProjectMetadata() {
+        if (projectMetadata == null) {
+            projectMetadata = CodenvyProjectMetadata.get(getProject());
         }
-        return metaProject;
+        return projectMetadata;
     }
 
     /**

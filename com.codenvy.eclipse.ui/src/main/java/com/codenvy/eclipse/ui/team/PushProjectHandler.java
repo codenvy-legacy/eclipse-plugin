@@ -25,7 +25,7 @@ import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
-import com.codenvy.eclipse.core.team.CodenvyMetaProject;
+import com.codenvy.eclipse.core.CodenvyProjectMetadata;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 
 /**
@@ -40,34 +40,36 @@ public final class PushProjectHandler extends AbstractProjectHandler {
             try {
                 final IWorkbench workbench = PlatformUI.getWorkbench();
                 workbench.getProgressService()
-                          .run(true, false, new IRunnableWithProgress() {
-                              @Override
-                              public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                                  monitor.beginTask("Push projects", projects.size());
+                         .run(true, false, new IRunnableWithProgress() {
+                             @Override
+                             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                                 monitor.beginTask("Push projects", projects.size());
 
-                                  try {
+                                 try {
 
-                                      for (IProject oneProject : projects) {
-                                          final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(oneProject, PROVIDER_ID);
-                                          final CodenvyMetaProject codenvyMetaProject = codenvyProvider.getMetaProject();
+                                     for (IProject oneProject : projects) {
+                                         final CodenvyProvider codenvyProvider =
+                                                                                 (CodenvyProvider)RepositoryProvider.getProvider(oneProject,
+                                                                                                                                 PROVIDER_ID);
+                                         final CodenvyProjectMetadata projectMetadata = codenvyProvider.getProjectMetadata();
 
-                                          updateProjectOnCodenvy(oneProject, codenvyMetaProject, monitor);
-                                          monitor.worked(1);
-                                      }
+                                         updateProjectOnCodenvy(oneProject, projectMetadata, monitor);
+                                         monitor.worked(1);
+                                     }
 
-                                      workbench.getDisplay().syncExec(new Runnable() {
-                                          @Override
-                                          public void run() {
-                                              workbench.getDecoratorManager()
-                                                       .update(CodenvyLightweightLabelDecorator.DECORATOR_ID);
-                                          }
-                                      });
+                                     workbench.getDisplay().syncExec(new Runnable() {
+                                         @Override
+                                         public void run() {
+                                             workbench.getDecoratorManager()
+                                                      .update(CodenvyLightweightLabelDecorator.DECORATOR_ID);
+                                         }
+                                     });
 
-                                  } finally {
-                                      monitor.done();
-                                  }
-                              }
-                          });
+                                 } finally {
+                                     monitor.done();
+                                 }
+                             }
+                         });
 
             } catch (InvocationTargetException | InterruptedException e) {
                 throw new RuntimeException(e);

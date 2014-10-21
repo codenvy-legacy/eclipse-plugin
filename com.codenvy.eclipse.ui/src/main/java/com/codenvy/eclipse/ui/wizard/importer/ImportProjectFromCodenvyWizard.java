@@ -41,7 +41,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.team.CodenvyMetaProject;
+import com.codenvy.eclipse.core.CodenvyProjectMetadata;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
 import com.codenvy.eclipse.ui.wizard.common.pages.AuthenticationWizardPage;
 import com.codenvy.eclipse.ui.wizard.importer.pages.ProjectWizardPage;
@@ -197,7 +197,7 @@ public final class ImportProjectFromCodenvyWizard extends Wizard implements IImp
                                                            .execute();
 
         return createIProjectFromZipStream(zipInputStream,
-                                           new CodenvyMetaProject(platformURL, username, project.name(), project.workspaceId()), monitor);
+                                           new CodenvyProjectMetadata(platformURL, username, project.name(), project.workspaceId()), monitor);
     }
 
     /**

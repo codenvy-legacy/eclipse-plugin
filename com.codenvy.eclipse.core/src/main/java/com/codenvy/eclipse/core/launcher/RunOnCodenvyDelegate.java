@@ -52,7 +52,7 @@ public final class RunOnCodenvyDelegate implements ILaunchConfigurationDelegate 
                 throw new CoreException(new Status(ERROR, PLUGIN_ID, "Project named " + projectName + " isn't a Codenvy project"));
             }
 
-            new CodenvyRunnerProcess(launch, codenvyProvider.getMetaProject());
+            new CodenvyRunnerProcess(launch, codenvyProvider.getProjectMetadata());
         }
     }
 }

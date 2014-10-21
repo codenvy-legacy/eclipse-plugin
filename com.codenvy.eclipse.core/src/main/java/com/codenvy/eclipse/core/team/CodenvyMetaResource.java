@@ -21,6 +21,7 @@ import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.auth.CodenvyAuthenticationException;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
+import com.codenvy.eclipse.core.CodenvyProjectMetadata;
 
 /**
  * The Codenvy resource mapping class.
@@ -39,25 +40,25 @@ public final class CodenvyMetaResource {
             final CodenvyProvider codenvyProvider = (CodenvyProvider)RepositoryProvider.getProvider(resource.getProject(), PROVIDER_ID);
 
             if (codenvyProvider != null) {
-                final CodenvyMetaProject metaProject = codenvyProvider.getMetaProject();
+                final CodenvyProjectMetadata projectMetadata = codenvyProvider.getProjectMetadata();
 
-                if (metaProject != null) {
-                    final ProjectReference codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(metaProject.projectName)
-                                                                      .withWorkspaceId(metaProject.workspaceId)
+                if (projectMetadata != null) {
+                    final ProjectReference codenvyProject = CodenvyAPI.getClient().newProjectBuilder().withName(projectMetadata.projectName)
+                                                                      .withWorkspaceId(projectMetadata.workspaceId)
                                                                       .build();
 
                     try {
 
                         if (resource instanceof IFile) {
                             this.tracked = CodenvyPlugin.getDefault()
-                                                        .getCodenvyBuilder(metaProject.url, metaProject.username)
+                                                        .getCodenvyBuilder(projectMetadata.url, projectMetadata.username)
                                                         .build()
                                                         .project()
                                                         .hasFile(codenvyProject, resource.getProjectRelativePath().toString())
                                                         .execute();
                         } else {
                             this.tracked = CodenvyPlugin.getDefault()
-                                                        .getCodenvyBuilder(metaProject.url, metaProject.username)
+                                                        .getCodenvyBuilder(projectMetadata.url, projectMetadata.username)
                                                         .build()
                                                         .project()
                                                         .hasFolder(codenvyProject, resource.getProjectRelativePath().toString())

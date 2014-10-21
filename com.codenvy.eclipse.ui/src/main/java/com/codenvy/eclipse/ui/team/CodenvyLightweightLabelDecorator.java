@@ -56,7 +56,7 @@ public final class CodenvyLightweightLabelDecorator extends LabelProvider implem
                     decoration.addOverlay(trackedImageDescriptor);
 
                     if (resource.getType() == PROJECT) {
-                        decoration.addSuffix(" [codenvy: " + provider.getMetaProject().url + "]");
+                        decoration.addSuffix(" [codenvy: " + provider.getProjectMetadata().url + "]");
                     }
                 }
             }

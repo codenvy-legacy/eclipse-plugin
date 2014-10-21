@@ -47,7 +47,7 @@ import com.codenvy.client.model.WorkspaceReference;
 import com.codenvy.eclipse.core.CodenvyNature;
 import com.codenvy.eclipse.core.CodenvyPlugin;
 import com.codenvy.eclipse.core.CodenvyProjectDescriptor;
-import com.codenvy.eclipse.core.team.CodenvyMetaProject;
+import com.codenvy.eclipse.core.CodenvyProjectMetadata;
 import com.codenvy.eclipse.core.team.CodenvyProvider;
 import com.codenvy.eclipse.ui.team.CodenvyLightweightLabelDecorator;
 import com.codenvy.eclipse.ui.wizard.common.CredentialsProviderWizard;
@@ -190,8 +190,8 @@ public class ExportProjectToCodenvyWizard extends Wizard implements IExportWizar
 
                                          createOrUpdateResourcesFromZip(codenvyFolderZip, codenvyFolder, monitor);
 
-                                         CodenvyMetaProject.create(oneProject,
-                                                                   new CodenvyMetaProject(platformURL, username, oneProject.getName(),
+                                         CodenvyProjectMetadata.create(oneProject,
+                                                                   new CodenvyProjectMetadata(platformURL, username, oneProject.getName(),
                                                                                           workspaceReference.id()));
                                          RepositoryProvider.map(oneProject, CodenvyProvider.PROVIDER_ID);
 

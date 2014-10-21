@@ -43,7 +43,7 @@ import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.eclipse.core.CodenvyPlugin;
-import com.codenvy.eclipse.core.team.CodenvyMetaProject;
+import com.codenvy.eclipse.core.CodenvyProjectMetadata;
 
 /**
  * The codenvy builder process.
@@ -69,19 +69,19 @@ public final class CodenvyBuilderProcess implements IProcess {
      * Constructs an instance of {@link CodenvyBuilderProcess}.
      * 
      * @param launch the {@link ILaunch} object.
-     * @param codenvyMetaProject the {@link CodenvyMetaProject} client API.
+     * @param projectMetadata the {@link CodenvyProjectMetadata}.
      * @throws NullPointerException if launch or codenvyMetaProject parameter is {@code null}.
      */
-    public CodenvyBuilderProcess(ILaunch launch, CodenvyMetaProject codenvyMetaProject) {
-        checkNotNull(codenvyMetaProject);
+    public CodenvyBuilderProcess(ILaunch launch, CodenvyProjectMetadata projectMetadata) {
+        checkNotNull(projectMetadata);
 
         this.launch = checkNotNull(launch);
-        this.project = CodenvyAPI.getClient().newProjectBuilder().withName(codenvyMetaProject.projectName)
-                                 .withWorkspaceId(codenvyMetaProject.workspaceId)
+        this.project = CodenvyAPI.getClient().newProjectBuilder().withName(projectMetadata.projectName)
+                                 .withWorkspaceId(projectMetadata.workspaceId)
                                  .build();
 
         this.codenvy = CodenvyPlugin.getDefault()
-                                    .getCodenvyBuilder(codenvyMetaProject.url, codenvyMetaProject.username)
+                                    .getCodenvyBuilder(projectMetadata.url, projectMetadata.username)
                                     .build();
 
         this.attributes = new HashMap<>();

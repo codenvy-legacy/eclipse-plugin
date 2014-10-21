@@ -37,7 +37,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 
-import com.codenvy.eclipse.core.utils.EclipseProjectHelper;
 import com.google.common.collect.HashBiMap;
 
 /**
@@ -69,8 +68,6 @@ public final class CodenvyNature implements IProjectNature {
 
     @Override
     public void configure() throws CoreException {
-        EclipseProjectHelper.checkCodenvyProjectLayout(codenvyProject);
-
         final IFile codenvyDesciptorFile = codenvyProject.getFolder(CODENVY_FOLDER_NAME).getFile(CODENVY_PROJECT_DESCRIPTOR_FILE_NAME);
         if (codenvyDesciptorFile.exists()) {
             final Job job = new Job("Configure project") {
