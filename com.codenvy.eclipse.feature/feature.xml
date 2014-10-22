@@ -14,7 +14,7 @@
 <feature
       id="com.codenvy.eclipse.feature"
       label="Codenvy Eclipse Plugin"
-      version="1.1.0"
+      version="1.2.0.qualifier"
       provider-name="Codenvy">
 
    <description>
