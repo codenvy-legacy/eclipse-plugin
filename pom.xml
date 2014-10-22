@@ -59,39 +59,38 @@
 		<tag>HEAD</tag>
 	</scm>
 	<properties>
+		<build-helper-maven-plugin.version>1.9</build-helper-maven-plugin.version>
+		<jackson.version>2.3.2</jackson.version>
 		<license_years>2014</license_years>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.build-helper-maven-plugin>1.9</version.build-helper-maven-plugin>
-		<version.codenvy-platform-api-client-java>1.0.4-SNAPSHOT</version.codenvy-platform-api-client-java>
-		<version.jackson>2.3.2</version.jackson>
-		<version.target-platform>4.4</version.target-platform>
-		<version.tycho>0.21.0</version.tycho>
+		<target-platform.version>4.4</target-platform.version>
+		<tycho.version>0.21.0</tycho.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.codenvy.platform-api-client-java</groupId>
 			<artifactId>uberjar</artifactId>
-			<version>${version.codenvy-platform-api-client-java}</version>
+			<version>${codenvy.platform-api-client-java.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>${version.jackson}</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>${version.jackson}</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${version.jackson}</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>${version.jackson}</version>
+			<version>${jackson.version}</version>
 		</dependency>
 	</dependencies>
 	<repositories>
@@ -114,37 +113,37 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>${version.build-helper-maven-plugin}</version>
+					<version>${build-helper-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-compiler-plugin</artifactId>
-					<version>${version.tycho}</version>
+					<version>${tycho.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-maven-plugin</artifactId>
-					<version>${version.tycho}</version>
+					<version>${tycho.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
-					<version>${version.tycho}</version>
+					<version>${tycho.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>target-platform-configuration</artifactId>
-					<version>${version.tycho}</version>
+					<version>${tycho.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-source-plugin</artifactId>
-					<version>${version.tycho}</version>
+					<version>${tycho.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-versions-plugin</artifactId>
-					<version>${version.tycho}</version>
+					<version>${tycho.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -178,7 +177,7 @@
 							<artifactId>com.codenvy.eclipse.target</artifactId>
 							<version>${project.version}</version>
 							<type>target</type>
-							<classifier>${version.target-platform}</classifier>
+							<classifier>${target-platform.version}</classifier>
 						</artifact>
 					</target>
 					<environments>
@@ -228,7 +227,7 @@
 				</property>
 			</activation>
 			<properties>
-				<version.target-platform>4.4</version.target-platform>
+				<target-platform.version>4.4</target-platform.version>
 			</properties>
 		</profile>
 		<profile>
@@ -240,7 +239,7 @@
 				</property>
 			</activation>
 			<properties>
-				<version.target-platform>4.3</version.target-platform>
+				<target-platform.version>4.3</target-platform.version>
 			</properties>
 		</profile>
 		<profile>
@@ -252,7 +251,7 @@
 				</property>
 			</activation>
 			<properties>
-				<version.target-platform>4.2</version.target-platform>
+				<target-platform.version>4.2</target-platform.version>
 			</properties>
 		</profile>
 	</profiles>

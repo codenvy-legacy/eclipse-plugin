@@ -33,9 +33,9 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${version.target-platform}.target</file>
+                                    <file>${target-platform.version}.target</file>
                                     <type>target</type>
-                                    <classifier>${version.target-platform}</classifier>
+                                    <classifier>${target-platform.version}</classifier>
                                 </artifact>
                             </artifacts>
                         </configuration>
