@@ -99,9 +99,7 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
 
         usernames = new Combo(wizardContainer, SWT.DROP_DOWN | SWT.BORDER);
         usernames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        usernameProposals =
-                            new ComboAutoCompleteField(usernames);
-        autoFillUsernames();
+        usernameProposals = new ComboAutoCompleteField(usernames);
 
         final Label passwordLabel = new Label(wizardContainer, SWT.NONE);
         passwordLabel.setText("Password:");
@@ -125,6 +123,7 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
         usernames.addSelectionListener(pageValidator);
         password.addKeyListener(pageValidator);
 
+        autoFillUsernames();
         setControl(wizardContainer);
     }
 
@@ -211,6 +210,10 @@ public final class AuthenticationWizardPage extends WizardPage implements IPageC
             }
 
             usernames.setText(currentUsername);
+
+            if (usernames.getItemCount() == 1) {
+                usernames.select(0);
+            }
         }
     }
 
