@@ -71,7 +71,8 @@ Release the plugin
 
 2. Prepare release:
 
-        mvn tycho-versions:set-version -DnewVersion=${releaseVersion} clean install
+        mvn tycho-versions:set-version -DnewVersion=${releaseVersion}
+        mvn clean install
         git commit -am "Prepare release ${releaseVersion}"
         git push origin master
 
@@ -82,7 +83,8 @@ Release the plugin
 
 4. Prepare for next development iteration:
 
-        mvn tycho-versions:set-version -DnewVersion=${nextDevelopmentVersion} clean install
+        mvn tycho-versions:set-version -DnewVersion=${nextDevelopmentVersion}
+        mvn clean install
         git commit -am "Prepare for next development iteration"
         git push origin master
 
