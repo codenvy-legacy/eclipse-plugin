@@ -8,6 +8,12 @@ This project aims to provide an Eclipse plugin to give the ability to developers
 to work either on Codenvy or in Eclipse, sharing the same code base without the
 need of a Git repo.
 
+Update sites
+------------
+
+* Nightly Build: https://install.codenvycorp.com/eclipse-plugin/updates-nightly
+* Main Update Site: https://install.codenvycorp.com/eclipse-plugin/updates 
+
 Build the project with Maven
 ----------------------------
 
