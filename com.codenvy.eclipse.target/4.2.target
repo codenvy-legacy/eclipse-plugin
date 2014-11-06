@@ -22,7 +22,7 @@
 		<location path="${M2_REPO}/com/fasterxml/jackson/core/jackson-databind/2.3.2/" type="Directory"/>
 		<location path="${M2_REPO}/com/fasterxml/jackson/core/jackson-core/2.3.2/" type="Directory"/>
 		<location path="${M2_REPO}/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.3.2" type="Directory"/>
-		<location path="${M2_REPO}/com/codenvy/platform-api-client-java/uberjar/1.1.0/" type="Directory"/>
+		<location path="${M2_REPO}/com/codenvy/platform-api-client-java/uberjar/1.2.0/" type="Directory"/>
 
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
             <repository location="http://download.eclipse.org/technology/swtbot/releases/2.2.1/"/>
