@@ -312,29 +312,12 @@ public final class CodenvyRunnerProcess implements IProcess {
                             break;
 
                         case RUNNING: {
-                            final String outputStreamContent = outputStream.getContents();
-
-                            if (outputStreamContent.matches("^" + WAITING_FOR_RUNNER_MESSAGE + "[.]*$")) {
-                                outputStream.append("\n");
-                            }
-
-                            final String logs = codenvy.runner()
-                                                       .logs(project, processId)
-                                                       .execute()
-                                                       .trim();
-
-                            final BufferedReader logsReader = new BufferedReader(new StringReader(logs));
-
-                            String line;
-                            while ((line = logsReader.readLine()) != null) {
-                                if (!outputStreamContent.contains(line)) {
-                                    outputStream.append(line + "\n");
-                                }
-                            }
+                            appendRunnerLogs();
                         }
                             break;
 
                         default: {
+                            appendRunnerLogs();
                             stopProcess();
                         }
                     }
@@ -345,6 +328,28 @@ public final class CodenvyRunnerProcess implements IProcess {
 
             } catch (IOException e) {
                 // ignore we read a string
+            }
+        }
+
+        private void appendRunnerLogs() throws IOException {
+            final String outputStreamContent = outputStream.getContents();
+
+            if (outputStreamContent.matches("^" + WAITING_FOR_RUNNER_MESSAGE + "[.]*$")) {
+                outputStream.append("\n");
+            }
+
+            final String logs = codenvy.runner()
+                                       .logs(project, processId)
+                                       .execute()
+                                       .trim();
+
+            final BufferedReader logsReader = new BufferedReader(new StringReader(logs));
+
+            String line;
+            while ((line = logsReader.readLine()) != null) {
+                if (!outputStreamContent.contains(line)) {
+                    outputStream.append(line + "\n");
+                }
             }
         }
     }
